@@ -15,7 +15,7 @@ tabInicio <- function(){
         mod_stockDas_ui("stock")
       ),
       fluidRow(
-        # cadastroDashUI("cadastro")
+        cadastroDash()
       ),
       fluidRow(
         box(title = "Compras", status = "primary",

@@ -1,6 +1,6 @@
 #' stockDas UI Function
 #'
-#' @description A shiny Module.
+#' @description A shiny Module of stock dashboard in body inicial tab.
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'

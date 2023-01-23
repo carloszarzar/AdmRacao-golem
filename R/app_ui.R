@@ -49,17 +49,15 @@ app_ui <- function(request) {
         # Corpo referente a cada tab ítem
         tabItems(
           #---- tabInicio
-          tabInicio()
+          tabInicio(),
           #---- tabEstqoue
-          #---- tabFornecedor
-          #---- tabRacao
-          #---- tabAlevino
-          #---- tabFazenda
+          #---- tabCadastro
+          tabFornecedor(),
+          tabRacao(),
+          tabAlevino(),
+          tabFazenda()
 
-          #---- Pode apagar
-          # body_inicio_tabItem(),
-          # body_cadastro_tabItem() #,
-          # cadFornecedor_tabItem()
+
         ),
         h2("Alguma informação permanente para todas tabPanel")
 
