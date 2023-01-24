@@ -48,19 +48,36 @@ app_ui <- function(request) {
       body = dashboardBody(
         # Corpo referente a cada tab ítem
         shinydashboard::tabItems(
-          #---- tabInicio
+          #---- tabInicio ----####
           shinydashboard::tabItem(
             tabName = "global-cadastro-tabInicio",
-            mod_tabInicio_ui("global")#,
+            mod_tabInicio_ui("global")
           ),
-          #---- tabEstqoue
+          #---- tabEstqoue ----####
           #---- tabCadastro
-          tabFornecedor(),
-          tabRacao(),
+          #---- tabFornecedor ----####
+          tabItem( # tabFornecedor (Fornecedor)
+            tabName = "global-cadastro-tabFornecedor",
+            mod_tabFornecedor_ui("global")
+          ),
+          #---- tabRacao ----####
+          tabItem( # tabRacao (Ração)
+            tabName = "global-cadastro-tabRacao",
+            mod_tabRacao_ui("global")
+          ),
+          #---- tabAlevino ----####
+          tabItem(
+            tabName = "global-cadastro-tabAlevino",
+            mod_tabAlevino_ui("global")
+          ),
           tabAlevino(),
-          tabFazenda() # Fazer c ada um desses tab de module
-          #---- tabCompras
-          #---- tabSaida
+          #---- tabFazenda ----####
+          tabItem(
+            tabName = "global-cadastro-tabFazenda",
+            mod_tabFazenda_ui("global")
+          )
+          #---- tabCompras ----####
+          #---- tabSaida ----####
 
 
         ),

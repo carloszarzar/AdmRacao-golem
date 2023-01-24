@@ -23,16 +23,16 @@ golem::add_module(name = "stockDas", with_test = TRUE) # stockDas é o módulo p
 golem::add_module(name = "cadastroDash", with_test = TRUE) # cadastroDas é o módulo do Dashboard no tab inicio body que apresenta os botões de cadastros (fornecedor, fazenda, ração, alevino)
 golem::add_module(name = "tabInicio", with_test = TRUE) # Módulo para aba início
 golem::add_module(name = "tabInicio", with_test = TRUE) # Módulo para aba início
+golem::add_module(name = "tabFornecedor", with_test = TRUE) # Módulo para tab (aba) Fornecedor
+golem::add_module(name = "tabRacao", with_test = TRUE) # Módulo para tab (aba) Ração
+golem::add_module(name = "tabAlevino", with_test = TRUE) # Módulo para tab (aba) Alevino
+golem::add_module(name = "tabFazenda", with_test = TRUE) # Módulo para tab (aba) Fazenda
+
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
 ### fct
-golem::add_fct("tabInicio", with_test = TRUE) # Tab (aba) início
-golem::add_fct("cadastroDash", with_test = TRUE) # Dashboard de cadastros (fornecedor, ração alevino, fazenda) presente no tabInicio body
-golem::add_fct("tabFornecedor", with_test = TRUE) # Tab (aba) Cadastro fornecedor
-golem::add_fct("tabRacao", with_test = TRUE) # Tab (aba) Ração
-golem::add_fct("tabAlevino", with_test = TRUE) # Tab (aba) Cadastro Alevino
-golem::add_fct("tabFazenda", with_test = TRUE) # Tab (aba) Cadastro Fazenda
+golem::add_fct("helpers", with_test = TRUE) # Funções auxiliar que ajuda na produção do App (arquivo negócio)
 
 ### utils
 golem::add_utils("db", with_test = TRUE) # Pequenas funções de conexão do Banco de dados (DataBase -db)
