@@ -21,12 +21,14 @@ attachment::att_amend_desc()
 ## Create a module infrastructure in R/
 golem::add_module(name = "stockDas", with_test = TRUE) # stockDas é o módulo para apresentar o dashboard do estoque no body (corpo) Início
 golem::add_module(name = "cadastroDash", with_test = TRUE) # cadastroDas é o módulo do Dashboard no tab inicio body que apresenta os botões de cadastros (fornecedor, fazenda, ração, alevino)
+golem::add_module(name = "tabInicio", with_test = TRUE) # Módulo para aba início
+golem::add_module(name = "tabInicio", with_test = TRUE) # Módulo para aba início
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
 ### fct
 golem::add_fct("tabInicio", with_test = TRUE) # Tab (aba) início
-golem::add_fct("cadastroDasb", with_test = TRUE) # Dashboard de cadastros (fornecedor, ração alevino, fazenda) presente no tabInicio body
+golem::add_fct("cadastroDash", with_test = TRUE) # Dashboard de cadastros (fornecedor, ração alevino, fazenda) presente no tabInicio body
 golem::add_fct("tabFornecedor", with_test = TRUE) # Tab (aba) Cadastro fornecedor
 golem::add_fct("tabRacao", with_test = TRUE) # Tab (aba) Ração
 golem::add_fct("tabAlevino", with_test = TRUE) # Tab (aba) Cadastro Alevino
