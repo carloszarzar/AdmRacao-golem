@@ -7,7 +7,7 @@
 #' @noRd
 tabAlevino <- function(){
   tabItem(
-    tabName = "tabAlevino",
+    tabName = "global-cadastro-tabAlevino",
     h2("Conteúdo tabAlevino Cadastro!")
   )
 

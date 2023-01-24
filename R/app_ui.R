@@ -18,15 +18,15 @@ app_ui <- function(request) {
       # Sidebar é a barra lateral do App
       sidebar = dashboardSidebar(
         # Início do menu do sidebar
-        sidebarMenu(id="tabs",
-                    menuItem("Início", tabName = "tabInicio", icon = icon("th")),
+        sidebarMenu(id="global-cadastro-tabs",
+                    menuItem("Início", tabName = "global-cadastro-tabInicio", icon = icon("th")),
                     menuItem("Estoque", tabName = "tabEstqoue", icon = icon("th")),
                     menuItem("Cadastro", tabName = "tabCadastro", icon = icon("th"),
                              # O Cadastro subdivide em:
-                             menuSubItem('Fornecedor', tabName = 'tabFornecedor'),
-                             menuSubItem('Ração', tabName = 'tabRacao'),
-                             menuSubItem('Alevino', tabName = 'tabAlevino'),
-                             menuSubItem('Fazenda', tabName = 'tabFazenda')
+                             menuSubItem('Fornecedor', tabName = 'global-cadastro-tabFornecedor'),
+                             menuSubItem('Ração', tabName = 'global-cadastro-tabRacao'),
+                             menuSubItem('Alevino', tabName = 'global-cadastro-tabAlevino'),
+                             menuSubItem('Fazenda', tabName = 'global-cadastro-tabFazenda')
 
                     ),
                     menuItem("Compras", tabName = "tabCompras", icon = icon("th")),
@@ -47,15 +47,20 @@ app_ui <- function(request) {
       # O corpo do App
       body = dashboardBody(
         # Corpo referente a cada tab ítem
-        tabItems(
+        shinydashboard::tabItems(
           #---- tabInicio
-          tabInicio(),
+          shinydashboard::tabItem(
+            tabName = "global-cadastro-tabInicio",
+            mod_tabInicio_ui("global")#,
+          ),
           #---- tabEstqoue
           #---- tabCadastro
           tabFornecedor(),
           tabRacao(),
           tabAlevino(),
-          tabFazenda()
+          tabFazenda() # Fazer c ada um desses tab de module
+          #---- tabCompras
+          #---- tabSaida
 
 
         ),

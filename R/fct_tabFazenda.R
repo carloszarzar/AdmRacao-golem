@@ -7,7 +7,7 @@
 #' @noRd
 tabFazenda <- function(){
   tabItem(
-    tabName = "tabFazenda",
+    tabName = "global-cadastro-tabFazenda",
     h2("Conteúdo tabFazenda Cadastro!")
   )
 

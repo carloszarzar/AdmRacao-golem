@@ -23,3 +23,8 @@ connect_to_db <- function(){
 read_sql_file <- function(path) {
   path %>% readLines() %>% paste(collapse = " ")
 }
+
+
+
+
+
