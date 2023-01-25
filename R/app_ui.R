@@ -70,7 +70,6 @@ app_ui <- function(request) {
             tabName = "global-cadastro-tabAlevino",
             mod_tabAlevino_ui("global")
           ),
-          tabAlevino(),
           #---- tabFazenda ----####
           tabItem(
             tabName = "global-cadastro-tabFazenda",
@@ -109,8 +108,10 @@ golem_add_external_resources <- function() {
     bundle_resources(
       path = app_sys("app/www"),
       app_title = "AdmRacao"
-    )
+    ),
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
+    shinyjs::useShinyjs(),
+    shinyjs::inlineCSS(appCSS)
   )
 }

@@ -16,6 +16,7 @@ CREATE TABLE endereco(
 	logrador VARCHAR(40) NOT NULL,
 	bairro VARCHAR(30) NOT NULL,
 	cidade VARCHAR(30) NOT NULL,
+	estado VARCHAR(30) NOT NULL,
 	numero INT NOT NULL,
 	cep INT NOT NULL,
 	referencia VARCHAR(40) NULL
@@ -24,7 +25,7 @@ CREATE TABLE endereco(
 CREATE TABLE telefone(
 	id_telefone SERIAL PRIMARY KEY,
 	numero1 INT NOT NULL,
-	whatsapp INT NOT NULL,
+	whatsapp INT NULL,
 	numero2 INT NULL
 );
 -- TABELA fornecedor
