@@ -28,7 +28,7 @@ read_sql_file <- function(path) {
 fieldsAll <- c("nome_vendedor", "nome_fabricante", "tipo_produto", "endereco", "telefone")
 
 # which fields are mandatory
-fieldsMandatory <- c("nome_vendedor", "nome_fabricante", "tipo_produto","telvendedor", "logrador","bairro","cidade","estado","numero","cep") # todos
+# fieldsMandatory <- c("nome_vendedor", "nome_fabricante", "tipo_produto","telvendedor", "logrador","bairro","cidade","estado","numero","cep") # todos
 
 # add an asterisk to an input label
 labelMandatory <- function(label) {

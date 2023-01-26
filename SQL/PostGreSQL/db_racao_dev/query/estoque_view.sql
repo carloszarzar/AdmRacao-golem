@@ -1,7 +1,3 @@
-/* ####---- Resumo do estoque na aba inicio (tab body) ----####
-   # Data: 26/01/2023
-   # Autor: Carlos A. Zarzar
-*/
 with entrada as (
 SELECT r.id_racao, SUM(cr.quantidade) AS qty, SUM(cr.valor_entrada) AS valor
         FROM racao AS r
