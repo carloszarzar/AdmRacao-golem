@@ -1,0 +1,12 @@
+#####----- Projeto AdmRacao - Golem -----#####
+
+# Próximos passos para o projeto.
+
+# Parei na Aba Fornecedor (fabricante + distribuidor).
+## O que tenho que fazer:
+1- Limpar o formulário assim que submeter ao banco de dados;
+2- Colocar as informações do Fabricante e Distribuido como endereço, telefone de contato na aba.
+	Posso tentar fazer isso de forma interativa com a tabela resumo já renderizada.
+	Um box que minimize e maximize para ser opção do usuário querer essa informação ou não.
+3- Colocar algum botão de delete para apagar o contato existente criado.
+4- Ajeitar o banco de dados db_racao_dev para a tabela distribuidor (vendedor) colocando o ID key do fabricante (id_fabricante) que corresponde a cada vendedor;
