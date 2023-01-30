@@ -3,5 +3,6 @@
    # Autor: Carlos A. Zarzar
 */
 SELECT DISTINCT nome_distribuidor AS "Distribuidor",
-            tipo_produto_dis AS "Produto"
-            FROM distribuidor;
+            tipo_produto_dis AS "Produto",
+            created_at AS "Data"
+            FROM distribuidor ORDER BY created_at DESC;

@@ -12,6 +12,7 @@ mod_tabFornecedor_ui <- function(id){
   tagList(
     fluidPage(
       ####---- Box Resumo fornecedores ----####
+      # Fornecedor = Fabricante + Distribuidor
       # Box da tabela com os fornecedores já cadastrados até então
       fluidRow(
         box(title = "Fabricantes cadastrados", status = "primary",
@@ -119,10 +120,10 @@ mod_tabFornecedor_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Box Resumo fornecedores ----####
-    #####----- Bos Resumo Fabricantes ------#####
+    #####----- Box Resumo Fabricantes ------#####
     ## Render table fabricante
     output$fabricante <- DT::renderDataTable({
-      golem::cat_dev("Renderizou a tabela (primeira vez 1) \n")
+      golem::cat_dev("Renderizou a tabela Fabricante 1 (primeira vez) \n")
       ## conectando com o DB PostgreSQL
       # Connect to DB
       con <- connect_to_db()
@@ -132,7 +133,7 @@ mod_tabFornecedor_server <- function(id){
       df_postgres <- DBI::dbGetQuery(con, statement = query)
       # Disconnect from the DB
       DBI::dbDisconnect(con)
-      golem::cat_dev("Fez a query e armazenou os dados \n")
+      # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
       # Convert to data.frame
       data.frame(df_postgres,check.names = FALSE)
       # Obtendo a tabela atualizada
@@ -140,13 +141,13 @@ mod_tabFornecedor_server <- function(id){
         tabela <- data.frame(df_postgres,check.names = FALSE),
         rownames = FALSE,
         options = list(searching = FALSE, lengthChange = FALSE)
-      )
+      ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
     })
 
-    #####----- Bos Resumo Distribuidores ------#####
+    #####----- Box Resumo Distribuidores ------#####
     ## Render table Distribuidores
     output$distribuidor <- DT::renderDataTable({
-      golem::cat_dev("Renderizou a tabela (primeira vez 1) \n")
+      golem::cat_dev("Renderizou a tabela Distribuidor 1 (primeira vez 1) \n")
       ## conectando com o DB PostgreSQL
       # Connect to DB
       con <- connect_to_db()
@@ -156,7 +157,7 @@ mod_tabFornecedor_server <- function(id){
       df_postgres <- DBI::dbGetQuery(con, statement = query)
       # Disconnect from the DB
       DBI::dbDisconnect(con)
-      golem::cat_dev("Fez a query e armazenou os dados \n")
+      # golem::cat_dev("Fez a query e armazenou os dados \n")
       # Convert to data.frame
       data.frame(df_postgres,check.names = FALSE)
       # Obtendo a tabela atualizada
@@ -164,7 +165,7 @@ mod_tabFornecedor_server <- function(id){
         tabela <- data.frame(df_postgres,check.names = FALSE),
         rownames = FALSE,
         options = list(searching = FALSE, lengthChange = FALSE)
-      )
+      ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
     })
     #####----------------------------------------
 
@@ -216,8 +217,8 @@ mod_tabFornecedor_server <- function(id){
       df_postgres <- DBI::dbGetQuery(con, statement = query)
       # Disconnect from the DB
       DBI::dbDisconnect(con)
-      golem::cat_dev("Fez um novo query para o banco de dados \n")
-      golem::cat_dev("Renderizou a tabela Fabricante (segunda vez 2) \n")
+      golem::cat_dev("Fez um novo query para a tabela Fabricante 2 \n")
+      golem::cat_dev("Renderizou a tabela Fabricante 2 (segunda vez 2) \n")
 
       ## Render table
       output$fabricante <- DT::renderDataTable({
@@ -226,7 +227,7 @@ mod_tabFornecedor_server <- function(id){
           tabela <- data.frame(df_postgres,check.names = FALSE),
           rownames = FALSE,
           options = list(searching = FALSE, lengthChange = FALSE)
-        )
+        ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
       })
     })
     #-----------------------------------------
@@ -273,7 +274,7 @@ mod_tabFornecedor_server <- function(id){
       df_postgres <- DBI::dbGetQuery(con, statement = query)
       # Disconnect from the DB
       DBI::dbDisconnect(con)
-      golem::cat_dev("Fez um novo query para o banco de dados \n")
+      golem::cat_dev("Fez um novo query para tabela Distribuidor \n")
       # Convert to data.frame
       # data.frame(df_postgres,check.names = FALSE)
       # Obtendo a tabela atualizada
@@ -284,7 +285,7 @@ mod_tabFornecedor_server <- function(id){
           tabela <- data.frame(df_postgres,check.names = FALSE),
           rownames = FALSE,
           options = list(searching = FALSE, lengthChange = FALSE)
-        )
+        ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
       })
 
     })

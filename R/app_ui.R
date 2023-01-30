@@ -56,7 +56,7 @@ app_ui <- function(request) {
           #---- tabEstqoue ----####
           #---- tabCadastro
           #---- tabFornecedor ----####
-          tabItem( # tabFornecedor (Fornecedor)
+          tabItem( # tabFornecedor (Fornecedor= Fabricante + Distribuidor)
             tabName = "global-cadastro-tabFornecedor",
             mod_tabFornecedor_ui("global")
           ),
