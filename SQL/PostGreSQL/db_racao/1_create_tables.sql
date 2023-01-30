@@ -43,7 +43,8 @@ CREATE TABLE distribuidor(
   id_telefone INT NOT NULL REFERENCES telefone(id_telefone),
   id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco),
   tipo_produto_dis VARCHAR(15) NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT Now() 
+  created_at TIMESTAMPTZ DEFAULT Now(),
+  id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante)
 );
 -- TABELA proprietario
 CREATE TABLE proprietario(

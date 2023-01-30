@@ -49,12 +49,12 @@ VALUES
 ('AleProducoes',4,4,'Alevino');
 
 -- TABELA distribuidor (Vendedor)
-INSERT INTO distribuidor(nome_distribuidor,id_telefone,id_endereco,tipo_produto_dis)
+INSERT INTO distribuidor(nome_distribuidor,id_telefone,id_endereco,tipo_produto_dis,id_fabricante)
 VALUES
-('Carlos Valouro' ,5,5,'Racao'),
-('Fabricio Aragao',6,6,'Racao'),
-('Mayara Noruega' ,7,7,'Racao'),
-('Rafael Miranda' ,8,8,'Alevino');
+('Carlos Valouro' ,5,5,'Racao',1),
+('Fabricio Aragao',6,6,'Racao',2),
+('Mayara Noruega' ,7,7,'Racao',5),
+('Rafael Miranda' ,8,8,'Alevino',3);
 
 -- TABELA proprietario
 INSERT INTO proprietario(nome,id_telefone,cpf)
