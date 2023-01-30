@@ -28,81 +28,85 @@ mod_tabFornecedor_ui <- function(id){
         ####---- Dados do Fabricante ----####
         box( # Dados do Fabricante
           title = "Dados do Fabricante (Fábrica)", width = 6,
-          textInput(ns("nome_fab"), labelMandatory("Nome do fabricante")),
-          textInput(ns("tel_fab"), labelMandatory("Telefone da fábrica")),
-          # Whatsapp
-          shinyWidgets::switchInput(
-            inputId = ns("whats_fab"),
-            label = "<i class=\"fab fa-whatsapp\"></i>",
-            # labelWidth = "80px",
-            onLabel = "Sim",
-            offLabel = "Não",
-            value = TRUE
-          ),
-          # Box check Tipo do produto fabricado
-          shinyWidgets::radioGroupButtons(
-            inputId = ns("tipo_produto_fab"),
-            label = labelMandatory("Produto Fabricado:"),
-            choices = c("Ração","Alevino"),
-            individual = TRUE,
-            justified = TRUE,
-            checkIcon = list(
-              yes = tags$i(class = "fa fa-check-square",
-                           style = "color: steelblue"),
-              no = tags$i(class = "fa fa-square-o",
-                          style = "color: steelblue"))
-          ),
-          # Botão submeter fabricante
-          h3("Cadastrar do Fabricante!"),
-          actionButton(ns("submit_fab"), "Cadastrar", icon("paper-plane"), class = "btn-primary"),
-          h4("Endereço do Fabricante"),
-          textInput(ns("logrador_fab"), label="Logrador", placeholder = "Rua, Avenida, Estrada ..."),
-          textInput(ns("bairro_fab"), label="Bairro",placeholder = "Bairro, comunidade, região ..."),
-          textInput(ns("cidade_fab"), label="Cidade"),
-          textInput(ns("estado_fab"), label="Estado"),
-          textInput(ns("num_ende_fab"), label="Número"),
-          textInput(ns("cep_fab"), label="CEP"),
-          textInput(ns("ref_fab"), "Ponto de referência", placeholder = "Proximo a Praça dos Três Poderes")
+          div(id = ns("form_fab"),
+              textInput(ns("nome_fab"), labelMandatory("Nome do fabricante")),
+              textInput(ns("tel_fab"), labelMandatory("Telefone da fábrica")),
+              # Whatsapp
+              shinyWidgets::switchInput(
+                inputId = ns("whats_fab"),
+                label = "<i class=\"fab fa-whatsapp\"></i>",
+                # labelWidth = "80px",
+                onLabel = "Sim",
+                offLabel = "Não",
+                value = TRUE
+              ),
+              # Box check Tipo do produto fabricado
+              shinyWidgets::radioGroupButtons(
+                inputId = ns("tipo_produto_fab"),
+                label = labelMandatory("Produto Fabricado:"),
+                choices = c("Ração","Alevino"),
+                individual = TRUE,
+                justified = TRUE,
+                checkIcon = list(
+                  yes = tags$i(class = "fa fa-check-square",
+                               style = "color: steelblue"),
+                  no = tags$i(class = "fa fa-square-o",
+                              style = "color: steelblue"))
+              ),
+              # Botão submeter fabricante
+              h3("Cadastrar do Fabricante!"),
+              actionButton(ns("submit_fab"), "Cadastrar", icon("paper-plane"), class = "btn-primary"),
+              h4("Endereço do Fabricante"),
+              textInput(ns("logrador_fab"), label="Logrador", placeholder = "Rua, Avenida, Estrada ..."),
+              textInput(ns("bairro_fab"), label="Bairro",placeholder = "Bairro, comunidade, região ..."),
+              textInput(ns("cidade_fab"), label="Cidade"),
+              textInput(ns("estado_fab"), label="Estado"),
+              textInput(ns("num_ende_fab"), label="Número"),
+              textInput(ns("cep_fab"), label="CEP"),
+              textInput(ns("ref_fab"), "Ponto de referência", placeholder = "Proximo a Praça dos Três Poderes")
+              )
         ),
         #---------------------------------------
         ####--- Dados do Distribuidor (vendedor) ---####
         box( # Dados do Distribuidor (vendedor)
           title = "Dados do Distribuidor (vendedor)", width = 6,
-          # Conteúdo do box
-          textInput(ns("nome_dis"), labelMandatory("Name Distribuidor (Vendedor representante)")),
-          textInput(ns("tel_dis"), labelMandatory("Telefone celular do Distribuidor (Vendedor representante)")),
-          # Whatsapp
-          shinyWidgets::switchInput(
-            inputId = ns("whats_dis"),
-            label = "<i class=\"fab fa-whatsapp\"></i>",
-            # labelWidth = "80px",
-            onLabel = "Sim",
-            offLabel = "Não",
-            value = TRUE
-          ),
-          # Box check Tipo do produto vendedor
-          shinyWidgets::radioGroupButtons(
-            inputId = ns("tipo_produto_dis"),
-            label = labelMandatory("Produto(s) vendido(s):"),
-            choices = c("Ração","Alevino","Ração/Alevino"),
-            individual = TRUE,
-            checkIcon = list(
-              yes = tags$i(class = "fa fa-circle",
-                           style = "color: steelblue"),
-              no = tags$i(class = "fa fa-circle-o",
-                          style = "color: steelblue"))
-          ),
-          # Botão submeter fabricante
-          h3("Cadastrar o Distribuidor (Vendedor representante)!"),
-          actionButton(ns("submit_dis"), "Cadastrar", icon("paper-plane"), class = "btn-primary"),
-          h4("Endereço do Distribuidor (Vendedor representante)"),
-          textInput(ns("logrador_dis"), label="Logrador", placeholder = "Rua, Avenida, Estrada ..."),
-          textInput(ns("bairro_dis"), label="Bairro",placeholder = "Bairro, comunidade, região ..."),
-          textInput(ns("cidade_dis"), label="Cidade"),
-          textInput(ns("estado_dis"), label="Estado"),
-          textInput(ns("num_ende_dis"), label="Número"),
-          textInput(ns("cep_dis"), label="CEP"),
-          textInput(ns("ref_dis"), "Ponto de referência", placeholder = "Proximo a Praça dos Três Poderes")
+          div(id = ns("form_dis"),
+              # Conteúdo do box
+              textInput(ns("nome_dis"), labelMandatory("Name Distribuidor (Vendedor representante)")),
+              textInput(ns("tel_dis"), labelMandatory("Telefone celular do Distribuidor (Vendedor representante)")),
+              # Whatsapp
+              shinyWidgets::switchInput(
+                inputId = ns("whats_dis"),
+                label = "<i class=\"fab fa-whatsapp\"></i>",
+                # labelWidth = "80px",
+                onLabel = "Sim",
+                offLabel = "Não",
+                value = TRUE
+              ),
+              # Box check Tipo do produto vendedor
+              shinyWidgets::radioGroupButtons(
+                inputId = ns("tipo_produto_dis"),
+                label = labelMandatory("Produto(s) vendido(s):"),
+                choices = c("Ração","Alevino","Ração/Alevino"),
+                individual = TRUE,
+                checkIcon = list(
+                  yes = tags$i(class = "fa fa-circle",
+                               style = "color: steelblue"),
+                  no = tags$i(class = "fa fa-circle-o",
+                              style = "color: steelblue"))
+              ),
+              # Botão submeter fabricante
+              h3("Cadastrar o Distribuidor (Vendedor representante)!"),
+              actionButton(ns("submit_dis"), "Cadastrar", icon("paper-plane"), class = "btn-primary"),
+              h4("Endereço do Distribuidor (Vendedor representante)"),
+              textInput(ns("logrador_dis"), label="Logrador", placeholder = "Rua, Avenida, Estrada ..."),
+              textInput(ns("bairro_dis"), label="Bairro",placeholder = "Bairro, comunidade, região ..."),
+              textInput(ns("cidade_dis"), label="Cidade"),
+              textInput(ns("estado_dis"), label="Estado"),
+              textInput(ns("num_ende_dis"), label="Número"),
+              textInput(ns("cep_dis"), label="CEP"),
+              textInput(ns("ref_dis"), "Ponto de referência", placeholder = "Proximo a Praça dos Três Poderes")
+              )
         )
         #---------------------------------------
       ) # Fim do formulário
@@ -206,6 +210,9 @@ mod_tabFornecedor_server <- function(id){
       ))
       # Disconnect from the DB
       DBI::dbDisconnect(con)
+      # Resetando o formulário
+      shinyjs::reset("form_fab")
+
       cat("Cadastrou dados do fabricante! \n")
       # Obtendo a tabela atualizada
       ## conectando com o DB PostgreSQL
@@ -264,6 +271,9 @@ mod_tabFornecedor_server <- function(id){
       ))
       # Disconnect from the DB
       DBI::dbDisconnect(con)
+      # Resetando o formulário
+      shinyjs::reset("form_dis")
+
       cat("Cadastrou dados do Distribuido (vendedor)! \n")
       # Obtendo a tabela atualizada
       ## conectando com o DB PostgreSQL
