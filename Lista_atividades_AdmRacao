@@ -7,7 +7,7 @@
 
 (ok, feito) 1- Limpar o formulário assim que submeter ao banco de dados;
 
-2- Colocar as informações do Fabricante e Distribuido como endereço, telefone de contato no app da aba.
+(ok, feito) 2- Colocar as informações do Fabricante e Distribuido como endereço, telefone de contato no app da aba.
 	Posso tentar fazer isso de forma interativa com a tabela resumo já renderizada.
 	Um box que minimize e maximize para ser opção do usuário querer essa informação ou não.
 	

@@ -14,5 +14,10 @@ WITH ins1 AS (
 	VALUES ('6545465',TRUE)
 	RETURNING id_telefone
    )
-INSERT INTO distribuidor(nome_distribuidor,tipo_produto_dis,id_telefone,id_endereco)
-SELECT 'Joel Fraga','Ração',id_telefone,id_endereco FROM ins2, ins1;
+, ins3 AS (
+  SELECT f.id_fabricante
+  FROM fabricante AS f
+    WHERE f.nome_fabricante = 'AleProducoes'
+)
+INSERT INTO distribuidor(nome_distribuidor,tipo_produto_dis,id_telefone,id_endereco,id_fabricante)
+SELECT  'Joel Fraga','Ração',id_telefone,id_endereco,id_fabricante FROM ins2, ins1, ins3;

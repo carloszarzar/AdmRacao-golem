@@ -58,9 +58,5 @@ appCSS <-c(
    #header { background: #fff; border-bottom: 1px solid #ddd; margin: -20px -15px 0; padding: 15px 15px 10px; }
   "
 )
-
-
-
 #-------------------------------------------------------------
-
 

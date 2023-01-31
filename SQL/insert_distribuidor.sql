@@ -13,5 +13,10 @@ WITH ins1 AS (
 	VALUES ('{input$tel_dis}',{input$whats_dis})
 	RETURNING id_telefone
    )
-INSERT INTO distribuidor(nome_distribuidor,tipo_produto_dis, id_telefone, id_endereco)
-SELECT '{input$nome_dis}','{input$tipo_produto_dis}',id_telefone,id_endereco FROM ins2, ins1;
+, ins3 AS (
+  SELECT f.id_fabricante
+  FROM fabricante AS f
+    WHERE f.nome_fabricante = '{input$fab_distribuidor}'
+)
+INSERT INTO distribuidor(nome_distribuidor,tipo_produto_dis, id_telefone, id_endereco,id_fabricante)
+SELECT '{input$nome_dis}','{input$tipo_produto_dis}',id_telefone,id_endereco,id_fabricante FROM ins2, ins1, ins3;

@@ -53,7 +53,7 @@ INSERT INTO distribuidor(nome_distribuidor,id_telefone,id_endereco,tipo_produto_
 VALUES
 ('Carlos Valouro' ,5,5,'Racao',1),
 ('Fabricio Aragao',6,6,'Racao',2),
-('Mayara Noruega' ,7,7,'Racao',5),
+('Mayara Noruega' ,7,7,'Racao',4),
 ('Rafael Miranda' ,8,8,'Alevino',3);
 
 -- TABELA proprietario
