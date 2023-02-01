@@ -29,7 +29,12 @@ mod_tabFornecedor_ui <- function(id){
           ####---- Box Pesquisa Fabricante ----####
           title = "Dados do Fabricante", status = "primary", solidHeader = TRUE,
           collapsible = TRUE,
-          h4(htmlOutput(ns('dados_fab')))
+          column(8, h4(htmlOutput(ns('dados_fab')))),
+          column(4, style = "padding: 50px 0;",
+                 uiOutput(ns("btn_fab"))
+                 )
+
+
         ),
         box(
           ####---- Box Pesquisa Distribuidor ----####
@@ -165,7 +170,10 @@ mod_tabFornecedor_server <- function(id){
         table(),
         rownames = FALSE,
         selection = "single",
-        options = list(searching = FALSE, lengthChange = FALSE)
+        class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+        options = list(searching = FALSE, lengthChange = FALSE,
+                       scrollX = TRUE # mantem a tabela dentro do conteiner
+                       )
       ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
     })
 
@@ -195,14 +203,17 @@ mod_tabFornecedor_server <- function(id){
         table_dis(),
         rownames = FALSE,
         selection = "single",
-        options = list(searching = FALSE, lengthChange = FALSE)
+        class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+        options = list(searching = FALSE, lengthChange = FALSE,
+                       scrollX = TRUE # mantem a tabela dentro do conteiner
+                       )
       ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
     })
     #####----------------------------------------
     ####---- Box Pesquisa Fabricante ----####
     output$dados_fab <- renderUI({
       # Linha da tabela selecionado
-      cond <- input$fabricante_rows_selected # condição condiction
+      cond <- input$fabricante_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # browser() # Shiny debugging
       if(!is.null(cond)){ # Linha selecionada:
         # Selecionando O Fabricante da linha da tabela selecionada
@@ -239,6 +250,46 @@ mod_tabFornecedor_server <- function(id){
         paste("Selecione na tabela um Fabricante (uma linha)")
       }
     })
+    # Botão Apagar Fabricante no cadastro
+    output$btn_fab <- renderUI({
+      # browser() # Shiny Debuggin
+      # Linha da tabela selecionado
+      cond <- input$fabricante_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      if(!is.null(cond)){
+        actionButton(inputId = ns("apagar_fab"),label = "Apagar",
+                     style = "padding:16px; font-size: 17px")
+      }
+    })
+
+
+    observeEvent(input$apagar_fab, {
+      # browser() # Shiny Debuggin
+      # Linha da tabela selecionado
+      # Preciso colcoar esse cond pra fora do reactive para usa-lo da melhor forma (mais de uma vez de uso)
+      cond <- input$fabricante_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      # Selecionando O Fabricante da linha da tabela selecionada
+      select <- table()[cond,'Fabricante']
+      # Confirmacao: Perguntando ao usuario se realmente quer apagar
+      showModal(modalDialog(title = "Testando",
+                            footer = tagList(
+                              modalButton("Cancel"),
+                              actionButton("ok", "OK")
+                              )
+                            )
+                )
+      # Connect to DB
+      con <- connect_to_db()
+      # Query Statement
+      query <- glue::glue("DELETE FROM fabricante WHERE nome_fabricante = '{select}';")
+      # Apagando no Banco de Dados
+      apagar <- DBI::dbExecute(conn = con, statement = query)
+      # Disconnect from the DB
+      DBI::dbDisconnect(con)
+      # Atualizar a renderizacao da tabela resumo
+      # Preciso melhorar essa renderização aqui!
+
+    })
+
     ####---- Box Pesquisa Distribuidor ----####
     output$dados_dis <- renderUI({
       # Linha da tabela selecionado
@@ -282,7 +333,7 @@ mod_tabFornecedor_server <- function(id){
         paste("Selecione na tabela um Distribuidor (uma linha)")
       }
     })
-    ####---- Formulário para cadastro ----####
+    ####---- Formulário para cadastro
     ####---- Cadastro do Fabricante ----####
     # Campos obrigatórios
     # Observe se todos os campos estão preenchidos para liberar o botão submeter (submit_fabricante)
@@ -345,7 +396,10 @@ mod_tabFornecedor_server <- function(id){
           table(), # Aqui uma tentativa de fazer table reactive e atualizar automaticamente
           rownames = FALSE,
           selection = "single",
-          options = list(searching = FALSE, lengthChange = FALSE)
+          class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE # mantem a tabela dentro do conteiner
+                         )
         ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
       })
 
@@ -409,7 +463,10 @@ mod_tabFornecedor_server <- function(id){
           table_dis(),
           rownames = FALSE,
           selection = "single",
-          options = list(searching = FALSE, lengthChange = FALSE)
+          class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE # mantem a tabela dentro do conteiner
+                         )
         ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
       })
     })
