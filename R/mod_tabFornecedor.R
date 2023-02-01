@@ -30,17 +30,18 @@ mod_tabFornecedor_ui <- function(id){
           title = "Dados do Fabricante", status = "primary", solidHeader = TRUE,
           collapsible = TRUE,
           column(8, h4(htmlOutput(ns('dados_fab')))),
-          column(4, style = "padding: 50px 0;",
+          column(4, style = "padding: 40px 0;",
                  uiOutput(ns("btn_fab"))
                  )
-
-
         ),
         box(
           ####---- Box Pesquisa Distribuidor ----####
           title = "Dados do Distribuidor", status = "primary", solidHeader = TRUE,
           collapsible = TRUE,
-          h4(htmlOutput(ns('dados_dis')))
+          column(8, h4(htmlOutput(ns('dados_dis')))),
+          column(4, style = "padding: 40px 0;",
+                 uiOutput(ns("btn_dis"))
+          )
         )
       ),
       #-----------------------------------------
@@ -261,32 +262,109 @@ mod_tabFornecedor_server <- function(id){
       }
     })
 
-
+    # Observe se o Botão de apagar foi clicado
     observeEvent(input$apagar_fab, {
-      # browser() # Shiny Debuggin
       # Linha da tabela selecionado
       # Preciso colcoar esse cond pra fora do reactive para usa-lo da melhor forma (mais de uma vez de uso)
       cond <- input$fabricante_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # Selecionando O Fabricante da linha da tabela selecionada
       select <- table()[cond,'Fabricante']
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
-      showModal(modalDialog(title = "Testando",
+      showModal(modalDialog(title = paste("Fabricante: ",select," vai ser deletado!"),
+                            div(tags$b("Os distribuidores registrados a esse fabricante automaticamente também serão deletados")),
+                            div(tags$b("Você está seguro que deseja apagar o Fabricante do banco de dados?", style = "color: red;")),
                             footer = tagList(
-                              modalButton("Cancel"),
-                              actionButton("ok", "OK")
+                              modalButton("Cancelar"),
+                              actionButton(ns("ok"), "OK")
                               )
                             )
                 )
+
+    })
+
+    # Observe o evento confirmação paar apagar os dados do DB
+    observeEvent(input$ok,{
+      # browser() # Shiny Debuggin
+      # Linha da tabela selecionado
+      # Preciso colcoar esse cond pra fora do reactive para usa-lo da melhor forma (mais de uma vez de uso)
+      cond <- input$fabricante_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      # Selecionando O Fabricante da linha da tabela selecionada
+      select <- table()[cond,'Fabricante']
       # Connect to DB
       con <- connect_to_db()
       # Query Statement
       query <- glue::glue("DELETE FROM fabricante WHERE nome_fabricante = '{select}';")
       # Apagando no Banco de Dados
-      apagar <- DBI::dbExecute(conn = con, statement = query)
+      DBI::dbExecute(conn = con, statement = query)
       # Disconnect from the DB
       DBI::dbDisconnect(con)
-      # Atualizar a renderizacao da tabela resumo
+
       # Preciso melhorar essa renderização aqui!
+      output$fabricante <- DT::renderDataTable({
+        golem::cat_dev("Renderizou a tabela Fabricante 1 (primeira vez) \n")
+        # Atualizar a renderizacao da tabela resumo
+        ## Atualizando a table (dados) para renderizar atualizado apos a inserção de informação
+        table({
+          # Obtendo a tabela atualizada
+          ## conectando com o DB PostgreSQL
+          # Connect to DB
+          con <- connect_to_db()
+          # Query estoque data (Materilized View)
+          query <- glue::glue(read_sql_file(path = "SQL/resumo_fabricante.sql"))
+          # browser() # Shiny Debugging
+          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          # Convert to data.frame
+          data.frame(df_postgres,check.names = FALSE)
+        })
+        # Renderizando a tabela
+        DT::datatable(
+          table(),
+          rownames = FALSE,
+          selection = "single",
+          class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE # mantem a tabela dentro do conteiner
+          )
+        ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      })
+
+      # Atualizar a renderizacao da tabela resumo do Distribuidor porque tem o efeito cascata ao deletar o fabricante
+      ## Render table Distribuidores
+      output$distribuidor <- DT::renderDataTable({
+
+        golem::cat_dev("Renderizou a tabela Distribuidor 1 (primeira vez 1) \n")
+
+        ## Obtendo a tabela atualizada
+        table_dis({
+          ## conectando com o DB PostgreSQL
+          # Connect to DB
+          con <- connect_to_db()
+          # Query resumo Distribuidor (Materilized View)
+          query <- glue::glue(read_sql_file(path = "SQL/resumo_distribuidor.sql"))
+          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          golem::cat_dev("Fez um novo query para tabela Distribuidor \n")
+          # Convert to data.frame
+          data.frame(df_postgres,check.names = FALSE)
+        })
+
+        # Obtendo a tabela atualizada
+        DT::datatable(
+          table_dis(),
+          rownames = FALSE,
+          selection = "single",
+          class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE # mantem a tabela dentro do conteiner
+          )
+        ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      })
+      # Removendo o modal
+      removeModal()
+
 
     })
 
@@ -310,7 +388,7 @@ mod_tabFornecedor_server <- function(id){
         DBI::dbDisconnect(con)
         # Renderizando o texto informativo do endereço
         df
-        ds <- paste("Distribuidor selecionado: ",df[1,'nome_fabricante']) # distribuidor selecionado
+        ds <- paste("Distribuidor selecionado: ",df[1,'nome_distribuidor']) # distribuidor selecionado
         tp <- paste("Tipo do produto vendido: ", df[1,'tipo_produto_dis']) # tipo do produto
         nf <- paste("Nome do Fabricante: ", df[1,'nome_fabricante']) # nome do fabricante
         l <- paste("Logrador: ",df[1,"logrador"]) # logrador
@@ -333,6 +411,90 @@ mod_tabFornecedor_server <- function(id){
         paste("Selecione na tabela um Distribuidor (uma linha)")
       }
     })
+
+    # Botão Apagar Distribuidor no cadastro
+    output$btn_dis <- renderUI({
+      # browser() # Shiny Debuggin
+      # Linha da tabela selecionado
+      cond_dis <- input$distribuidor_rows_selected # condição condiction
+      if(!is.null(cond_dis)){
+        actionButton(inputId = ns("apagar_dis"),label = "Apagar",
+                     style = "padding:16px; font-size: 17px")
+      }
+    })
+
+    # Observe se o Botão de apagar foi clicado
+    observeEvent(input$apagar_dis, {
+      # Linha da tabela selecionado
+      cond_dis <- input$distribuidor_rows_selected # condição condiction
+      # Selecionando O Fabricante da linha da tabela selecionada
+      select <- table_dis()[cond_dis,'Distribuidor']
+      # Confirmacao: Perguntando ao usuario se realmente quer apagar
+      showModal(modalDialog(title = paste("Distribuidor: ",select," vai ser deletado!"),
+                            div(tags$b("Você está seguro que deseja apagar o Distribuidor do banco de dados?", style = "color: red;")),
+                            footer = tagList(
+                              modalButton("Cancelar"),
+                              actionButton(ns("ok_dis"), "OK")
+                            )
+      )
+      )
+
+    })
+
+    # Observe o evento confirmação paar apagar os dados do DB
+    observeEvent(input$ok_dis,{
+      # browser() # Shiny Debuggin
+      # Linha da tabela selecionado
+      cond_dis <- input$distribuidor_rows_selected # condição condiction
+      # Selecionando O Fabricante da linha da tabela selecionada
+      select <- table_dis()[cond_dis,'Distribuidor']
+      # Connect to DB
+      con <- connect_to_db()
+      # Query Statement
+      query <- glue::glue("DELETE FROM distribuidor WHERE nome_distribuidor = '{select}';")
+      # Apagando no Banco de Dados
+      DBI::dbExecute(conn = con, statement = query)
+      # Disconnect from the DB
+      DBI::dbDisconnect(con)
+      # Atualizar a renderizacao da tabela resumo
+      ## Render table Distribuidores
+      output$distribuidor <- DT::renderDataTable({
+
+        golem::cat_dev("Renderizou a tabela Distribuidor 1 (primeira vez 1) \n")
+
+        ## Obtendo a tabela atualizada
+        table_dis({
+          ## conectando com o DB PostgreSQL
+          # Connect to DB
+          con <- connect_to_db()
+          # Query resumo Distribuidor (Materilized View)
+          query <- glue::glue(read_sql_file(path = "SQL/resumo_distribuidor.sql"))
+          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          golem::cat_dev("Fez um novo query para tabela Distribuidor \n")
+          # Convert to data.frame
+          data.frame(df_postgres,check.names = FALSE)
+        })
+
+        # Obtendo a tabela atualizada
+        DT::datatable(
+          table_dis(),
+          rownames = FALSE,
+          selection = "single",
+          class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE # mantem a tabela dentro do conteiner
+          )
+        ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      })
+      # Removendo o modal
+      removeModal()
+
+
+    })
+    #===================================================
+
     ####---- Formulário para cadastro
     ####---- Cadastro do Fabricante ----####
     # Campos obrigatórios

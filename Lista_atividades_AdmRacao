@@ -11,7 +11,7 @@
 	Posso tentar fazer isso de forma interativa com a tabela resumo já renderizada.
 	Um box que minimize e maximize para ser opção do usuário querer essa informação ou não.
 	
-3- Colocar algum botão de delete para apagar o contato existente criado.
+(ok, feito) 3- Colocar algum botão de delete para apagar o contato existente criado.
 
 (ok, feito) 4- Ajeitar o banco de dados db_racao_dev para a tabela distribuidor (vendedor) colocando o ID key do fabricante (id_fabricante) que corresponde a cada vendedor;
 
