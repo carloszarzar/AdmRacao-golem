@@ -7,6 +7,8 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
+#' @importFrom DT dataTableOutput
+#' @importFrom shinyWidgets switchInput radioGroupButtons
 mod_tabFornecedor_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -141,6 +143,11 @@ mod_tabFornecedor_ui <- function(id){
 }
 
 #' tabFornecedor Server Functions
+#'
+#' @importFrom glue glue
+#' @importFrom DBI dbGetQuery dbDisconnect dbExecute
+#' @importFrom DT renderDataTable datatable formatDate
+#' @importFrom golem cat_dev
 #'
 #' @noRd
 mod_tabFornecedor_server <- function(id){
@@ -510,63 +517,269 @@ mod_tabFornecedor_server <- function(id){
       mandatoryFilled_fab <- all(mandatoryFilled_fab)
       shinyjs::toggleState(id = "submit_fab", condition = mandatoryFilled_fab)
     })
+
+
     # INSERT INTO
     ## Inserindo os dados submition
     ##Update data in Rpostgresql table
     observeEvent(input$submit_fab,{
-      # Connect to DB
-      con <- connect_to_db()
-      ###Construct query to insert values into database table
-      # browser() # Shiny Debugging
-      ## Inserindo dados fornecedor
-      query <- glue::glue(read_sql_file(path = "SQL/insert_fabricante.sql"))
 
-      ### Query to send to database
-      insert_forne <- DBI::dbSendQuery(conn = con, statement = query)
-      DBI::dbClearResult(insert_forne) # limpando resultados
-      ###shinyModal to show to user when the update to the database table is successful
-      showModal( modalDialog( title=paste0("Dados do Fabricante inserido com sucesso!!!"),
-                              br(),
-                              div(tags$b(paste0("A tabela do Fabricante foi atualizada."), style = "color: green;"))
-      ))
-      # Disconnect from the DB
-      DBI::dbDisconnect(con)
-      # Resetando o formulário
-      shinyjs::reset("form_fab")
+      # Coferindo se todos os campos estão corretor
+      ## Listando os campos
+      li <- list(
+        input$nome_fab,input$tel_fab,input$logrador_fab,input$bairro_fab,input$cidade_fab,input$estado_fab,input$num_ende_fab,input$cep_fab
+      )
+      ## Lista de mensagens imprimidas no app
+      li_msg <- list(
+        nome_fab = c("Nome do fabricante deve ter no máximo 20 letras"),
+        tel_fab = c("Telefone do fabricante deve ter no máximo 15 números"),
+        logrador_fab = c("Logrador deve ter no máximo 40 letras"),
+        bairro_fab = c("Bairro deve ter no máximo 30 letras"),
+        cidade_fab = c("Cidade deve ter no máximo 30 letras"),
+        estado_fab = c("Estado deve ter no máximo 30 letras"),
+        num_ende_fab = c("Número do endereço deve ter no máximo 10 dígitos"),
+        cep_fab = c("CEP deve ter no máximo 15 dígito")
+      )
+      ## Vetor booleano dos campos que fracassaram
+      segCadFab <- sapply(li, stringi::stri_stats_latex)[1,] > c(20,15,40,30,30,30,10,15)
+      ## Algum fracassou
+      (failed <- any(segCadFab))
+      ## Condição NÃO satisfeita
+      if(failed){
+        cat("Um falhou")
+        showModal(
+          modalDialog(
+            title = "Erro no cadastro do Fabricante",
+            div(tags$b(HTML(paste(li_msg[segCadFab], collapse = "<br/>")), style = "color: red;")),
+            footer = modalButton("Fechar"),
+            easyClose = TRUE,
+            fade = TRUE
+          )
+        )
+      } else { ## Condição satisfeita
+          golem::cat_dev("ok, pode continuar \n")
+          # Connect to DB
+          con <- connect_to_db()
+          ###Construct query to insert values into database table
+          # browser() # Shiny Debugging
+          ## Inserindo dados fornecedor
+          query <- glue::glue(read_sql_file(path = "SQL/insert_fabricante.sql"))
 
-      cat("Cadastrou dados do fabricante! \n")
-      ## Atualizando a table (dados) para renderizar atualizado apos a inserção de informação
-      table({
-        # Obtendo a tabela atualizada
-        ## conectando com o DB PostgreSQL
-        # Connect to DB
-        con <- connect_to_db()
-        # Query estoque data (Materilized View)
-        query <- glue::glue(read_sql_file(path = "SQL/resumo_fabricante.sql"))
-        # browser() # Shiny Debugging
-        df_postgres <- DBI::dbGetQuery(con, statement = query)
-        # Disconnect from the DB
-        DBI::dbDisconnect(con)
-        # Convert to data.frame
-        data.frame(df_postgres,check.names = FALSE)
-      })
+          ### Query to send to database
+          insert_forne <- DBI::dbSendQuery(conn = con, statement = query)
+          DBI::dbClearResult(insert_forne) # limpando resultados
+          ###shinyModal to show to user when the update to the database table is successful
+          showModal( modalDialog( title=paste0("Dados do Fabricante inserido com sucesso!!!"),
+                                  br(),
+                                  div(tags$b(paste0("A tabela do Fabricante foi atualizada."), style = "color: green;"))
+          ))
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          # Resetando o formulário
+          shinyjs::reset("form_fab")
 
-      ## Render table
-      output$fabricante <- DT::renderDataTable({
-        DT::datatable(
-          # Convert to data.frame
-          table(), # Aqui uma tentativa de fazer table reactive e atualizar automaticamente
-          rownames = FALSE,
-          selection = "single",
-          class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
-          options = list(searching = FALSE, lengthChange = FALSE,
-                         scrollX = TRUE # mantem a tabela dentro do conteiner
-                         )
-        ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
-      })
+          cat("Cadastrou dados do fabricante! \n")
+          ## Atualizando a table (dados) para renderizar atualizado apos a inserção de informação
+          table({
+            # Obtendo a tabela atualizada
+            ## conectando com o DB PostgreSQL
+            # Connect to DB
+            con <- connect_to_db()
+            # Query estoque data (Materilized View)
+            query <- glue::glue(read_sql_file(path = "SQL/resumo_fabricante.sql"))
+            # browser() # Shiny Debugging
+            df_postgres <- DBI::dbGetQuery(con, statement = query)
+            # Disconnect from the DB
+            DBI::dbDisconnect(con)
+            # Convert to data.frame
+            data.frame(df_postgres,check.names = FALSE)
+          })
+
+          ## Render table
+          output$fabricante <- DT::renderDataTable({
+            DT::datatable(
+              # Convert to data.frame
+              table(), # Aqui uma tentativa de fazer table reactive e atualizar automaticamente
+              rownames = FALSE,
+              selection = "single",
+              class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+              options = list(searching = FALSE, lengthChange = FALSE,
+                             scrollX = TRUE # mantem a tabela dentro do conteiner
+              )
+            ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+          })
+      }
+
+
+      # # Coferindo se todos os campos estão corretor
+      # segCadFab <- vapply(c("nome_fab","tel_fab","logrador_fab","bairro_fab","cidade_fab","estado_fab","num_ende_fab","cep_fab"),
+      #                     function(x) {
+      #                       stringi::stri_stats_latex(input[[x]])['CharsWord'] > 15 &&
+      #                         stringi::stri_stats_latex(input[[x]])['CharsWord'] > 20 &&
+      #                         stringi::stri_stats_latex(input[[x]])['CharsWord'] > 30 &&
+      #                         stringi::stri_stats_latex(input[[x]])['CharsWord'] > 40
+      #                     },
+      #                     logical(1))
+      # segCadFab
+      # (failed <- any(segCadFab))
+      #
+      # li <- list(
+      #   nome_fab = c("Nome do fabricante deve ter no máximo 20 letras"),
+      #   tel_fab = c("Telefone do fabricante deve ter no máximo 15 números"),
+      #   logrador_fab = c("Logrador deve ter no máximo 40 letras"),
+      #   bairro_fab = c("Bairro deve ter no máximo 30 letras"),
+      #   cidade_fab = c("Cidade deve ter no máximo 30 letras"),
+      #   estado_fab = c("Estado deve ter no máximo 30 letras"),
+      #   num_ende_fab = c("Número do endereço deve ter no máximo 10 dígitos"),
+      #   cep_fab = c("CEP deve ter no máximo 15 dígito")
+      # )
+      #
+      # if(failed){
+      #   cat("Um falhou")
+      #   showModal(
+      #     modalDialog(
+      #       title = "Erro no cadastro do Fabricante",
+      #       div(tags$b(HTML(paste(li[segCadFab], collapse = "<br/>")), style = "color: red;")),
+      #       footer = modalButton("Fechar"),
+      #       easyClose = TRUE,
+      #       fade = TRUE
+      #     )
+      #   )
+      # } else {
+      #   golem::cat_dev("ok, pode continuar \n")
+      #   # Connect to DB
+      #   con <- connect_to_db()
+      #   ###Construct query to insert values into database table
+      #   # browser() # Shiny Debugging
+      #   ## Inserindo dados fornecedor
+      #   query <- glue::glue(read_sql_file(path = "SQL/insert_fabricante.sql"))
+      #
+      #   ### Query to send to database
+      #   insert_forne <- DBI::dbSendQuery(conn = con, statement = query)
+      #   DBI::dbClearResult(insert_forne) # limpando resultados
+      #   ###shinyModal to show to user when the update to the database table is successful
+      #   showModal( modalDialog( title=paste0("Dados do Fabricante inserido com sucesso!!!"),
+      #                           br(),
+      #                           div(tags$b(paste0("A tabela do Fabricante foi atualizada."), style = "color: green;"))
+      #   ))
+      #   # Disconnect from the DB
+      #   DBI::dbDisconnect(con)
+      #   # Resetando o formulário
+      #   shinyjs::reset("form_fab")
+      #
+      #   cat("Cadastrou dados do fabricante! \n")
+      #   ## Atualizando a table (dados) para renderizar atualizado apos a inserção de informação
+      #   table({
+      #     # Obtendo a tabela atualizada
+      #     ## conectando com o DB PostgreSQL
+      #     # Connect to DB
+      #     con <- connect_to_db()
+      #     # Query estoque data (Materilized View)
+      #     query <- glue::glue(read_sql_file(path = "SQL/resumo_fabricante.sql"))
+      #     # browser() # Shiny Debugging
+      #     df_postgres <- DBI::dbGetQuery(con, statement = query)
+      #     # Disconnect from the DB
+      #     DBI::dbDisconnect(con)
+      #     # Convert to data.frame
+      #     data.frame(df_postgres,check.names = FALSE)
+      #   })
+      #
+      #   ## Render table
+      #   output$fabricante <- DT::renderDataTable({
+      #     DT::datatable(
+      #       # Convert to data.frame
+      #       table(), # Aqui uma tentativa de fazer table reactive e atualizar automaticamente
+      #       rownames = FALSE,
+      #       selection = "single",
+      #       class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+      #       options = list(searching = FALSE, lengthChange = FALSE,
+      #                      scrollX = TRUE # mantem a tabela dentro do conteiner
+      #       )
+      #     ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      #   })
+      # }
+
+
+
+
+
+      # Para proteger os dados importatos pelo usuário no servidor
+      # devo colocar aqui uma verificações da condições antes de proceguir
+      # Por exemplo if else ou req() requerimentos de condições necessárias
+      # como número de telefone no máximo 15 dígitos, nome do fabricante no máximo 20 caracteres
+      # Caso não passe a condição um modal é chamado para o usuário corrigir
+      # Caso contrário devemos proseguir com a conexão DB
+
+      # # Verificando a condição de segurança após preencher formulário
+      # (str_informe <- stringi::stri_stats_latex(input$nome_fab))
+      # if(str_informe["CharsWord"] > 20){
+      #   cat("Problema !!! O número de letras deve ser menor que 20 \n")
+      #   showModal(
+      #     modalDialog(
+      #       title = "Erro no cadastro do Fabricante",
+      #       div(tags$b("Nome do fabricante deve ter no máximo 20 letras", style = "color: red;")),
+      #       footer = modalButton("Fechar"),
+      #       # size = "m",
+      #       easyClose = TRUE,
+      #       fade = TRUE
+      #     )
+      #   )
+      # } else {
+      #   cat("ok \n")
+      #   # Connect to DB
+      #   con <- connect_to_db()
+      #   ###Construct query to insert values into database table
+      #   # browser() # Shiny Debugging
+      #   ## Inserindo dados fornecedor
+      #   query <- glue::glue(read_sql_file(path = "SQL/insert_fabricante.sql"))
+      #
+      #   ### Query to send to database
+      #   insert_forne <- DBI::dbSendQuery(conn = con, statement = query)
+      #   DBI::dbClearResult(insert_forne) # limpando resultados
+      #   ###shinyModal to show to user when the update to the database table is successful
+      #   showModal( modalDialog( title=paste0("Dados do Fabricante inserido com sucesso!!!"),
+      #                           br(),
+      #                           div(tags$b(paste0("A tabela do Fabricante foi atualizada."), style = "color: green;"))
+      #   ))
+      #   # Disconnect from the DB
+      #   DBI::dbDisconnect(con)
+      #   # Resetando o formulário
+      #   shinyjs::reset("form_fab")
+      #
+      #   cat("Cadastrou dados do fabricante! \n")
+      #   ## Atualizando a table (dados) para renderizar atualizado apos a inserção de informação
+      #   table({
+      #     # Obtendo a tabela atualizada
+      #     ## conectando com o DB PostgreSQL
+      #     # Connect to DB
+      #     con <- connect_to_db()
+      #     # Query estoque data (Materilized View)
+      #     query <- glue::glue(read_sql_file(path = "SQL/resumo_fabricante.sql"))
+      #     # browser() # Shiny Debugging
+      #     df_postgres <- DBI::dbGetQuery(con, statement = query)
+      #     # Disconnect from the DB
+      #     DBI::dbDisconnect(con)
+      #     # Convert to data.frame
+      #     data.frame(df_postgres,check.names = FALSE)
+      #   })
+      #
+      #   ## Render table
+      #   output$fabricante <- DT::renderDataTable({
+      #     DT::datatable(
+      #       # Convert to data.frame
+      #       table(), # Aqui uma tentativa de fazer table reactive e atualizar automaticamente
+      #       rownames = FALSE,
+      #       selection = "single",
+      #       class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+      #       options = list(searching = FALSE, lengthChange = FALSE,
+      #                      scrollX = TRUE # mantem a tabela dentro do conteiner
+      #       )
+      #     ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      #   })
+      # }
 
     })
-    #-----------------------------------------
+
     ####--- Cadastro do Distribuidor (vendedor) ---####
     observe({
       # golem::cat_dev("Campos obrigatórios \n")
