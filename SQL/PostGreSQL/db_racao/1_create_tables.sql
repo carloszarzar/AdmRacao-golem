@@ -19,7 +19,7 @@ CREATE TABLE endereco(
 	estado VARCHAR(30) NULL,
 	num_ende VARCHAR(10) NULL,
 	cep VARCHAR(15) NULL,
-	referencia VARCHAR(40) NULL
+	referencia TEXT NULL
 );
 -- TABELA telefone
 CREATE TABLE telefone(
