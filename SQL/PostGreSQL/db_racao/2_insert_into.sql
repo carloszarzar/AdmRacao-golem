@@ -74,12 +74,12 @@ VALUES
 ('Fazenda Peixe bonito',13,4568799,12,15,'tambaqui',4,'extensivo');
 
 -- TABELA racao
-INSERT INTO racao(tamanho,tipo,id_fabricante,proteina)
+INSERT INTO racao(nome,tamanho,tipo,id_fabricante,proteina)
 VALUES
-(5,'alevino',1,48),
-(10,'engorda',1,38),
-(25,'prime',1,42),
-(5,'alevino',4,48);
+('A',5,'alevino',1,48),
+('B',10,'engorda',1,38),
+('C',25,'prime',1,42),
+('D',5,'alevino',4,48);
 
 -- TABELA alevino
 INSERT INTO alevino(id_fabricante,especie,sexo)

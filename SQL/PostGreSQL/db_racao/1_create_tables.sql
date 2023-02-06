@@ -70,6 +70,7 @@ CREATE TABLE fazenda(
 -- TABELA racao
 CREATE TABLE racao(
 	id_racao SERIAL PRIMARY KEY NOT NULL,
+	nome VARCHAR(20) NOT NULL,
 	tamanho INT NOT NULL,
 	tipo VARCHAR(20) NOT NULL,
 	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante),
