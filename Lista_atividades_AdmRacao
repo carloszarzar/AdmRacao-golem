@@ -19,5 +19,4 @@
 
 6 - Documentação do App. Preciso estudar oxygen2 para melhorar a documentação.
 
-7 - Mecanismo de proteção a utilização do usuário. Por exemplo no form os caracteres não podem ultrapassar o limite
-	que está descrito na tabela do banco de dados.
+(ok, feito) 7 - Mecanismo de proteção a utilização do usuário. Por exemplo no form os caracteres não podem ultrapassar o limite que está descrito na tabela do banco de dados.
