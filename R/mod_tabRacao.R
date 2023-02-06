@@ -25,6 +25,8 @@ mod_tabRacao_ui <- function(id){
 
 #' tabRacao Server Functions
 #'
+#' @importFrom DBI dbGetQuery dbDisconnect
+#'
 #' @noRd
 mod_tabRacao_server <- function(id){
   moduleServer( id, function(input, output, session){

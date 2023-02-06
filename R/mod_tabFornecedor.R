@@ -148,6 +148,8 @@ mod_tabFornecedor_ui <- function(id){
 #' @importFrom DBI dbGetQuery dbDisconnect dbExecute
 #' @importFrom DT renderDataTable datatable formatDate
 #' @importFrom golem cat_dev
+#' @importFrom stringi stri_stats_latex
+#' @importFrom shinyjs toggleState reset
 #'
 #' @noRd
 mod_tabFornecedor_server <- function(id){

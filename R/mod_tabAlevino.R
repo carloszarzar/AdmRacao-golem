@@ -23,6 +23,8 @@ mod_tabAlevino_ui <- function(id){
 
 #' tabAlevino Server Functions
 #'
+#' @importFrom DBI dbGetQuery dbDisconnect
+#'
 #' @noRd
 mod_tabAlevino_server <- function(id){
   moduleServer( id, function(input, output, session){

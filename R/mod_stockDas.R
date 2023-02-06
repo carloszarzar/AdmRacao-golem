@@ -20,6 +20,8 @@ mod_stockDas_ui <- function(id){
 
 #' stockDas Server Functions
 #'
+#' @importFrom DBI dbGetQuery dbDisconnect
+#'
 #' @noRd
 mod_stockDas_server <- function(id){
   moduleServer( id, function(input, output, session){

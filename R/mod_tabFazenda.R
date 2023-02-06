@@ -23,6 +23,8 @@ mod_tabFazenda_ui <- function(id){
 
 #' tabFazenda Server Functions
 #'
+#' @importFrom DBI dbGetQuery dbDisconnect
+#'
 #' @noRd
 mod_tabFazenda_server <- function(id){
   moduleServer( id, function(input, output, session){

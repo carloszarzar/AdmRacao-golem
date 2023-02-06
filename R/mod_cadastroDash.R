@@ -37,6 +37,8 @@ mod_cadastroDash_ui <- function(id){
 
 #' cadastroDash Server Functions
 #'
+#' @importFrom shinydashboard updateTabItems
+#'
 #' @noRd
 mod_cadastroDash_server <- function(id){
   moduleServer( id, function(input, output, session){
