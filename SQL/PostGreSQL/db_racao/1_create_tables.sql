@@ -34,7 +34,8 @@ CREATE TABLE fabricante(
 	id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco),
 	id_telefone INT NULL REFERENCES telefone(id_telefone),
 	tipo_produto_fab VARCHAR(15) NOT NULL,
-	created_at TIMESTAMPTZ DEFAULT Now() 
+	created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL 
 );
 -- TABELA distribuidor (vendedor)
 CREATE TABLE distribuidor(
@@ -44,6 +45,7 @@ CREATE TABLE distribuidor(
   id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco),
   tipo_produto_dis VARCHAR(15) NOT NULL,
   created_at TIMESTAMPTZ DEFAULT Now(),
+  modified_at TIMESTAMPTZ NULL,
   id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante) ON DELETE CASCADE
 );
 -- TABELA proprietario

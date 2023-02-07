@@ -5,7 +5,7 @@
    # e faz um INNER JOIN com tabela endereço e telefone
 */
 SELECT f.nome_fabricante, e.logrador, e.bairro, e.cidade, e.estado, e.num_ende,
-  e.cep, e.referencia, tel.celular, tel.whatsapp
+  e.cep, e.referencia, tel.celular, tel.whatsapp, f.tipo_produto_fab
   FROM fabricante AS f
 INNER JOIN endereco AS e
     ON f.id_endereco = e.id_endereco

@@ -43,17 +43,17 @@ VALUES
 -- TABELA fabricante (Fornecedor)
 INSERT INTO fabricante(nome_fabricante,id_telefone,id_endereco,tipo_produto_fab)
 VALUES
-('Polinutri',1,1,'Racao'),
-('Fosfish',2,2,'Racao'),
+('Polinutri',1,1,'Ração'),
+('Fosfish',2,2,'Ração'),
 ('JM Alevino',3,3,'Alevino'),
 ('AleProducoes',4,4,'Alevino');
 
 -- TABELA distribuidor (Vendedor)
 INSERT INTO distribuidor(nome_distribuidor,id_telefone,id_endereco,tipo_produto_dis,id_fabricante)
 VALUES
-('Carlos Valouro' ,5,5,'Racao',1),
-('Fabricio Aragao',6,6,'Racao',2),
-('Mayara Noruega' ,7,7,'Racao',4),
+('Carlos Valouro' ,5,5,'Ração',1),
+('Fabricio Aragao',6,6,'Ração',2),
+('Mayara Noruega' ,7,7,'Ração',4),
 ('Rafael Miranda' ,8,8,'Alevino',3);
 
 -- TABELA proprietario
