@@ -24,7 +24,6 @@ mod_tabFornecedor_ui <- function(id){
             width = 6, height = 550,
             DT::dataTableOutput(ns("distribuidor"))),
       ),
-      #-----------------------------------------
       ####---- Box Pesquisa Fornecedores = Fabricante + Distribuidor
       fluidRow(
         box(
@@ -46,10 +45,9 @@ mod_tabFornecedor_ui <- function(id){
           )
         )
       ),
-      #-----------------------------------------
       ####---- Formulário para cadastro
       fluidRow(
-        ####---- Cadastro do Fabricante ----####
+          ####---- Cadastro do Fabricante ----####
         box( # Cadastro do Fabricante
           title = "Dados do Fabricante (Fábrica)", width = 6,
           div(id = ns("form_fab"),
@@ -90,8 +88,7 @@ mod_tabFornecedor_ui <- function(id){
               textInput(ns("ref_fab"), "Ponto de referência", placeholder = "Proximo a Praça dos Três Poderes")
               )
         ),
-        #---------------------------------------
-        ####--- Cadastro do Distribuidor (vendedor) ---####
+          ####--- Cadastro do Distribuidor (vendedor) ---####
         box( # Cadastro do Distribuidor (vendedor)
           title = "Cadastro do Distribuidor (vendedor)", width = 6,
           div(id = ns("form_dis"),
@@ -135,10 +132,7 @@ mod_tabFornecedor_ui <- function(id){
         )
         #---------------------------------------
       ) # Fim do formulário
-
-      #-----------------------------------------
     )
-
   )
 }
 
@@ -155,7 +149,7 @@ mod_tabFornecedor_ui <- function(id){
 mod_tabFornecedor_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    ####---- Box Resumo fornecedores ----####
+    ####---- Box Resumo fornecedores
     #####----- Box Resumo Fabricantes ------#####
     ## Render table fabricante
     table <- reactiveVal({
@@ -184,7 +178,7 @@ mod_tabFornecedor_server <- function(id){
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
                        )
-      ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      ) %>% DT::formatDate(  'Data', method = 'toLocaleString') # Consertando timestap para formato desejado
     })
 
     #####----- Box Resumo Distribuidores ------#####
@@ -207,6 +201,7 @@ mod_tabFornecedor_server <- function(id){
     ## Render table Distribuidores
     output$distribuidor <- DT::renderDataTable({
       golem::cat_dev("Renderização da tabela Distribuidor 1 \n")
+      # browser()
       # Obtendo a tabela atualizada
       DT::datatable(
         table_dis(),
@@ -216,9 +211,8 @@ mod_tabFornecedor_server <- function(id){
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
                        )
-      ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      ) %>% DT::formatDate(  'Data', method = 'toLocaleString') # Consertando timestap para formato desejado
     })
-    #####----------------------------------------
     ####---- Box Pesquisa Fabricante ----####
     # Observe se alguma linha da tabela foi selecionado e imprima informações no box de pesquisa
     output$dados_fab <- renderUI({
@@ -336,7 +330,7 @@ mod_tabFornecedor_server <- function(id){
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
           )
-        ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+        ) %>% DT::formatDate(  'Data', method = 'toLocaleString') # Consertando timestap para formato desejado
       })
 
       # Atualizar a renderizacao da tabela resumo do Distribuidor porque tem o efeito cascata ao deletar o fabricante
@@ -369,7 +363,7 @@ mod_tabFornecedor_server <- function(id){
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
           )
-        ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+        ) %>% DT::formatDate(  'Data', method = 'toLocaleString') # Consertando timestap para formato desejado
       })
       # Removendo o modal
       removeModal()
@@ -497,14 +491,13 @@ mod_tabFornecedor_server <- function(id){
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
           )
-        ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+        ) %>% DT::formatDate(  'Data', method = 'toLocaleString') # Consertando timestap para formato desejado
       })
       # Removendo o modal
       removeModal()
 
 
     })
-    #===================================================
 
     ####---- Formulário para cadastro
     ####---- Cadastro do Fabricante ----####
@@ -610,7 +603,7 @@ mod_tabFornecedor_server <- function(id){
               options = list(searching = FALSE, lengthChange = FALSE,
                              scrollX = TRUE # mantem a tabela dentro do conteiner
               )
-            ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+            ) %>% DT::formatDate(  'Data', method = 'toLocaleString') # Consertando timestap para formato desejado
           })
       }
 
@@ -716,7 +709,7 @@ mod_tabFornecedor_server <- function(id){
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
             )
-          ) %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+          ) %>% DT::formatDate(  'Data', method = 'toLocaleString') # Consertando timestap para formato desejado
         })
       }
     })
