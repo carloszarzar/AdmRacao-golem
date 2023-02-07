@@ -76,10 +76,15 @@ VALUES
 -- TABELA racao
 INSERT INTO racao(nome,tamanho,tipo,id_fabricante,proteina)
 VALUES
-('A',5,'alevino',1,48),
-('B',10,'engorda',1,38),
-('C',25,'prime',1,42),
-('D',5,'alevino',4,48);
+('A',0.4,'alevino',1,40),
+('B',1.7,'alevino',1,40),
+('C',4.0,'alevino',1,36),
+('D',4.0,'juvenil 1',1,36),
+('E',6.0,'juvenil 1',1,36),
+('F',8.0,'juvenil 2',2,32),
+('G',8.0,'engorda',2,32),
+('H',10.0,'engorda',2,28),
+('I',10.0,'finalização',2,22);
 
 -- TABELA alevino
 INSERT INTO alevino(id_fabricante,especie,sexo)

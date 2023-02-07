@@ -71,11 +71,19 @@ CREATE TABLE fazenda(
 CREATE TABLE racao(
 	id_racao SERIAL PRIMARY KEY NOT NULL,
 	nome VARCHAR(20) NOT NULL,
-	tamanho INT NOT NULL,
-	tipo VARCHAR(20) NOT NULL,
-	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante),
-	proteina INT NOT NULL,
-	created_at TIMESTAMPTZ DEFAULT Now() 
+	tamanho REAL NOT NULL, -- mm
+	tipo VARCHAR(20) NOT NULL, -- alevino, juvenil 1, juvenil 2, engorda, finalização
+	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante) ON DELETE CASCADE,
+	proteina INT NOT NULL, -- %
+	created_at TIMESTAMPTZ DEFAULT Now(), 
+	extrato_etereo_min INT NULL, -- g/kg
+    	umidadde_max INT NULL, -- %
+    	mineral_max INT NULL, -- g/kg
+    	fibra_max INT NULL, -- g/kg
+    	calcio_min INT NULL, -- g/kg
+    	calcio_man INT NULL, -- g/kg
+    	fosforo_min INT NULL, -- g/kg
+    	vitamina_c_min INT NULL -- mg/kg
 );
 
 -- TABELA alevino
