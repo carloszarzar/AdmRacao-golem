@@ -34,7 +34,8 @@ CREATE TABLE fabricante(
 	id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco),
 	id_telefone INT NULL REFERENCES telefone(id_telefone),
 	tipo_produto_fab VARCHAR(15) NOT NULL,
-	created_at TIMESTAMPTZ DEFAULT Now() 
+	created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL 
 );
 -- TABELA distribuidor (vendedor)
 CREATE TABLE distribuidor(
