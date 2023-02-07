@@ -42,7 +42,8 @@ mod_tabFornecedor_ui <- function(id){
           collapsible = TRUE,
           column(8, h4(htmlOutput(ns('dados_dis')))),
           column(4, style = "padding: 40px 0;",
-                 uiOutput(ns("btn_dis"))
+                 uiOutput(ns("btn_dis")),
+                 uiOutput(ns("btnEdit_dis"))
           )
         )
       ),
@@ -372,7 +373,7 @@ mod_tabFornecedor_server <- function(id){
 
 
     })
-#===========================================================
+#================ Botão Editar Fabricante ==================================
     # Botão Editar (os Dados)Editando os dados do Fabricante)
     ## Observe se alguma linha da tabela foi selecionada para mostrar o botão editar
     output$btnEdit_fab <- renderUI({
@@ -381,7 +382,7 @@ mod_tabFornecedor_server <- function(id){
       cond <- input$fabricante_rows_selected # condição condiction selecionado (NULL ou n_linha)
       if(!is.null(cond)){
         actionButton(inputId = ns("edit_fab"),label = "Editar",
-                     style = "padding:16px; font-size: 20px")
+                     style = "padding:20px; font-size: 17px")
       }
     })
     # Observe se o Botão Editar foi clicado
@@ -571,7 +572,7 @@ mod_tabFornecedor_server <- function(id){
       }
     })
     # Campos obrigatórios
-    # Observe se todos os campos estão preenchidos para liberar o botão submeter (submit_fabricante)
+    # Observe se todos os campos estão preenchidos para liberar o botão ok editar Farbicante (ok_EditFab)
     observe({
       # golem::cat_dev("Campos obrigatórios \n")
       mandatoryFilled_fab <- vapply(c("nome_fab_edit","tel_fab_edit","whats_fab_edit","tipo_produto_fab_edit"),
@@ -583,9 +584,6 @@ mod_tabFornecedor_server <- function(id){
       mandatoryFilled_fab <- all(mandatoryFilled_fab)
       shinyjs::toggleState(id = "ok_editFab", condition = mandatoryFilled_fab)
     })
-
-
-
 #===========================================================
     ####---- Box Pesquisa Distribuidor ----####
     # Observando se alguma linha da tabela foi selecionada e renderizando o box pesquisa
@@ -714,6 +712,198 @@ mod_tabFornecedor_server <- function(id){
 
 
     })
+
+#============== Botão Editar Distribuidor ===================
+    # Botão Editar (os Dados)Editando os dados do Fabricante)
+    ## Observe se alguma linha da tabela foi selecionada para mostrar o botão editar
+    output$btnEdit_dis <- renderUI({
+      # browser() # Shiny Debuggin
+      # Linha da tabela selecionado
+      cond <- input$distribuidor_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      if(!is.null(cond)){
+        actionButton(inputId = ns("edit_dis"),label = "Editar",
+                     style = "padding:20px; font-size: 17px")
+      }
+    })
+    # Observe se o Botão Editar foi clicado
+    observeEvent(input$edit_dis, {
+      # Saber qual linha da tabela está selecionada
+      cond_dis <- input$distribuidor_rows_selected # condição condiction
+      # Selecionando o nome do Distribuidor da linha da tabela selecionada
+      select <- table_dis()[cond_dis,'Distribuidor']
+      # Connect to DB
+      con <- connect_to_db()
+      # Consulta (Query) do PostgreSQL
+      query <- glue::glue(read_sql_file(path = "SQL/pesquisa_distribuidor.sql"))
+      # Getting consulta DB
+      df <- DBI::dbGetQuery(con, statement = query)
+      # Disconnect from the DB
+      DBI::dbDisconnect(con)
+      # Mostrar o modal para edição dos dados Fabricante
+      showModal(
+        modalDialog(
+          title = paste("Edição do Distribuidor: ",select,"!"),
+          footer = tagList(
+            modalButton("Cancelar"),
+            actionButton(ns("ok_editDis"), "OK")
+          ),
+          fluidRow(
+            column(6,
+                   h4("Informação do Distribuidor"),
+                   textInput(ns("nome_dis_edit"), labelMandatory("Nome do Distribuidor"), value=df$nome_distribuidor ),
+                   textInput(ns("tel_dis_edit"), labelMandatory("Telefone do Distribuidor"),value=df$celular),
+                   selectInput(inputId = ns("fab_dis_edit"),
+                               label = labelMandatory("Fabricante (Fábrica) do Distribuidor (vendedor)"),
+                               choices = table()[,"Fabricante"]),
+                   # Whatsapp
+                   shinyWidgets::switchInput(
+                     inputId = ns("whats_dis_edit"),
+                     label = "<i class=\"fab fa-whatsapp\"></i>",
+                     # labelWidth = "80px",
+                     onLabel = "Sim",
+                     offLabel = "Não",
+                     value = df$whatsapp
+                   ),
+                   # Box check Tipo do produto vendedor
+                   shinyWidgets::radioGroupButtons(
+                     inputId = ns("tipo_produto_dis_edit"),
+                     label = labelMandatory("Produto(s) vendido(s):"),
+                     choices = c("Ração","Alevino","Ração/Alevino"),
+                     individual = TRUE,
+                     checkIcon = list(
+                       yes = tags$i(class = "fa fa-circle",
+                                    style = "color: steelblue"),
+                       no = tags$i(class = "fa fa-circle-o",
+                                   style = "color: steelblue")),
+                     selected = df$tipo_produto_dis
+                   )
+            ),
+            column(6,
+                   h4("Endereço do Distribuidor"),
+                   textInput(ns("logrador_dis_edit"), label="Logrador", placeholder = "Rua, Avenida, Estrada ...",value=df$logrador),
+                   textInput(ns("bairro_dis_edit"), label="Bairro",placeholder = "Bairro, comunidade, região ...",value=df$bairro),
+                   textInput(ns("cidade_dis_edit"), label="Cidade",value=df$cidade),
+                   textInput(ns("estado_dis_edit"), label="Estado",value=df$estado),
+                   textInput(ns("num_ende_dis_edit"), label="Número",value=df$num_ende),
+                   textInput(ns("cep_dis_edit"), label="CEP",value=df$cep),
+                   textInput(ns("ref_dis_edit"), "Ponto de referência", placeholder = "Proximo a Praça dos Três Poderes",value=df$referencia)
+            )
+          )
+        )
+      )
+    })
+    # Observe se o botão Ok da edição foi confirmada
+    observeEvent(input$ok_editDis,{
+      golem::cat_dev("Ok, vamos seguir com o trablho!!!! \n")
+      #-----------------
+      # Saber qual linha da tabela está selecionada
+      cond_dis <- input$distribuidor_rows_selected # condição condiction
+      # Selecionando o nome do Distribuidor da linha da tabela selecionada
+      select <- table_dis()[cond_dis,'Distribuidor']
+      # Coferindo se todos os campos estão corretor
+      ## Listando os campos
+      li <- list(
+        input$nome_dis_edit,input$tel_dis_edit,
+        input$logrador_dis_edit,input$bairro_dis_edit,
+        input$cidade_dis_edit,input$estado_dis_edit,
+        input$num_ende_dis_edit,input$cep_dis_edit
+      )
+      ## Lista de mensagens imprimidas no app
+      li_msg <- list(
+        nome_fab = c("Nome do distribuidor deve ter no máximo 20 letras"),
+        tel_fab = c("Telefone do distribuidor deve ter no máximo 15 números"),
+        logrador_fab = c("Logrador deve ter no máximo 40 letras"),
+        bairro_fab = c("Bairro deve ter no máximo 30 letras"),
+        cidade_fab = c("Cidade deve ter no máximo 30 letras"),
+        estado_fab = c("Estado deve ter no máximo 30 letras"),
+        num_ende_fab = c("Número do endereço deve ter no máximo 10 dígitos"),
+        cep_fab = c("CEP deve ter no máximo 15 dígito")
+      )
+      ## Vetor booleano dos campos que fracassaram
+      segCadDis <- sapply(li, stringi::stri_stats_latex)[1,] > c(20,15,40,30,30,30,10,15)
+      ## Algum fracassou
+      (failed <- any(segCadDis))
+      ## Condição NÃO satisfeita
+      if(failed){
+        golem::cat_dev("Um falhou \n")
+        golem::cat_dev("Condição NÃO satisfeita !!! \n")
+        # Fechando o modal
+        removeModal()
+        # Abrindo o modal de erro
+        showModal(
+          modalDialog(
+            title = "Erro no cadastro do Distribuidor",
+            div(tags$b(HTML(paste(li_msg[segCadDis], collapse = "<br/>")), style = "color: red;")),
+            footer = modalButton("Fechar"),
+            easyClose = TRUE,
+            fade = TRUE
+          )
+        )
+      } else { ## Condição satisfeita
+        golem::cat_dev("Condição Satisfeita !!!! \n")
+        # Connect to DB
+        con <- connect_to_db()
+        ###Construct query to insert values into database table
+        # browser() # Shiny Debugging
+        ## Inserindo dados fornecedor
+        query <- glue::glue(read_sql_file(path = "SQL/edit_distribuidor.sql"))
+        ### Query to send to database
+        edit_dis <- DBI::dbSendQuery(conn = con, statement = query)
+        DBI::dbClearResult(edit_dis) # limpando resultados
+        #-------------------
+        # Atualizar a renderizacao da tabela resumo do Distribuidor porque tem o efeito cascata ao deletar o fabricante
+        ## Render table Distribuidores
+        output$distribuidor <- DT::renderDataTable({
+          golem::cat_dev("Renderizou a tabela Distribuidor 1 (primeira vez 1) \n")
+          ## Obtendo a tabela atualizada
+          table_dis({
+            ## conectando com o DB PostgreSQL
+            # Connect to DB
+            con <- connect_to_db()
+            # Query resumo Distribuidor (Materilized View)
+            query <- glue::glue(read_sql_file(path = "SQL/resumo_distribuidor.sql"))
+            df_postgres <- DBI::dbGetQuery(con, statement = query)
+            # Disconnect from the DB
+            DBI::dbDisconnect(con)
+            golem::cat_dev("Fez um novo query para tabela Distribuidor \n")
+            # Convert to data.frame
+            data.frame(df_postgres,check.names = FALSE)
+          })
+          # Obtendo a tabela atualizada
+          DT::datatable(
+            table_dis(),
+            rownames = FALSE,
+            selection = "single",
+            class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+            options = list(searching = FALSE, lengthChange = FALSE,
+                           scrollX = TRUE # mantem a tabela dentro do conteiner
+            )
+          ) %>% DT::formatDate(  'Data', method = 'toLocaleString') # Consertando timestap para formato desejado
+        })
+        # Removendo o modal
+        removeModal()
+        #-----------------
+        showNotification("Distribuidor Editado com Sucesso !!!", type = "message")
+      }
+    })
+    # Campos obrigatórios
+    # Observe se todos os campos estão preenchidos para liberar o botão ok editar Farbicante (ok_EditFab)
+    observe({
+      # golem::cat_dev("Campos obrigatórios \n")
+      mandatoryFilled_dis <- vapply(c("nome_dis_edit","tel_dis_edit","whats_dis_edit","tipo_produto_dis_edit"),
+                                    function(x) {
+                                      !is.null(input[[x]]) && input[[x]] != ""
+                                    },
+                                    logical(1)
+      )
+      mandatoryFilled_dis <- all(mandatoryFilled_dis)
+      shinyjs::toggleState(id = "ok_editDis", condition = mandatoryFilled_dis)
+    })
+
+
+
+#==============================================================
+
 
     ####---- Formulário para cadastro
     ####---- Cadastro do Fabricante ----####
