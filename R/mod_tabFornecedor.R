@@ -739,6 +739,7 @@ mod_tabFornecedor_server <- function(id){
       df <- DBI::dbGetQuery(con, statement = query)
       # Disconnect from the DB
       DBI::dbDisconnect(con)
+      # browser()
       # Mostrar o modal para edição dos dados Fabricante
       showModal(
         modalDialog(
@@ -754,7 +755,8 @@ mod_tabFornecedor_server <- function(id){
                    textInput(ns("tel_dis_edit"), labelMandatory("Telefone do Distribuidor"),value=df$celular),
                    selectInput(inputId = ns("fab_dis_edit"),
                                label = labelMandatory("Fabricante (Fábrica) do Distribuidor (vendedor)"),
-                               choices = table()[,"Fabricante"]),
+                               choices = table()[,"Fabricante"],
+                               selected = df$nome_fabricante),
                    # Whatsapp
                    shinyWidgets::switchInput(
                      inputId = ns("whats_dis_edit"),
@@ -883,7 +885,7 @@ mod_tabFornecedor_server <- function(id){
         # Removendo o modal
         removeModal()
         #-----------------
-        showNotification("Distribuidor Editado com Sucesso !!!", type = "message")
+        showNotification("Distribuidor Editado com Sucesso!!!", type = "message")
       }
     })
     # Campos obrigatórios

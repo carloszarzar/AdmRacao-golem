@@ -12,7 +12,7 @@ WITH distribuidor_update AS (
       tipo_produto_dis = '{input$tipo_produto_dis_edit}',
       id_fabricante = (SELECT f.id_fabricante
                        FROM fabricante AS f
-                         WHERE f.nome_fabricante = 'AleProducoes'),
+                         WHERE f.nome_fabricante = '{input$fab_dis_edit}'),
       modified_at = Now()
   WHERE nome_distribuidor = '{select}'
   RETURNING id_endereco, id_telefone, id_fabricante
