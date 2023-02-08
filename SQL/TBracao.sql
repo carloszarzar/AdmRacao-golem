@@ -2,9 +2,24 @@
    # Data: 06/02/2023
    # Autor: Carlos A. Zarzar
 */
-SELECT DISTINCT nome AS "Nome da ração",
-            tamanho AS "Tamanho pellet (mm)",
-            tipo AS "Fase",
-            id_fabricante "Fabricante",
-            created_at AS "Data"
-            FROM racao ORDER BY created_at;
+SELECT DISTINCT r.nome AS "Nome da ração",
+            r.tamanho AS "Tamanho pellet (mm)",
+            r.tipo AS "Fase",
+            f.nome_fabricante "Fabricante",
+            r.proteina AS "Proteína",
+            r.created_at AS "Data",
+            d.nome_distribuidor AS "Distribuidor",
+            t.celular AS "Celular",
+            t.whatsapp AS "Whatsapp",
+            r.extrato_etereo_min,
+            r.umidade_max,
+            r.mineral_max,
+            r.fibra_max,
+            r.calcio_min,
+            r.calcio_max,
+            r.fosforo_min,
+            r.vitamina_c_min
+FROM racao AS r
+INNER JOIN fabricante AS f USING(id_fabricante)
+INNER JOIN distribuidor AS d USING(id_fabricante)
+INNER JOIN telefone AS t ON t.id_telefone = d.id_telefone;

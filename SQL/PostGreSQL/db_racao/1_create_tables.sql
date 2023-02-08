@@ -79,11 +79,11 @@ CREATE TABLE racao(
 	proteina INT NOT NULL, -- %
 	created_at TIMESTAMPTZ DEFAULT Now(), 
 	extrato_etereo_min INT NULL, -- g/kg
-    	umidadde_max INT NULL, -- %
+    	umidade_max INT NULL, -- %
     	mineral_max INT NULL, -- g/kg
     	fibra_max INT NULL, -- g/kg
     	calcio_min INT NULL, -- g/kg
-    	calcio_man INT NULL, -- g/kg
+    	calcio_max INT NULL, -- g/kg
     	fosforo_min INT NULL, -- g/kg
     	vitamina_c_min INT NULL -- mg/kg
 );
