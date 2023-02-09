@@ -2,7 +2,8 @@
    # Data: 06/02/2023
    # Autor: Carlos A. Zarzar
 */
-SELECT DISTINCT r.nome AS "Nome da ração",
+SELECT DISTINCT id_racao,
+            r.nome AS "Nome da ração",
             r.tamanho AS "Tamanho pellet (mm)",
             r.tipo AS "Fase",
             f.nome_fabricante "Fabricante",
