@@ -39,7 +39,6 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
-
   ####----- tabInicio ----####
   mod_tabInicio_server("global")
   ####----- tabFornecedor ----####

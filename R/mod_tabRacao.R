@@ -61,7 +61,7 @@ mod_tabRacao_ui <- function(id){
                   shinyWidgets::radioGroupButtons(
                     inputId = ns("tipo_rac"),
                     label = labelMandatory("Fase de produção do tipo da Ração:"),
-                    choices = c("Alevino","Juvenil I", "Juvenil II","Engorda","Finalização"),
+                    choices = c("alevino","juvenil 1", "juvenil 2","engorda","finalização"),
                     individual = TRUE,
                     justified = TRUE,
                     checkIcon = list(
@@ -75,15 +75,15 @@ mod_tabRacao_ui <- function(id){
                   numericInput(ns("proteina"),labelMandatory("Proteína Bruta Mín. (%):"), value = NULL, min = 0)
                 ),
                 column(3,
-                       numericInput(ns("extrato"),"Extrato Etéreo Mín. (g/kg):", value = NULL, min = 0),
-                       numericInput(ns("umidade"),"Umidade Máx. (%):", value = NULL, min = 0),
-                       numericInput(ns("mineral"),"Mat. Mineral Máx. (g/kg):", value = NULL, min = 0),
-                       numericInput(ns("fibra"),"Fibra Bruta Máx. (g/kg):", value = NULL, min = 0)
+                       numericInput(ns("extrato"),"Extrato Etéreo Mín. (g/kg):", value = 0, min = 0),
+                       numericInput(ns("umidade"),"Umidade Máx. (%):", value = 0, min = 0),
+                       numericInput(ns("mineral"),"Mat. Mineral Máx. (g/kg):", value = 0, min = 0),
+                       numericInput(ns("fibra"),"Fibra Bruta Máx. (g/kg):", value = 0, min = 0)
                 ),
                 column(3,
-                       sliderInput("calcio","Cálcio Mín. e Máx. (g/kg):", min = 0, max = 60, value = c(5,25)),
-                       numericInput(ns("fosforo"),"Fósforo Mín. (g/kg):", value = NULL, min = 0),
-                       numericInput(ns("vitamina"),"Vitamina C Mín. (mg/kg):", value = NULL, min = 0),
+                       sliderInput(ns("calcio"),"Cálcio Mín. e Máx. (g/kg):", min = 0, max = 60, value = c(0,60)),
+                       numericInput(ns("fosforo"),"Fósforo Mín. (g/kg):", value = 0, min = 0),
+                       numericInput(ns("vitamina"),"Vitamina C Mín. (mg/kg):", value = 0, min = 0),
                        actionButton(ns("submit_rac"), "Cadastrar", icon("paper-plane"), class = "btn-primary")
                 )
 
@@ -108,12 +108,13 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     ####---- Renderizando a tabela Ração Alevino ----####
     # Renderização da tabela Ração Alevino
     output$TBracao_ale <- DT::renderDataTable({
+      # browser()
       golem::cat_dev("Renderização da tabela Ração Alevino (I) \n")
       df_ale <- subset(df_rac(), Fase == "alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
-      index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
+      # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
       # Renderizando a tabela
       DT::datatable(
-        df_ale[index,],
+        df_ale, # df_ale[index,],
         rownames = FALSE,
         selection = "single",
         class = 'compact row-border',
@@ -123,19 +124,20 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         )
       ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
     })
-    # Conteúdo do Tabs Ração Alevino
-    ## Tab = status_ale
+    ####---- Conteúdo do Tabs Ração Alevino
+    ####---- Tab = status_ale ----####
     output$status_ale <- renderUI({
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # browser()
       if(!is.null(cond)){ # Linha selecionada:
         cat("# Linha selecionada: \n")
+        # browser()
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_ale <- df_rac() |>
           subset(Fase == "alevino") |>
-          dplyr::arrange(`Tamanho pellet (mm)`) |>
+          # dplyr::arrange(`Tamanho pellet (mm)`) |>
           dplyr::slice(cond)
 
         ## Corpo da informação
@@ -151,10 +153,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         } else {
           what <- h4(paste("Whatsapp: Não"))
         }
-        ## Renderizando a informação da Ração
-        # HTML(paste(headT,tam,prot,fase,
-        #            fab,dis,tel,what))
-
+        ## Renderizar o Status da ração e os botões de apagar e editar
         div(
           h3(paste("Ração selecionada: ",df_ale$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           HTML(paste(# headT,
@@ -170,17 +169,16 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         h1("Selecione na tabela uma Ração (uma linha)")
       }
     })
-    ####--- Botão Apagar Ração Alevino clicado ----####
+    # Botão Apagar Ração Alevino clicado
     observeEvent(input$apagar_rac_ale, {
+      # browser()
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_ale <- df_rac() |>
         subset(Fase == "alevino") |>
-        dplyr::arrange(`Tamanho pellet (mm)`) |>
+        # dplyr::arrange(`Tamanho pellet (mm)`) |>
         dplyr::slice(cond)
-
-      # browser()
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
       showModal(
         modalDialog(title = paste("Ração selecionada: ",df_ale$`Nome da ração`," vai ser excluído!"),
@@ -202,32 +200,51 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     })
     ## Botão clicado de Confirmação para apagar Ração Alevino do Banco de dados
     observeEvent(input$ok_apagar_rac_ale, {
+      # browser()
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_ale <- df_rac() |>
         subset(Fase == "alevino") |>
-        dplyr::arrange(`Tamanho pellet (mm)`) |>
+        # dplyr::arrange(`Tamanho pellet (mm)`) |>
         dplyr::slice(cond)
-
-      browser()
-      ####---- Apagando dados Ração Alevino ----####
+      ## Apagando dados Ração Alevino
       # Connect to DB
       con <- connect_to_db()
       # Query Statement
-      query <- glue::glue("DELETE FROM racao WHERE id_racao = 'df_ale$id_racao';")
+      #====----- To trabalhando aqui ----=====#
+      # Tenho que avaliar esse ON DELETE CASCADE para ração cadastrada na tabela de compra (compra_racao)
+
+
+      query <- glue::glue("DELETE FROM racao WHERE id_racao = {df_ale$id_racao};")
       # Apagando no Banco de Dados
       DBI::dbExecute(conn = con, statement = query)
       # Disconnect from the DB
       DBI::dbDisconnect(con)
+      # Atualizando os dados Ração
+      df_rac({
+        golem::cat_dev("Importou os dados da Ração \n")
+        ## conectando com o DB PostgreSQL
+        # Connect to DB
+        con <- connect_to_db()
+        # Query
+        query <- glue::glue(read_sql_file(path = "SQL/TBracao.sql"))
+        # browser() # Shiny Debugging
+        df_postgres <- DBI::dbGetQuery(con, statement = query)
+        # Disconnect from the DB
+        DBI::dbDisconnect(con)
+        # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+        # Convert to data.frame
+        data.frame(df_postgres,check.names = FALSE)
+      })
       # Renderizar a tabela novamente
       output$TBracao_ale <- DT::renderDataTable({
-        golem::cat_dev("Renderização da tabela Ração Alevino (I) \n")
+        golem::cat_dev("Renderização da tabela Ração Alevino (II) \n")
         df_ale <- subset(df_rac(), Fase == "alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
-        index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
+        # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
         # Renderizando a tabela
         DT::datatable(
-          df_ale[index,],
+          df_ale, # df_ale[index,],
           rownames = FALSE,
           selection = "single",
           class = 'compact row-border',
@@ -237,21 +254,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
           )
         ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
       })
-
-
-
+      removeModal()
     })
-
-
-
-#===============================================
-    ####--- Botão Editar Ração Alevino Clicado ----####
+    #====----- To trabalhando aqui ----=====#
+    ## Botão Editar Ração Alevino Clicado
     observeEvent(input$edit_rac_ale, {
       cat(cond)
     })
-
-#===============================================
-    ## Tab = aspecto_ale
+    ####----Tab = aspecto_ale ----####
     output$aspecto_ale <- renderUI({
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
@@ -262,7 +272,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         ## Obtendo os dados
         df_ale <- df_rac() |>
           subset(Fase == "alevino") |>
-          dplyr::arrange(`Tamanho pellet (mm)`) |>
+          # dplyr::arrange(`Tamanho pellet (mm)`) |>
           dplyr::slice(cond)
 
         ## Corpo da informação
@@ -287,15 +297,15 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       }
 
     })
+    #====================================================
     ####---- Renderizando a tabela Ração Juvenil I e II ----####
     output$TBracao_juv <- DT::renderDataTable({
       golem::cat_dev("Renderização da tabela Ração Juvenil I e II (1 vez) \n")
       df_juv <- subset(df_rac(), Fase == "juvenil 1" | Fase == "juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
-      index <- order(df_juv$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
-
+      # index <- order(df_juv$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
       # Renderizando a tabela
       DT::datatable(
-        df_juv[index,],
+        df_juv, # df_juv[index,],
         rownames = FALSE,
         selection = "single",
         class = 'compact row-border',
@@ -305,18 +315,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         )
       ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
     })
-
-
-
     ####---- Renderizando a tabela Ração Engorda & Finalização ----####
     output$TBracao_eng <- DT::renderDataTable({
       golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (I) \n")
       df_eng <- subset(df_rac(), Fase == "engorda" | Fase == "finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
-      index <- order(df_eng$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
-
+      # index <- order(df_eng$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
       # Renderizando a tabela
       DT::datatable(
-        df_eng[index,],
+        df_eng, # df_eng[index,],
         rownames = FALSE,
         selection = "single",
         class = 'compact row-border',
@@ -326,15 +332,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         )
       ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
     })
-
-
-    ####---- Cadastrar da Ração ----####
+    #====================================================
+    ####---- Cadastrar da Ração Todas ----####
     # Campos obrigatórios
     # Observe se todos os campos estão preenchidos para liberar o botão submeter (submit_rac)
     observe({
       mandatoryFilled_fab <- vapply(c("nome_rac","tipo_rac","tamanho","proteina"),
                                     function(x) {
-                                      !is.null(input[[x]]) && input[[x]] != ""
+                                      !is.null(input[[x]]) && input[[x]] != "" && !is.na(input[[x]])
                                     },
                                     logical(1)
       )
@@ -343,9 +348,10 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     })
     # Renderizando o Select input para add o fabricante
     output$rac_fab <- renderUI({
-      selectInput(inputId = ns("fab_distribuidor"),
+      # browser()
+      selectInput(inputId = ns("select_fab_rac"),
                   label = labelMandatory("Fabricante da Ração"),
-                  choices = df_fab()[,"nome_fabricante"])
+                  choices = df_fab()[which(df_fab()$tipo_produto_fab == "Ração"),"nome_fabricante"])
     })
     # Botão submeter ração clicado (submit_rac)
     observeEvent(input$submit_rac, {
@@ -367,17 +373,17 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       } else { # Condição satisfeita
         # INSERT INTO
         ## Inserindo os dados submetidos
-
         #------------- INSERT INTO --------------
-        # # Connect to DB
-        # con <- connect_to_db()
-        # ## Inserindo dados fornecedor
-        # query <- glue::glue(read_sql_file(path = "SQL/insert_racao.sql"))
-        # ### Query to send to database
-        # insert_rac <- DBI::dbSendQuery(conn = con, statement = query)
-        # DBI::dbClearResult(insert_rac) # limpando resultados
+        # Connect to DB
+        con <- connect_to_db()
+        ## Inserindo dados fornecedor
+        query <- glue::glue(read_sql_file(path = "SQL/insert_racao.sql"))
+        ### Query to send to database
+        insert_rac <- DBI::dbSendQuery(conn = con, statement = query)
+        DBI::dbClearResult(insert_rac) # limpando resultados
+        # Disconnect from the DB
+        DBI::dbDisconnect(con)
         #----------------------------------------
-
         ###shinyModal to show to user when the update to the database table is successful
         showModal(
           modalDialog( title=paste0("Dados da Ração foi inseridos com sucesso!!!"),
@@ -386,8 +392,6 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
                                 footer = modalButton("Ok")
           )
         )
-        # Disconnect from the DB
-        # DBI::dbDisconnect(con)
         # Resetando o formulário
         shinyjs::reset("form_rac")
         # Atualizando os dados Ração
@@ -410,10 +414,10 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         output$TBracao_ale <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Alevino (I) \n")
           df_ale <- subset(df_rac(), Fase == "alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
-          index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
+          # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
           DT::datatable(
-            df_ale[index,],
+            df_ale, # df_ale[index,],
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
@@ -421,17 +425,16 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
             )
-          ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+          ) # %>% DT::formatDate('Data', method = 'toLocaleString') # Consertando timestap para formato desejado
         })
         # Renderização da tabela Ração Juvenil I e II
         output$TBracao_juv <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Juvenil I e II (1 vez) \n")
           df_juv <- subset(df_rac(), Fase == "juvenil 1" | Fase == "juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
-          index <- order(df_juv$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
-
+          # index <- order(df_juv$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
           DT::datatable(
-            df_juv[index,],
+            df_juv, # df_juv[index,],
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
@@ -445,11 +448,10 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         output$TBracao_eng <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (I) \n")
           df_eng <- subset(df_rac(), Fase == "engorda" | Fase == "finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
-          index <- order(df_eng$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
-
+          # index <- order(df_eng$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
           DT::datatable(
-            df_eng[index,],
+            df_eng,# df_eng[index,],
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
@@ -459,15 +461,8 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
             )
           ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
         })
-
-
-
-
       }
-
-
-
-
+      #---------------------------------------------------
     })
   })
 }

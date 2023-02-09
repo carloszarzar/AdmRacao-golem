@@ -76,16 +76,16 @@ CREATE TABLE racao(
 	tamanho REAL NOT NULL, -- mm
 	tipo VARCHAR(20) NOT NULL, -- alevino, juvenil 1, juvenil 2, engorda, finalização
 	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante) ON DELETE CASCADE,
-	proteina INT NOT NULL, -- %
+	proteina REAL NOT NULL, -- %
 	created_at TIMESTAMPTZ DEFAULT Now(), 
-	extrato_etereo_min INT NULL, -- g/kg
-    	umidade_max INT NULL, -- %
-    	mineral_max INT NULL, -- g/kg
-    	fibra_max INT NULL, -- g/kg
-    	calcio_min INT NULL, -- g/kg
-    	calcio_max INT NULL, -- g/kg
-    	fosforo_min INT NULL, -- g/kg
-    	vitamina_c_min INT NULL -- mg/kg
+	extrato_etereo_min REAL NULL, -- g/kg
+    	umidade_max REAL NULL, -- %
+    	mineral_max REAL NULL, -- g/kg
+    	fibra_max REAL NULL, -- g/kg
+    	calcio_min REAL NULL, -- g/kg
+    	calcio_max REAL NULL, -- g/kg
+    	fosforo_min REAL NULL, -- g/kg
+    	vitamina_c_min REAL NULL -- mg/kg
 );
 
 -- TABELA alevino

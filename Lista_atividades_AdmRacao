@@ -24,3 +24,13 @@
 8 - Trabalhar na Aba Ração (tabRacao); Preciso editar a tabela racao no DB para inserir informações completas. Portanto terei que levantar quais as informações da rações devem ser inserida ao cadastrar uma; Modifiquei db_racao_dev (tabela racao inserindo coluna nome), portanto db_racao est[a desatualizada;
 
 8.1 - Atualizei a tabela racao do banco de dados db_racao_dev. Coloquei algumas propriedade da ração, podendo ser NULL a informação.
+
+#--- Lista da Aba Racao ---####
+1, OK) Consertar a ordem que aparece na tabela e a ordem que é selecionado não bate;
+2, OK) Se clicar na coluna para ordenar por tamanho por exemplo não sei como a seleção na aba vai funcionar. Se mudar terei que tirar a possíbilidade de ordenar.
+3, OK) Conferir se está sendo apagardo ao clicar com o botão apagar;
+4) Desenvolver o botão editar.
+5) Ao apagar uma ração que está cadastrado uma compra (na tabela compra de ração), é emitido um erro. Ou eu configuro o ON DELETE CASCADE, ou eu tento dar um jeito de apagar a ração mas o ergistro da compra permaneça no histórico. (https://stackoverflow.com/questions/45740857/how-to-delete-row-from-postgresql-table-without-cascade)
+6) Desenvolver as subabas para ração juvenil (I e II) e engorda (finalização);
+
+

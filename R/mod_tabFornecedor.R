@@ -289,7 +289,6 @@ mod_tabFornecedor_server <- function(id,df_fab){
                 )
 
     })
-
     # Observe o evento: confirmação para apagar os dados do DB
     observeEvent(input$ok,{
       # browser() # Shiny Debuggin
@@ -390,7 +389,6 @@ mod_tabFornecedor_server <- function(id,df_fab){
 
 
     })
-#================ Botão Editar Fabricante ==================================
     # Botão Editar (os Dados)Editando os dados do Fabricante)
     ## Observe se alguma linha da tabela foi selecionada para mostrar o botão editar
     output$btnEdit_fab <- renderUI({
@@ -616,7 +614,6 @@ mod_tabFornecedor_server <- function(id,df_fab){
       mandatoryFilled_fab <- all(mandatoryFilled_fab)
       shinyjs::toggleState(id = "ok_editFab", condition = mandatoryFilled_fab)
     })
-#===========================================================
     ####---- Box Pesquisa Distribuidor ----####
     # Observando se alguma linha da tabela foi selecionada e renderizando o box pesquisa
     output$dados_dis <- renderUI({
@@ -661,9 +658,8 @@ mod_tabFornecedor_server <- function(id,df_fab){
         paste("Selecione na tabela um Distribuidor (uma linha)")
       }
     })
-
     # Botão Apagar Distribuidor no cadastro
-    # Renderiza o botão caso a linha foi selecionado
+    ## Renderiza o botão caso a linha foi selecionado
     output$btn_dis <- renderUI({
       # browser() # Shiny Debuggin
       # Linha da tabela selecionado
@@ -673,8 +669,7 @@ mod_tabFornecedor_server <- function(id,df_fab){
                      style = "padding:16px; font-size: 17px")
       }
     })
-
-    # Observe se o Botão de apagar foi clicado
+    ## Observe se o Botão de apagar foi clicado
     observeEvent(input$apagar_dis, {
       # Linha da tabela selecionado
       cond_dis <- input$distribuidor_rows_selected # condição condiction
@@ -691,8 +686,7 @@ mod_tabFornecedor_server <- function(id,df_fab){
       )
 
     })
-
-    # Observe o evento: confirmação que quer apagar os dados do DB
+    ## Observe o evento: confirmação que quer apagar os dados do DB
     observeEvent(input$ok_dis,{
       # browser() # Shiny Debuggin
       # Linha da tabela selecionado
@@ -744,8 +738,6 @@ mod_tabFornecedor_server <- function(id,df_fab){
 
 
     })
-
-#============== Botão Editar Distribuidor ===================
     # Botão Editar (os Dados)Editando os dados do Fabricante)
     ## Observe se alguma linha da tabela foi selecionada para mostrar o botão editar
     output$btnEdit_dis <- renderUI({
@@ -933,12 +925,6 @@ mod_tabFornecedor_server <- function(id,df_fab){
       mandatoryFilled_dis <- all(mandatoryFilled_dis)
       shinyjs::toggleState(id = "ok_editDis", condition = mandatoryFilled_dis)
     })
-
-
-
-#==============================================================
-
-
     ####---- Formulário para cadastro
     ####---- Cadastro do Fabricante ----####
     # Campos obrigatórios

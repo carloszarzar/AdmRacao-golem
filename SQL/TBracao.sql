@@ -23,4 +23,5 @@ SELECT DISTINCT id_racao,
 FROM racao AS r
 INNER JOIN fabricante AS f USING(id_fabricante)
 INNER JOIN distribuidor AS d USING(id_fabricante)
-INNER JOIN telefone AS t ON t.id_telefone = d.id_telefone;
+INNER JOIN telefone AS t ON t.id_telefone = d.id_telefone
+ORDER BY r.created_at DESC;
