@@ -148,13 +148,13 @@ mod_tabFornecedor_ui <- function(id){
 #' @importFrom shinyjs toggleState reset
 #'
 #' @noRd
-mod_tabFornecedor_server <- function(id){
+mod_tabFornecedor_server <- function(id,df_fab){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Box Resumo fornecedores
     #####----- Box Resumo Fabricantes ------#####
     ## Render table fabricante
-    table <- reactiveVal({
+    table_fab <- reactiveVal({
       ## conectando com o DB PostgreSQL
       # Connect to DB
       con <- connect_to_db()
@@ -168,12 +168,14 @@ mod_tabFornecedor_server <- function(id){
       # Convert to data.frame
       data.frame(df_postgres,check.names = FALSE)
     })
+    # Editar aqui a mudança de table_fab para df_fab
+
     # Renderizando a tabela resumo Fabricante
     output$fabricante <- DT::renderDataTable({
       golem::cat_dev("Renderização da tabela Fabricante 1 \n")
       # Renderizando a tabela
       DT::datatable(
-        table(),
+        table_fab(),
         rownames = FALSE,
         selection = "single",
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
@@ -223,7 +225,7 @@ mod_tabFornecedor_server <- function(id){
       # browser() # Shiny debugging
       if(!is.null(cond)){ # Linha selecionada:
         # Selecionando O Fabricante da linha da tabela selecionada
-        select <- table()[cond,'Fabricante']
+        select <- table_fab()[cond,'Fabricante']
         ## Fazendo a cunsulta da filtragem no BD PostgreSQL
         # Connect to DB
         con <- connect_to_db()
@@ -274,7 +276,7 @@ mod_tabFornecedor_server <- function(id){
       # Linha da tabela selecionado
       cond <- input$fabricante_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # Selecionando O Fabricante da linha da tabela selecionada
-      select <- table()[cond,'Fabricante']
+      select <- table_fab()[cond,'Fabricante']
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
       showModal(modalDialog(title = paste("Fabricante: ",select," vai ser deletado!"),
                             div(tags$b("Os distribuidores registrados a esse fabricante automaticamente também serão deletados")),
@@ -295,7 +297,7 @@ mod_tabFornecedor_server <- function(id){
       # Preciso colcoar esse cond pra fora do reactive para usa-lo da melhor forma (mais de uma vez de uso)
       cond <- input$fabricante_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # Selecionando O Fabricante da linha da tabela selecionada
-      select <- table()[cond,'Fabricante']
+      select <- table_fab()[cond,'Fabricante']
       # Connect to DB
       con <- connect_to_db()
       # Query Statement
@@ -310,7 +312,7 @@ mod_tabFornecedor_server <- function(id){
         golem::cat_dev("Renderizou a tabela Fabricante 1 (primeira vez) \n")
         # Atualizar a renderizacao da tabela resumo
         ## Atualizando a table (dados) para renderizar atualizado apos a inserção de informação
-        table({
+        table_fab({
           # Obtendo a tabela atualizada
           ## conectando com o DB PostgreSQL
           # Connect to DB
@@ -324,9 +326,24 @@ mod_tabFornecedor_server <- function(id){
           # Convert to data.frame
           data.frame(df_postgres,check.names = FALSE)
         })
+        # Atualizando dados da tabela Fabricante
+        df_fab({
+          ## conectando com o DB PostgreSQL
+          # Connect to DB
+          con <- connect_to_db()
+          # Query resumo fabricante (Materilized View)
+          query <- glue::glue(read_sql_file(path = "SQL/TBfab.sql"))
+          # browser() # Shiny Debugging
+          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+          # Convert to data.frame
+          data.frame(df_postgres,check.names = FALSE)
+        })
         # Renderizando a tabela
         DT::datatable(
-          table(),
+          table_fab(),
           rownames = FALSE,
           selection = "single",
           class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
@@ -390,7 +407,7 @@ mod_tabFornecedor_server <- function(id){
       # Saber qual linha da tabela está selecionada
       cond <- input$fabricante_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # Selecionando o nome do Fabricante da linha da tabela selecionada
-      select <- table()[cond,'Fabricante']
+      select <- table_fab()[cond,'Fabricante']
       # Connect to DB
       con <- connect_to_db()
       # Consulta (Query) do PostgreSQL
@@ -457,7 +474,7 @@ mod_tabFornecedor_server <- function(id){
       # Saber qual linha da tabela está selecionada
       cond <- input$fabricante_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # Selecionando o nome do Fabricante da linha da tabela selecionada
-      select <- table()[cond,'Fabricante']
+      select <- table_fab()[cond,'Fabricante']
       # Coferindo se todos os campos estão corretor
       ## Listando os campos
       li <- list(
@@ -511,7 +528,7 @@ mod_tabFornecedor_server <- function(id){
           golem::cat_dev("Renderizou a tabela Fabricante 1 (primeira vez) \n")
           # Atualizar a renderizacao da tabela resumo
           ## Atualizando a table (dados) para renderizar atualizado apos a inserção de informação
-          table({
+          table_fab({
             # Obtendo a tabela atualizada
             ## conectando com o DB PostgreSQL
             # Connect to DB
@@ -525,9 +542,24 @@ mod_tabFornecedor_server <- function(id){
             # Convert to data.frame
             data.frame(df_postgres,check.names = FALSE)
           })
+          # Atualizando dados da tabela Fabricante
+          df_fab({
+            ## conectando com o DB PostgreSQL
+            # Connect to DB
+            con <- connect_to_db()
+            # Query resumo fabricante (Materilized View)
+            query <- glue::glue(read_sql_file(path = "SQL/TBfab.sql"))
+            # browser() # Shiny Debugging
+            df_postgres <- DBI::dbGetQuery(con, statement = query)
+            # Disconnect from the DB
+            DBI::dbDisconnect(con)
+            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+            # Convert to data.frame
+            data.frame(df_postgres,check.names = FALSE)
+          })
           # Renderizando a tabela
           DT::datatable(
-            table(),
+            table_fab(),
             rownames = FALSE,
             selection = "single",
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
@@ -755,7 +787,7 @@ mod_tabFornecedor_server <- function(id){
                    textInput(ns("tel_dis_edit"), labelMandatory("Telefone do Distribuidor"),value=df$celular),
                    selectInput(inputId = ns("fab_dis_edit"),
                                label = labelMandatory("Fabricante (Fábrica) do Distribuidor (vendedor)"),
-                               choices = table()[,"Fabricante"],
+                               choices = table_fab()[,"Fabricante"],
                                selected = df$nome_fabricante),
                    # Whatsapp
                    shinyWidgets::switchInput(
@@ -985,7 +1017,7 @@ mod_tabFornecedor_server <- function(id){
 
           cat("Cadastrou dados do fabricante! \n")
           ## Atualizando a table (dados) para renderizar atualizado apos a inserção de informação
-          table({
+          table_fab({
             # Obtendo a tabela atualizada
             ## conectando com o DB PostgreSQL
             # Connect to DB
@@ -999,12 +1031,27 @@ mod_tabFornecedor_server <- function(id){
             # Convert to data.frame
             data.frame(df_postgres,check.names = FALSE)
           })
+          # Atualizando dados da tabela Fabricante
+          df_fab({
+            ## conectando com o DB PostgreSQL
+            # Connect to DB
+            con <- connect_to_db()
+            # Query resumo fabricante (Materilized View)
+            query <- glue::glue(read_sql_file(path = "SQL/TBfab.sql"))
+            # browser() # Shiny Debugging
+            df_postgres <- DBI::dbGetQuery(con, statement = query)
+            # Disconnect from the DB
+            DBI::dbDisconnect(con)
+            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+            # Convert to data.frame
+            data.frame(df_postgres,check.names = FALSE)
+          })
 
           ## Render table
           output$fabricante <- DT::renderDataTable({
             DT::datatable(
               # Convert to data.frame
-              table(), # Aqui uma tentativa de fazer table reactive e atualizar automaticamente
+              table_fab(), # Aqui uma tentativa de fazer table reactive e atualizar automaticamente
               rownames = FALSE,
               selection = "single",
               class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
@@ -1126,7 +1173,7 @@ mod_tabFornecedor_server <- function(id){
     output$fab_select <- renderUI({
       selectInput(inputId = ns("fab_distribuidor"),
                   label = labelMandatory("Fabricante (Fábrica) do Distribuidor (vendedor)"),
-                  choices = table()[,"Fabricante"])
+                  choices = table_fab()[,"Fabricante"])
 
 
 

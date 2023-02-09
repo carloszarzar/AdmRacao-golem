@@ -7,12 +7,45 @@
 app_server <- function(input, output, session) {
   ## Your application server logic
 
+  ####---- Obtendo dados do DB ----####
+  # Dados da Tabela Fabricante
+  df_fab <- reactiveVal({
+    ## conectando com o DB PostgreSQL
+    # Connect to DB
+    con <- connect_to_db()
+    # Query resumo fabricante (Materilized View)
+    query <- glue::glue(read_sql_file(path = "SQL/TBfab.sql"))
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
+  # Dados da Tabela Ração
+  df_rac <- reactiveVal({
+    golem::cat_dev("Importou os dados da Ração \n")
+    ## conectando com o DB PostgreSQL
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue(read_sql_file(path = "SQL/TBracao.sql"))
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
+
   ####----- tabInicio ----####
   mod_tabInicio_server("global")
   ####----- tabFornecedor ----####
-  mod_tabFornecedor_server("global")
+  mod_tabFornecedor_server("global",df_fab)
   ####----- tabRacao ----####
-  mod_tabRacao_server("global")
+  mod_tabRacao_server("global",df_fab,df_rac)
   ####----- tabAlevino ----####
   mod_tabAlevino_server("global")
   ####----- tabFazenda ----####
