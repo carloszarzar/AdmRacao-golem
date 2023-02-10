@@ -30,7 +30,7 @@ mod_tabRacao_ui <- function(id){
         ####---- Status Ração Alevino ----####
         tabBox(
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Ração Alevino"),
-          id = "tab_ale",width = 4, height = 400,
+          id = "tab_ale",width = 4, height = 415,
           tabPanel("Status", htmlOutput(ns("status_ale"))),
           tabPanel("Aspectos", htmlOutput(ns("aspecto_ale")))#,
           # tabPanel("Editar", uiOutput(ns("edit_ale")))
@@ -38,7 +38,7 @@ mod_tabRacao_ui <- function(id){
         ####---- Status Ração Juvenil I e II ----####
         tabBox(
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Ração Juvenil I e II"),
-          id = "tab_juv",width = 4, height = 400,
+          id = "tab_juv",width = 4, height = 415,
           tabPanel("Status", htmlOutput(ns("status_juv"))),
           tabPanel("Aspectos", htmlOutput(ns("aspecto_juv")))#,
           # tabPanel("Editar", uiOutput(ns("edit_ale")))
@@ -46,7 +46,7 @@ mod_tabRacao_ui <- function(id){
         ####---- Status Ração Engorda e Finalização ----####
         tabBox(
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Ração Engorda e Finalização"),
-          id = "tab_eng",width = 4, height = 400,
+          id = "tab_eng",width = 4, height = 415,
           tabPanel("Status", htmlOutput(ns("status_eng"))),
           tabPanel("Aspectos", htmlOutput(ns("aspecto_eng")))#,
           # tabPanel("Editar", uiOutput(ns("edit_ale")))
