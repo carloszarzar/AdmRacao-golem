@@ -520,8 +520,9 @@ mod_tabFornecedor_server <- function(id,df_fab){
         ### Query to send to database
         edit_fab <- DBI::dbSendQuery(conn = con, statement = query)
         DBI::dbClearResult(edit_fab) # limpando resultados
+        # Disconnect from the DB
+        DBI::dbDisconnect(con)
         # Renderizando as tabelas resumo. Fabricante e Distribuidor
-        # Preciso melhorar essa renderização aqui!
         output$fabricante <- DT::renderDataTable({
           golem::cat_dev("Renderizou a tabela Fabricante 1 (primeira vez) \n")
           # Atualizar a renderizacao da tabela resumo
