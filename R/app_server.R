@@ -39,6 +39,23 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
+  # Dados da Tabela Compra_Ração
+  df_comp_rac <- reactiveVal({
+    golem::cat_dev("Importou os dados da Ração \n")
+    ## conectando com o DB PostgreSQL
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue("TABLE compra_racao;")
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
+
   ####----- tabInicio ----####
   mod_tabInicio_server("global")
   ####----- tabFornecedor ----####
