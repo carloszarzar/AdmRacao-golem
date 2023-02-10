@@ -87,11 +87,11 @@ VALUES
 ('I',10.0,'finalização',2,22);
 
 -- TABELA alevino
-INSERT INTO alevino(id_fabricante,especie,sexo)
+INSERT INTO alevino(id_fabricante,especie,sexo,peso_init,dias_init)
 VALUES
-(2,'tambaqui','misto'),
-(2,'tambaqui','macho'),
-(3,'tambaqui','fêmea');
+(2,'tambaqui','misto',5,15),
+(2,'tambaqui','macho',3,15),
+(3,'tambaqui','fêmea',7,20);
 
 -- TABELA compra
 INSERT INTO compra(quantidade_itens,valor_total,data_compra,id_fabricante,data_chegada,tipo_compra)

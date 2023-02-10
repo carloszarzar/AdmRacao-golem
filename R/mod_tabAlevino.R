@@ -13,8 +13,8 @@ mod_tabAlevino_ui <- function(id){
     fluidPage(
       fluidRow(
         box(title = "Alevino cadastrados", status = "primary",
-            width = 8, height = 250,
-            tableOutput(ns("alevino") ))
+            width = 8, height = 500,
+            DT::dataTableOutput(ns("tb_alevino")))
       )
     )
 
@@ -26,31 +26,33 @@ mod_tabAlevino_ui <- function(id){
 #' @importFrom DBI dbGetQuery dbDisconnect
 #'
 #' @noRd
-mod_tabAlevino_server <- function(id){
+mod_tabAlevino_server <- function(id,df_alevino){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    # Obtendo dados para a tabela estoque
-    ## conectando com o DB PostgreSQL
-    data <- reactive({
-      # Connect to DB
-      con <- connect_to_db()
-      # Query estoque data (Materilized View)
-      df_postgres <- DBI::dbGetQuery(con,
-            'SELECT DISTINCT id_alevino AS "Apelido Alevino",
-            especie AS "Espécie",
-            sexo AS "Sexo"
-            FROM alevino ORDER BY id_alevino;'
-      )
-      # Disconnect from the DB
-      DBI::dbDisconnect(con)
-      # Convert to data.frame
-      data.frame(df_postgres,check.names = FALSE)
-    })
 
     # Render table
-    output$alevino <- renderTable({
-      data()
+    output$tb_alevino <- DT::renderDataTable({
+      # browser()
+      golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
+      # ale_tb <- subset(df_alevino(), Fase == "alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+      # Renderizando a tabela
+      DT::datatable(
+        df_alevino(),
+        rownames = FALSE,
+        selection = "single",
+        class = 'compact row-border',
+        # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+        options = list(searching = FALSE, lengthChange = FALSE,
+                       scrollX = TRUE # mantem a tabela dentro do conteiner
+        )
+      ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
     })
+
+
+
+
+
+
 
   })
 }

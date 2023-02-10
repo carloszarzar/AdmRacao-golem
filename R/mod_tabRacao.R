@@ -16,7 +16,7 @@ mod_tabRacao_ui <- function(id){
         ####---- Tabela Ração Alevino ----####
         box(title = "Ração Alevino", status = "primary",
             width = 4, height = 500,
-            DT::dataTableOutput(ns("TBracao_ale") )),
+            DT::dataTableOutput(ns("TBracao_ale"))),
         ####---- Tabela Ração Juvenil I e II ----####
         box(title = "Ração Juvenil I e II", status = "primary",
             width = 4, height = 500,
@@ -98,8 +98,14 @@ mod_tabRacao_ui <- function(id){
 
 #' tabRacao Server Functions
 #'
-#' @importFrom DBI dbGetQuery dbDisconnect
+#' @importFrom DBI dbGetQuery dbDisconnect dbExecute dbSendQuery
 #' @importFrom DT renderDataTable datatable formatDate
+#' @importFrom dplyr slice select
+#' @importFrom glue glue
+#' @importFrom golem cat_dev
+#' @importFrom shinyWidgets execute_safely radioGroupButtons
+#' @importFrom stringi stri_stats_latex
+#' @importFrom shinyjs toggleState reset
 #'
 #' @noRd
 mod_tabRacao_server <- function(id,df_fab,df_rac){

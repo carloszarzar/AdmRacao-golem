@@ -95,7 +95,10 @@ CREATE TABLE alevino(
 	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante),
 	especie VARCHAR(20) NOT NULL,
 	sexo VARCHAR(10) NULL,
-	created_at TIMESTAMPTZ DEFAULT Now() 
+	peso_init REAL NOT NULL, -- mg
+	dias_init INT NULL, -- dias de vida
+	created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL 
 );
 
 -- TABELA compra
