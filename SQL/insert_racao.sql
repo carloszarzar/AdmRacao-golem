@@ -2,6 +2,7 @@
    # Versão Shiny
    # Data: 09/02/2023
    # Autor: Carlos A. Zarzar
+   # NULLIF(argument_1,argument_2) retorna NULL se argument_1=argument_2
 */
 INSERT INTO racao(nome,tamanho,tipo,id_fabricante,
             proteina,created_at,
