@@ -85,7 +85,7 @@ CREATE TABLE racao(
     	calcio_min REAL NULL, -- g/kg
     	calcio_max REAL NULL, -- g/kg
     	fosforo_min REAL NULL, -- g/kg
-    	vitamina_c_min REAL NULL -- mg/kg,
+    	vitamina_c_min REAL NULL, -- mg/kg
     	modified_at TIMESTAMPTZ NULL 
 );
 
