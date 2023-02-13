@@ -34,6 +34,24 @@ style="-webkit-column-count: 2; -moz-column-count: 2; column-count: 2; -webkit-c
 
 </div>
 
+<table border="0">
+<tr>
+<td>
+
+| Espécie          | Sistema de Produção | Participação Custo |
+|------------------|---------------------|--------------------|
+| Tambaqui         | viveiro escavado    | 78%                |
+| Tambaqui Curumim | viveiro escavado    | 64%                |
+| Tilápia          | tanque rede         | 72%                |
+| Tilápia          | viveiro escavado    | 82,31%             |
+
+</td>
+<td>
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/racao.jpg" alt="Ração peixe" style="height: 180px; width:180px;"/>
+</td>
+</tr>
+</table>
+
 Considerando o contexto em regiões onde a aquicultura é incipiente e a
 produção de peixes é característico da agricultura familiar, a compra e
 administração desse principal insumo é mais desafiador. Portanto, afim
