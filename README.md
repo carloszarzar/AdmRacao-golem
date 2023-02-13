@@ -73,14 +73,14 @@ utilização.
 
 ### Aba Cadastro de Fornecedores
 
-<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
-<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.pnghttps://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_fornecedor.png">
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_fornecedor.png" width="630" height="252"/>
 </a>
 
 ### Aba Cadastro de Rações
 
-<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
-<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_racao.png">
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_racao.png" width="630" height="252"/>
 </a>
 
 ## Informações técnicas
