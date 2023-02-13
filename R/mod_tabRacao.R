@@ -8,6 +8,7 @@
 #'
 #' @importFrom shiny NS tagList
 #' @importFrom DT dataTableOutput
+#' @importFrom shinydashboard tabBox
 mod_tabRacao_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -28,7 +29,7 @@ mod_tabRacao_ui <- function(id){
       ),
       fluidRow(
         ####---- Status Ração Alevino ----####
-        tabBox(
+        shinydashboard::tabBox(
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Ração Alevino"),
           id = "tab_ale",width = 4, height = 415,
           tabPanel("Status", htmlOutput(ns("status_ale"))),
@@ -36,7 +37,7 @@ mod_tabRacao_ui <- function(id){
           # tabPanel("Editar", uiOutput(ns("edit_ale")))
         ),
         ####---- Status Ração Juvenil I e II ----####
-        tabBox(
+        shinydashboard::tabBox(
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Ração Juvenil I e II"),
           id = "tab_juv",width = 4, height = 415,
           tabPanel("Status", htmlOutput(ns("status_juv"))),
@@ -44,7 +45,7 @@ mod_tabRacao_ui <- function(id){
           # tabPanel("Editar", uiOutput(ns("edit_ale")))
         ),
         ####---- Status Ração Engorda e Finalização ----####
-        tabBox(
+        shinydashboard::tabBox(
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Ração Engorda e Finalização"),
           id = "tab_eng",width = 4, height = 415,
           tabPanel("Status", htmlOutput(ns("status_eng"))),

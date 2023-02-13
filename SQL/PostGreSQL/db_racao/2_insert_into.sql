@@ -87,11 +87,11 @@ VALUES
 ('I',10.0,'finalização',2,22);
 
 -- TABELA alevino
-INSERT INTO alevino(id_fabricante,especie,sexo,peso_init,dias_init)
+INSERT INTO alevino(id_fabricante,prod_ale,especie,sexo,peso_init,data_init,dias_init)
 VALUES
-(2,'tambaqui','misto',5,15),
-(2,'tambaqui','macho',3,15),
-(3,'tambaqui','fêmea',7,20);
+(2,'tambaqui','Colossoma macropomum','misto',5,'2022-02-28',15),
+(2,'tambaqui','Colossoma macropomum','macho',3,'2022-02-28',15),
+(3,'tambaqui','Colossoma macropomum','fêmea',7,'2022-02-28',20);
 
 -- TABELA compra
 INSERT INTO compra(quantidade_itens,valor_total,data_compra,id_fabricante,data_chegada,tipo_compra)

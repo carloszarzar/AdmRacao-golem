@@ -37,6 +37,7 @@ CREATE TABLE fabricante(
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL 
 );
+
 -- TABELA distribuidor (vendedor)
 CREATE TABLE distribuidor(
   id_distribuidor SERIAL PRIMARY KEY,
@@ -93,9 +94,11 @@ CREATE TABLE racao(
 CREATE TABLE alevino(
 	id_alevino SERIAL PRIMARY KEY NOT NULL,
 	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante),
-	especie VARCHAR(20) NOT NULL,
+	prod_ale VARCHAR(20) NOT NULL,
+	especie VARCHAR(20) NULL,
 	sexo VARCHAR(10) NULL,
 	peso_init REAL NOT NULL, -- mg
+	data_init TIMESTAMPTZ NOT NULL, -- Data de eclosão
 	dias_init INT NULL, -- dias de vida
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL 

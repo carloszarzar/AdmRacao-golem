@@ -79,7 +79,7 @@ app_server <- function(input, output, session) {
     # Connect to DB
     con <- connect_to_db()
     # Query
-    query <- glue::glue("TABLE alevino;")
+    query <- glue::glue(read_sql_file(path = "SQL/TBalevino.sql"))
     # browser() # Shiny Debugging
     df_postgres <- DBI::dbGetQuery(con, statement = query)
     # Disconnect from the DB
@@ -96,7 +96,7 @@ app_server <- function(input, output, session) {
   ####----- tabRacao ----####
   mod_tabRacao_server("global",df_fab,df_rac)
   ####----- tabAlevino ----####
-  mod_tabAlevino_server("global",df_alevino)
+  mod_tabAlevino_server("global",df_alevino,df_fab)
   ####----- tabFazenda ----####
   mod_tabFazenda_server("global")
 
