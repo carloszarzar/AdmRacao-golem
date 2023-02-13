@@ -30,16 +30,11 @@ A ração é um dos principais custo na produção aquícola. Esse insumo repres
 | Tilápia          | viveiro escavado    | 82,31%             |
   </div>
   <div>
-  ![Ração de peixes](/home/zarzar/Documentos/Golem/AdmRacao/man/figures/racao.jpg "Ração peixe"){width=50%}
+  <img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/racao.jpg" alt="Ração peixe" style="height: 180px; width:180px;"/>
   </div>
 </div>
 
 Considerando o contexto em regiões onde a aquicultura é incipiente e a produção de peixes é característico da agricultura familiar, a compra e administração desse principal insumo é mais desafiador. Portanto, afim de fomentar essas regiões de grande potencial para a aquicultura e baixar o principal custo da produção, a ração, desenvolvemos o software ADMRação, uma aplicação Web que permite administrar estoques de compras coletivas de ração para peixes e camarão, e assim incentivar a produção aquícola de pequenos agricultores familiares na região de Monte Alegre do estado do Pará.
-
-<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
-  <img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
-</a>  
-
 
 ## Instalação
 
@@ -56,13 +51,19 @@ devtools::install_github("carloszarzar/AdmRacao-golem")
 O projeto ainda está em desenvolvimento (qualquer colaborador será muito bem vindo no projeto), porém o propósito do App é ser simples e bastante funcional. Público alvo são grupos pequenos de produtores ou agricultur familiar, associação ou uma cooperativa que tenham interesse em produzir peixes. Abaixo segue alguns __prints__ do aplicativo Web na sua utilização. 
 
 ### Aba Início
-![Ração de peixes](/home/zarzar/Documentos/Golem/AdmRacao/man/figures/app_inicio.png){width=70%}
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
+  <img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
+</a>  
 
 ### Aba Cadastro de Fornecedores
-![Ração de peixes](/home/zarzar/Documentos/Golem/AdmRacao/man/figures/app_fornecedor.png){width=70%}
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
+  <img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
+</a>  
 
 ### Aba Cadastro de Rações
-![Ração de peixes](/home/zarzar/Documentos/Golem/AdmRacao/man/figures/app_racao.png){width=70%}
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
+  <img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
+</a>  
 
 ## Informações técnicas
 

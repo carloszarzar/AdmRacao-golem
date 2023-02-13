@@ -28,11 +28,7 @@ style="-webkit-column-count: 2; -moz-column-count: 2; column-count: 2; -webkit-c
 
 <div>
 
-<figure>
-<img src="/home/zarzar/Documentos/Golem/AdmRacao/man/figures/racao.jpg"
-title="Ração peixe" style="width:50.0%" alt="Ração de peixes" />
-<figcaption aria-hidden="true">Ração de peixes</figcaption>
-</figure>
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/racao.jpg" alt="Ração peixe" style="height: 180px; width:180px;"/>
 
 </div>
 
@@ -47,10 +43,6 @@ ADMRação, uma aplicação Web que permite administrar estoques de compras
 coletivas de ração para peixes e camarão, e assim incentivar a produção
 aquícola de pequenos agricultores familiares na região de Monte Alegre
 do estado do Pará.
-
-<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
-<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
-</a>
 
 ## Instalação
 
@@ -75,30 +67,21 @@ utilização.
 
 ### Aba Início
 
-<figure>
-<img
-src="/home/zarzar/Documentos/Golem/AdmRacao/man/figures/app_inicio.png"
-style="width:70.0%" alt="Ração de peixes" />
-<figcaption aria-hidden="true">Ração de peixes</figcaption>
-</figure>
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
+</a>
 
 ### Aba Cadastro de Fornecedores
 
-<figure>
-<img
-src="/home/zarzar/Documentos/Golem/AdmRacao/man/figures/app_fornecedor.png"
-style="width:70.0%" alt="Ração de peixes" />
-<figcaption aria-hidden="true">Ração de peixes</figcaption>
-</figure>
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
+</a>
 
 ### Aba Cadastro de Rações
 
-<figure>
-<img
-src="/home/zarzar/Documentos/Golem/AdmRacao/man/figures/app_racao.png"
-style="width:70.0%" alt="Ração de peixes" />
-<figcaption aria-hidden="true">Ração de peixes</figcaption>
-</figure>
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
+</a>
 
 ## Informações técnicas
 
