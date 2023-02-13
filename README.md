@@ -48,6 +48,10 @@ coletivas de ração para peixes e camarão, e assim incentivar a produção
 aquícola de pequenos agricultores familiares na região de Monte Alegre
 do estado do Pará.
 
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png">
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.png" width="630" height="252"/>
+</a>
+
 ## Instalação
 
 ADMRação pode ser instalado através do próprio R (RStudio) com auxílio
