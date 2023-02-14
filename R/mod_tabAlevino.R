@@ -30,7 +30,7 @@ mod_tabAlevino_ui <- function(id){
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Informação do Alevino"),
           width = 4, height = 415,
           tabPanel("Informação", htmlOutput(ns("inf_ale"))),
-          tabPanel("Vendedor", tableOutput(ns("ven_ale")))
+          tabPanel("Vendedor", uiOutput(ns("ven_ale")))
         )
       ),
       # Cadastro de Alevino
@@ -362,7 +362,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       }
     })
     ####---- Tabpanel ven_ale ----#####
-    output$ven_ale <- renderTable({
+    output$ven_ale <- renderUI({
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$tb_alevino_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # browser()
@@ -373,6 +373,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
           dplyr::select('nome_distribuidor','celular','whatsapp')
           # dplyr::slice(cond)
         df_ale
+        renderDataTable({df_ale})
       } else { # Linha NÃO selecionada
         h1("Selecione na tabela um Alevino (uma linha)")
       }
