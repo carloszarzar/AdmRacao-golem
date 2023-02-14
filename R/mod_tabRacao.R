@@ -33,7 +33,8 @@ mod_tabRacao_ui <- function(id){
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Ração Alevino"),
           id = "tab_ale",width = 4, height = 415,
           tabPanel("Status", htmlOutput(ns("status_ale"))),
-          tabPanel("Aspectos", htmlOutput(ns("aspecto_ale")))#,
+          tabPanel("Aspectos", htmlOutput(ns("aspecto_ale"))),
+          tabPanel("Vendedor", uiOutput(ns("vendedor_ale")))
           # tabPanel("Editar", uiOutput(ns("edit_ale")))
         ),
         ####---- Status Ração Juvenil I e II ----####
@@ -41,15 +42,17 @@ mod_tabRacao_ui <- function(id){
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Ração Juvenil I e II"),
           id = "tab_juv",width = 4, height = 415,
           tabPanel("Status", htmlOutput(ns("status_juv"))),
-          tabPanel("Aspectos", htmlOutput(ns("aspecto_juv")))#,
+          tabPanel("Aspectos", htmlOutput(ns("aspecto_juv"))),
+          tabPanel("Vendedor", uiOutput(ns("vendedor_juv")))
           # tabPanel("Editar", uiOutput(ns("edit_ale")))
         ),
         ####---- Status Ração Engorda e Finalização ----####
         shinydashboard::tabBox(
-          title = tagList(shiny::icon("gear",verify_fa = FALSE), "Ração Engorda e Finalização"),
+          title = tagList(shiny::icon("gear",verify_fa = FALSE), "Ração Engorda e Final"),
           id = "tab_eng",width = 4, height = 415,
           tabPanel("Status", htmlOutput(ns("status_eng"))),
-          tabPanel("Aspectos", htmlOutput(ns("aspecto_eng")))#,
+          tabPanel("Aspectos", htmlOutput(ns("aspecto_eng"))),
+          tabPanel("Vendedor", uiOutput(ns("vendedor_eng")))
           # tabPanel("Editar", uiOutput(ns("edit_ale")))
         )
       ),
@@ -154,19 +157,20 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         prot <- h4(paste("Proteína: ",df_ale$Proteína, " %"))
         fase <- h4(paste("Fase de cultivo: ",df_ale$Fase))
         fab <- h4(paste("Fabricante: ",df_ale$Fabricante))
-        dis <- h4(paste("Distribuidor: ",df_ale$Distribuidor))
-        tel <- h4(paste("Telefone: ",df_ale$Celular))
-        if(df_ale$Whatsapp){
-          what <- h4(paste("Whatsapp: Sim"))
-        } else {
-          what <- h4(paste("Whatsapp: Não"))
-        }
+        # dis <- h4(paste("Distribuidor: ",df_ale$Distribuidor))
+        # tel <- h4(paste("Telefone: ",df_ale$Celular))
+        # if(df_ale$Whatsapp){
+        #   what <- h4(paste("Whatsapp: Sim"))
+        # } else {
+        #   what <- h4(paste("Whatsapp: Não"))
+        # }
         ## Renderizar o Status da ração e os botões de apagar e editar
         div(
           h3(paste("Ração selecionada: ",df_ale$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           HTML(paste(# headT,
             tam,prot,fase,
-                     fab,dis,tel,what)),
+            fab #,dis,tel,what
+            )),
           actionButton(inputId = ns("apagar_rac_ale"),label = "Apagar",
                        style = "vertical-align: middle; height: 50px; width: 100%; font-size: 22px;"),
           actionButton(inputId = ns("edit_rac_ale"),label = "Editar",
@@ -436,6 +440,28 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       }
 
     })
+    ####---- Tab = vendedor_ale ----####
+    output$vendedor_ale <- renderUI({
+      # Conferindo se a linha da tabela foi selecionado
+      cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      if(!is.null(cond)){
+        # browser()
+        ## Obtendo o ID dos dados selecionados
+        id_select <- df_rac() |>
+          subset(Fase == "alevino") |>
+          dplyr::slice(cond) |>
+          dplyr::select('id_racao')
+        ## Obtendo os dados do vendedor para a ração selecionada
+        df_ale <- df_rac() |>
+          # subset(Fase == "alevino") |>
+          dplyr::filter(id_racao == as.numeric(id_select)) |>
+          dplyr::select('Distribuidor','Celular','Whatsapp')
+        # Renderizando a tabela do vendedor da Ração Alevino
+        renderDataTable({df_ale})
+      } else {
+        h1("Selecione na tabela uma Ração (uma linha)")
+      }
+    })
     #====================================================
     ####---- Renderizando a tabela Ração Juvenil I e II ----####
     # Renderização da tabela Ração Juvenil I e II
@@ -476,19 +502,20 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         prot <- h4(paste("Proteína: ",df_juv$Proteína, " %"))
         fase <- h4(paste("Fase de cultivo: ",df_juv$Fase))
         fab <- h4(paste("Fabricante: ",df_juv$Fabricante))
-        dis <- h4(paste("Distribuidor: ",df_juv$Distribuidor))
-        tel <- h4(paste("Telefone: ",df_juv$Celular))
-        if(df_juv$Whatsapp){
-          what <- h4(paste("Whatsapp: Sim"))
-        } else {
-          what <- h4(paste("Whatsapp: Não"))
-        }
+        # dis <- h4(paste("Distribuidor: ",df_juv$Distribuidor))
+        # tel <- h4(paste("Telefone: ",df_juv$Celular))
+        # if(df_juv$Whatsapp){
+        #   what <- h4(paste("Whatsapp: Sim"))
+        # } else {
+        #   what <- h4(paste("Whatsapp: Não"))
+        # }
         ## Renderizar o Status da ração e os botões de apagar e editar
         div(
           h3(paste("Ração selecionada: ",df_juv$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           HTML(paste(# headT,
             tam,prot,fase,
-            fab,dis,tel,what)),
+            fab #,dis,tel,what
+            )),
           actionButton(inputId = ns("apagar_rac_juv"),label = "Apagar",
                        style = "vertical-align: middle; height: 50px; width: 100%; font-size: 22px;"),
           actionButton(inputId = ns("edit_rac_juv"),label = "Editar",
@@ -753,6 +780,28 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       }
 
     })
+    ####---- Tab = vendedor_juv ----####
+    output$vendedor_juv <- renderUI({
+      # Conferindo se a linha da tabela foi selecionado
+      cond <- input$TBracao_juv_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      if(!is.null(cond)){
+        # browser()
+        ## Obtendo o ID dos dados selecionados
+        id_select <- df_rac() |>
+          subset(Fase == "juvenil 1" | Fase == "juvenil 2") |>
+          dplyr::slice(cond) |>
+          dplyr::select('id_racao')
+        ## Obtendo os dados do vendedor para a ração selecionada
+        df_juv <- df_rac() |>
+          # subset(Fase == "alevino") |>
+          dplyr::filter(id_racao == as.numeric(id_select)) |>
+          dplyr::select('Distribuidor','Celular','Whatsapp')
+        # Renderizando a tabela do vendedor da Ração Alevino
+        renderDataTable({df_juv})
+      } else {
+        h1("Selecione na tabela uma Ração (uma linha)")
+      }
+    })
     #====================================================
     ####---- Renderizando a tabela Ração Engorda & Finalização ----####
     # Renderização da tabela Ração Engorda & Finalização
@@ -793,19 +842,20 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         prot <- h4(paste("Proteína: ",df_eng$Proteína, " %"))
         fase <- h4(paste("Fase de cultivo: ",df_eng$Fase))
         fab <- h4(paste("Fabricante: ",df_eng$Fabricante))
-        dis <- h4(paste("Distribuidor: ",df_eng$Distribuidor))
-        tel <- h4(paste("Telefone: ",df_eng$Celular))
-        if(df_eng$Whatsapp){
-          what <- h4(paste("Whatsapp: Sim"))
-        } else {
-          what <- h4(paste("Whatsapp: Não"))
-        }
+        # dis <- h4(paste("Distribuidor: ",df_eng$Distribuidor))
+        # tel <- h4(paste("Telefone: ",df_eng$Celular))
+        # if(df_eng$Whatsapp){
+        #   what <- h4(paste("Whatsapp: Sim"))
+        # } else {
+        #   what <- h4(paste("Whatsapp: Não"))
+        # }
         ## Renderizar o Status da ração e os botões de apagar e editar
         div(
           h3(paste("Ração selecionada: ",df_eng$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           HTML(paste(# headT,
             tam,prot,fase,
-            fab,dis,tel,what)),
+            fab #,dis,tel,what
+            )),
           actionButton(inputId = ns("apagar_rac_eng"),label = "Apagar",
                        style = "vertical-align: middle; height: 50px; width: 100%; font-size: 22px;"),
           actionButton(inputId = ns("edit_rac_eng"),label = "Editar",
@@ -1069,6 +1119,28 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         h1("Selecione na tabela uma Ração (uma linha)")
       }
 
+    })
+    ####---- Tab = vendedor_eng ----####
+    output$vendedor_eng <- renderUI({
+      # Conferindo se a linha da tabela foi selecionado
+      cond <- input$TBracao_eng_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      if(!is.null(cond)){
+        # browser()
+        ## Obtendo o ID dos dados selecionados
+        id_select <- df_rac() |>
+          subset(Fase == "engorda" | Fase == "finalização") |>
+          dplyr::slice(cond) |>
+          dplyr::select('id_racao')
+        ## Obtendo os dados do vendedor para a ração selecionada
+        df_eng <- df_rac() |>
+          # subset(Fase == "alevino") |>
+          dplyr::filter(id_racao == as.numeric(id_select)) |>
+          dplyr::select('Distribuidor','Celular','Whatsapp')
+        # Renderizando a tabela do vendedor da Ração Alevino
+        renderDataTable({df_eng})
+      } else {
+        h1("Selecione na tabela uma Ração (uma linha)")
+      }
     })
     #====================================================
     ####---- Cadastrar da Ração Todas ----####

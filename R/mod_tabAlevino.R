@@ -382,6 +382,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
           dplyr::select('nome_distribuidor','celular','whatsapp')
           # dplyr::slice(cond)
         df_ale
+        # Renderizando a tabela do vendedor do alevino
         renderDataTable({df_ale})
       } else { # Linha NÃO selecionada
         h1("Selecione na tabela um Alevino (uma linha)")
