@@ -30,7 +30,7 @@ mod_tabAlevino_ui <- function(id){
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Informação do Alevino"),
           width = 4, height = 415,
           tabPanel("Informação", htmlOutput(ns("inf_ale"))),
-          tabPanel("Vendedor", htmlOutput(ns("ven_ale")))
+          tabPanel("Vendedor", tableOutput(ns("ven_ale")))
         )
       ),
       # Cadastro de Alevino
@@ -362,32 +362,17 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       }
     })
     ####---- Tabpanel ven_ale ----#####
-    output$ven_ale <- renderUI({
+    output$ven_ale <- renderTable({
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$tb_alevino_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # browser()
       if(!is.null(cond)){ # Linha selecionada:
         # Obtendo os dados slecionado correspondente a linha
         df_ale <- df_alevino() |>
-          # dplyr::filter(id_alevino == df_alevino()[cond,'id_alevino'] )
-          dplyr::slice(cond)
+          dplyr::filter(id_alevino == df_alevino()[cond,'id_alevino'] ) |>
+          dplyr::select('nome_distribuidor','celular','whatsapp')
+          # dplyr::slice(cond)
         df_ale
-        ifelse(df_ale$whatsapp,h4(paste("Whatsapp: Sim")),h4(paste("Whatsapp: Não")))
-        ## Corpo da informação
-        if(df_ale$whatsapp){
-          what <- h4(paste("Whatsapp: Sim"))
-        } else {
-          what <- h4(paste("Whatsapp: Não"))
-        }
-        ## Renderizar informação do Alevino e os botões de apagar e editar
-        div(
-          h3(paste("Vendedores do Fabricante: ",df_ale$nome_fabricante), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
-          tags$ul(
-            tags$li(h4(paste("Nome do Distribuidor: ", df_ale$nome_distribuidor))),
-            tags$li(h4(paste("Telefone contato: ",df_ale$celular))),
-            tags$li(what)
-          )
-        )
       } else { # Linha NÃO selecionada
         h1("Selecione na tabela um Alevino (uma linha)")
       }
