@@ -97,6 +97,9 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       # Renderizando a tabela
       DT::datatable(
         df_ale, # df_alevino(),
+        colnames=c("Nome do Fabricante", "Tipo do Produto","Sexo",
+                   "Espécie","Peso inicial","Data nasc.","Dias vida",
+                   "Criado em:"),
         rownames = FALSE,
         selection = "single",
         class = 'compact row-border',
@@ -217,6 +220,9 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         # Renderizando a tabela
         DT::datatable(
           df_ale, # df_alevino(),
+          colnames=c("Nome do Fabricante", "Tipo do Produto","Sexo",
+                     "Espécie","Peso inicial","Data nasc.","Dias vida",
+                     "Criado em:"),
           rownames = FALSE,
           selection = "single",
           class = 'compact row-border',
@@ -349,6 +355,9 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
           # Renderizando a tabela
           DT::datatable(
             df_ale, # df_alevino(),
+            colnames=c("Nome do Fabricante", "Tipo do Produto","Sexo",
+                       "Espécie","Peso inicial","Data nasc.","Dias vida",
+                       "Criado em:"),
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
@@ -472,6 +481,9 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
           # Renderizando a tabela
           DT::datatable(
             df_ale, # df_alevino(),
+            colnames=c("Nome do Fabricante", "Tipo do Produto","Sexo",
+                       "Espécie","Peso inicial","Data nasc.","Dias vida",
+                       "Criado em:"),
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
