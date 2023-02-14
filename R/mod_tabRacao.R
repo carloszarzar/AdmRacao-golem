@@ -225,7 +225,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       ## Mecanismo proibir deletar ração cadastrada em compra no banco de dados
       shinyWidgets::execute_safely(expr =  DBI::dbExecute(conn = con, statement = query),
                                    title = "Erro !!!",
-                                   message = "Atenção: Ração já cadastrada na tabela de compra de Ração.",
+                                   message = "Atenção: Ocorreu algum problema.",
                                    include_error = FALSE)
       # Disconnect from the DB
       DBI::dbDisconnect(con)
@@ -277,7 +277,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       # Mostrando o Modal para Edição dos dados
       showModal(
         modalDialog(
-          title = paste("Edição do Ração: ",df_ale$`Nome da ração`,"!"),
+          title = paste("Edição da Ração: ",df_ale$`Nome da ração`,"!"),
           size = "l",
           style = "width: fit-content !important;",
           footer = tagList(

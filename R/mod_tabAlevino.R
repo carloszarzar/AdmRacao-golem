@@ -29,12 +29,9 @@ mod_tabAlevino_ui <- function(id){
           id = ns("tab_inf_ale"),
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Informação do Alevino"),
           width = 4, height = 415,
-          tabPanel("Status", htmlOutput(ns("inf_ale"))),
+          tabPanel("Informação", htmlOutput(ns("inf_ale"))),
           tabPanel("Vendedor", htmlOutput(ns("ven_ale")))
         )
-
-
-
       ),
       # Cadastro de Alevino
       fluidRow(
@@ -72,7 +69,7 @@ mod_tabAlevino_ui <- function(id){
                        # ),
                        radioButtons(ns("prod_ale"), label = labelMandatory("Tipo de produto Alevino"),
                                     choices = list("Tambaqui" = "Tambaqui", "Tilápia" = "Tilápia", "Camarão" = "Camarão", "Outros" = "Outros"),
-                                    selected = 1),
+                                    selected = "Tambaqui"),
                        uiOutput(outputId = ns("ale_fabe_render")),
                        dateInput(ns("data_init"), label = labelMandatory("Data de nascimento (eclosão)"), value = Sys.Date()),
                        actionButton(ns("submit_ale"), "Cadastrar", icon("paper-plane"), class = "btn-primary")
@@ -107,39 +104,10 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
         )
-      ) %>% DT::formatDate(c('created_at','data_init'), method = 'toLocaleString') # Consertando timestap para formato desejado
+      ) %>% DT::formatDate('created_at', method = 'toLocaleString') # Consertando timestap para formato desejado
     })
     ####---- BOX informação Alevino ----####
-    # Tabpanel ven_ale
-    output$ven_ale <- renderUI({
-      # Conferindo se a linha da tabela foi selecionado
-      cond <- input$tb_alevino_rows_selected # condição condiction selecionado (NULL ou n_linha)
-      # browser()
-      if(!is.null(cond)){ # Linha selecionada:
-        # Obtendo os dados slecionado correspondente a linha
-        df_ale <- df_alevino() |>
-          dplyr::slice(cond)
-        df_ale
-        ## Corpo da informação
-        if(df_ale$whatsapp){
-          what <- h4(paste("Whatsapp: Sim"))
-        } else {
-          what <- h4(paste("Whatsapp: Não"))
-        }
-        ## Renderizar informação do Alevino e os botões de apagar e editar
-        div(
-          h3(paste("Dados do vendedor: ",df_ale$nome_fabricante), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
-          tags$ul(
-            tags$li(paste("Nome do Distribuidor: ", df_ale$nome_distribuidor)),
-            tags$li(paste("Telefone contato: ",df_ale$celular)),
-            tags$li(paste("Whatsapp: ", what))
-          )
-        )
-      } else { # Linha NÃO selecionada
-        h1("Selecione na tabela um Alevino (uma linha)")
-      }
-    })
-    # Tabpanel inf_ale
+    ####---- Tabpanel inf_ale ----####
     output$inf_ale <- renderUI({
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$tb_alevino_rows_selected # condição condiction selecionado (NULL ou n_linha)
@@ -148,7 +116,6 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         # Obtendo os dados slecionado correspondente a linha
         df_ale <- df_alevino() |>
           dplyr::slice(cond)
-        df_ale
         ## Corpo da informação
         prod <- h4(paste("Produto: ",df_ale$prod_ale))
         sexo <- h4(paste("Sexo: ",df_ale$sexo))
@@ -167,23 +134,269 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
           HTML(paste(
             prod,sexo,especie,peso,dias,data
           )),
-          actionButton(inputId = ns("apagar_rac_ale"),label = "Apagar",
+          actionButton(inputId = ns("apagar_ale"),label = "Apagar",
                        style = "vertical-align: middle; height: 50px; width: 100%; font-size: 22px;"),
-          actionButton(inputId = ns("edit_rac_ale"),label = "Editar",
+          actionButton(inputId = ns("edit_ale"),label = "Editar",
                        style = "vertical-align: middle; height: 50px; width: 100%; font-size: 22px; margin-top: 5px;")
         )
       } else { # Linha NÃO selecionada
         h1("Selecione na tabela um Alevino (uma linha)")
       }
     })
-
-
-
+    # Botão Apagar apertado - apagar_ale
+    observeEvent(input$apagar_ale, {
+      # Conferindo se a linha da tabela foi selecionado
+      cond <- input$tb_alevino_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      # browser()
+      # Obtendo os dados slecionado correspondente a linha
+      df_ale <- df_alevino() |>
+        dplyr::slice(cond)
+      # Confirmacao: Perguntando ao usuario se realmente quer apagar
+      showModal(
+        modalDialog(title = paste("Alevino selecionada: ",df_ale$nome_fabricante," vai ser excluída!"),
+                    div(
+                      tags$ul(
+                        tags$li(paste("Nome do Fabricante: ",df_ale$nome_fabricante)),
+                        tags$li(paste("Tipo de Alevino: ",df_ale$prod_ale)),
+                        tags$li(paste("Sexo: ",df_ale$sexo)),
+                        tags$li(paste("Espécie: ",df_ale$especie)),
+                        tags$li(paste("Péso médio inicial: ",df_ale$peso_init)),
+                        tags$li(paste("Data nascimento: ",df_ale$data_init)),
+                        tags$li(paste("Dias (idade): ",df_ale$dias_init)),
+                      )
+                    ),
+                    div(tags$b("Você está seguro que deseja apagar o Alevino no banco de dados?", style = "color: red;")),
+                    footer = tagList(
+                      modalButton("Cancelar"),
+                      actionButton(ns("ok_apagar_ale"), "OK")
+                    )
+        )
+      )
+    })
+    ## Botão clicado de Confirmação para apagar Ração Alevino do Banco de dados
+    observeEvent(input$ok_apagar_ale, {
+      # browser()
+      # Conferindo se a linha da tabela foi selecionado
+      cond <- input$tb_alevino_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      # Obtendo os dados slecionado correspondente a linha
+      df_ale <- df_alevino() |>
+        dplyr::slice(cond)
+      ## Apagando dados Alevino
+      # Connect to DB
+      con <- connect_to_db()
+      # Query Statement
+      query <- glue::glue("DELETE FROM alevino WHERE id_alevino = {df_ale$id_alevino};")
+      # Apagando no Banco de Dados
+      ## Mecanismo proibir deletar ração cadastrada em compra no banco de dados
+      shinyWidgets::execute_safely(expr =  DBI::dbExecute(conn = con, statement = query),
+                                   title = "Erro !!!",
+                                   message = "Atenção: Ocorreu algum problema com a operação.",
+                                   include_error = FALSE)
+      # Disconnect from the DB
+      DBI::dbDisconnect(con)
+      golem::cat_dev("Desconectou com DB \n")
+      # Atualizando os dados Alevino
+      df_alevino({
+        # Connect to DB
+        con <- connect_to_db()
+        # Query
+        query <- glue::glue(read_sql_file(path = "SQL/TBalevino.sql"))
+        # browser() # Shiny Debugging
+        df_postgres <- DBI::dbGetQuery(con, statement = query)
+        # Disconnect from the DB
+        DBI::dbDisconnect(con)
+        # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+        # Convert to data.frame
+        data.frame(df_postgres,check.names = FALSE)
+      })
+      # Renderização da tabela Ração Alevino
+      output$tb_alevino <- DT::renderDataTable({
+        # browser()
+        golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
+        df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
+        # Renderizando a tabela
+        DT::datatable(
+          df_ale, # df_alevino(),
+          rownames = FALSE,
+          selection = "single",
+          class = 'compact row-border',
+          # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE # mantem a tabela dentro do conteiner
+          )
+        ) %>% DT::formatDate('created_at', method = 'toLocaleString') # Consertando timestap para formato desejado
+      })
+      removeModal()
+    })
+    # Botão Editar apertado - edit_ale
+    observeEvent(input$edit_ale, {
+      # Conferindo se a linha da tabela foi selecionado
+      cond <- input$tb_alevino_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      # browser()
+      # Obtendo os dados slecionado correspondente a linha
+      df_ale <- df_alevino() |>
+        dplyr::slice(cond)
+      # Mostrando o Modal para Edição dos dados
+      showModal(
+        modalDialog(
+          title = paste("Edição do Alevino: ",df_ale$nome_fabricante,"!"),
+          size = "l",
+          style = "width: fit-content !important;",
+          footer = tagList(
+            modalButton("Cancelar"),
+            actionButton(ns("ok_edit_ale"), "OK")
+          ),
+          # Formulário de Edição
+          fluidRow(
+            column(8,
+                   textInput(ns("especie_edit"), labelMandatory("Nome da Espécie do Alevino"), value = df_ale$especie),
+                   shinyWidgets::radioGroupButtons(
+                     inputId = ns("sexo_edit"),
+                     label = labelMandatory("Sexo do alevino:"),
+                     choices = c("misto","fêmea", "macho"),
+                     individual = TRUE,
+                     justified = TRUE,
+                     selected = df_ale$sexo,
+                     checkIcon = list(
+                       yes = tags$i(class = "fa fa-check-square",
+                                    style = "color: steelblue"),
+                       no = tags$i(class = "fa fa-square-o",
+                                   style = "color: steelblue"))
+                   ),
+                   numericInput(ns("peso_init_edit"),labelMandatory("Média do Peso inicial do alevino (mg):"), value = df_ale$peso_init, min = 0),
+                   numericInput(ns("dias_init_edit"),labelMandatory("Dias de vida do alevino (dias):"), value = df_ale$dias_init, min = 0)
+            ),
+            column(4,
+                   radioButtons(ns("prod_ale_edit"), label = labelMandatory("Tipo de produto Alevino"),
+                                choices = list("Tambaqui" = "Tambaqui", "Tilápia" = "Tilápia", "Camarão" = "Camarão", "Outros" = "Outros"),
+                                selected = df_ale$prod_ale),
+                   selectInput(inputId = ns("ale_fab_edit"),
+                               label = labelMandatory("Fabricante do Alevino"),
+                               choices = df_fab()[which(df_fab()$tipo_produto_fab == "Alevino"),"nome_fabricante"]),
+                   dateInput(ns("data_init_edit"), label = labelMandatory("Data de nascimento (eclosão)"), value = df_ale$data_init)
+            )
+          )
+        )
+      )
+    })
+    ## Botão Editar Confirmação Clicado - Ração Alevino (ok_edit_ale)
+    observeEvent(input$ok_edit_ale, {
+      # Segurança: Coferindo se todos os campos estão preenchidos corretamente
+      ## Listando os campos condicionados
+      li <- c(
+        stringi::stri_stats_latex(input$especie_edit)[1],input$peso_init_edit,input$dias_init_edit
+      )
+      ## Lista de mensagens imprimidas no app
+      li_msg <- list(
+        especie = "Nome da Espécie deve ter no máximo 20 letras",
+        peso_init = "Número máximo aceitável do peso (mg) é 2.000.000.000",
+        dias_init = "Número máximo aceitável em dias é 2.000.000.000"
+      )
+      # browser()
+      ## Vetor booleano dos campos que fracassaram
+      faile_cond_campos <- li > c(20,2000000000,2000000000) # Campos condicionais falhados
+      ## Algum fracassou
+      (failed <- any(faile_cond_campos))
+      # Testando a condição de segurança
+      if(failed){ # Condição Não satisfeita
+        # Fechando o modal
+        removeModal()
+        # Abrindo o modal de erro
+        showModal(
+          modalDialog(
+            title = "Erro no cadastro do Alevino !!!",
+            div(tags$b(HTML(paste(li_msg[faile_cond_campos], collapse = "<br/>")), style = "color: red;")),
+            footer = modalButton("Fechar"),
+            easyClose = TRUE,
+            fade = TRUE
+          )
+        )
+      } else { # Condição satisfeita
+        # Conferindo se a linha da tabela foi selecionado
+        cond <- input$tb_alevino_rows_selected # condição condiction selecionado (NULL ou n_linha)
+        # browser()
+        # Obtendo os dados slecionado correspondente a linha
+        df_ale <- df_alevino() |>
+          dplyr::slice(cond)
+        # Connect to DB
+        con <- connect_to_db()
+        ## Inserindo dados fornecedor
+        query <- glue::glue(read_sql_file(path = "SQL/edit_ale.sql"))
+        ### Query to send to database
+        edit_rac <- DBI::dbSendQuery(conn = con, statement = query)
+        DBI::dbClearResult(edit_rac) # limpando resultados
+        # Disconnect from the DB
+        DBI::dbDisconnect(con)
+        # Atualizando os dados Alevino
+        df_alevino({
+          # Connect to DB
+          con <- connect_to_db()
+          # Query
+          query <- glue::glue(read_sql_file(path = "SQL/TBalevino.sql"))
+          # browser() # Shiny Debugging
+          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+          # Convert to data.frame
+          data.frame(df_postgres,check.names = FALSE)
+        })
+        # Renderização da tabela Ração Alevino
+        output$tb_alevino <- DT::renderDataTable({
+          # browser()
+          golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
+          df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
+          # Renderizando a tabela
+          DT::datatable(
+            df_ale, # df_alevino(),
+            rownames = FALSE,
+            selection = "single",
+            class = 'compact row-border',
+            # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+            options = list(searching = FALSE, lengthChange = FALSE,
+                           scrollX = TRUE # mantem a tabela dentro do conteiner
+            )
+          ) %>% DT::formatDate('created_at', method = 'toLocaleString') # Consertando timestap para formato desejado
+        })
+        removeModal()
+      }
+    })
+    ####---- Tabpanel ven_ale ----#####
+    output$ven_ale <- renderUI({
+      # Conferindo se a linha da tabela foi selecionado
+      cond <- input$tb_alevino_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      # browser()
+      if(!is.null(cond)){ # Linha selecionada:
+        # Obtendo os dados slecionado correspondente a linha
+        df_ale <- df_alevino() |>
+          # dplyr::filter(id_alevino == df_alevino()[cond,'id_alevino'] )
+          dplyr::slice(cond)
+        df_ale
+        ifelse(df_ale$whatsapp,h4(paste("Whatsapp: Sim")),h4(paste("Whatsapp: Não")))
+        ## Corpo da informação
+        if(df_ale$whatsapp){
+          what <- h4(paste("Whatsapp: Sim"))
+        } else {
+          what <- h4(paste("Whatsapp: Não"))
+        }
+        ## Renderizar informação do Alevino e os botões de apagar e editar
+        div(
+          h3(paste("Vendedores do Fabricante: ",df_ale$nome_fabricante), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
+          tags$ul(
+            tags$li(h4(paste("Nome do Distribuidor: ", df_ale$nome_distribuidor))),
+            tags$li(h4(paste("Telefone contato: ",df_ale$celular))),
+            tags$li(what)
+          )
+        )
+      } else { # Linha NÃO selecionada
+        h1("Selecione na tabela um Alevino (uma linha)")
+      }
+    })
     ####---- Cadastro Alevino ----####
     # Campos obrigatórios
     # Observe se todos os campos estão preenchidos para liberar o botão submeter (submit_ale)
     observe({
-      mandatoryFilled_fab <- vapply(c("especie","sexo","peso_init","dias_init","ale_fab"),
+      mandatoryFilled_fab <- vapply(c("especie","sexo","peso_init","dias_init","ale_fab","prod_ale"),
                                     function(x) {
                                       !is.null(input[[x]]) && input[[x]] != "" && !is.na(input[[x]])
                                     },
@@ -202,15 +415,27 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
     ##### Botão submeter alevino clicado (submit_ale)
     observeEvent(input$submit_ale, {
       # Segurança: Coferindo se todos os campos estão preenchidos corretamente
-      li_msg <- c("Nome da Espécie deve ter no máximo 20 letras")
-      failed <- stringi::stri_stats_latex(input$especie)[1] > 20
+      ## Listando os campos condicionados
+      li <- c(
+        stringi::stri_stats_latex(input$especie)[1],input$peso_init,input$dias_init
+      )
+      ## Lista de mensagens imprimidas no app
+      li_msg <- list(
+        especie = "Nome da Espécie deve ter no máximo 20 letras",
+        peso_init = "Número máximo aceitável do peso (mg) é 2.000.000.000",
+        dias_init = "Número máximo aceitável em dias é 2.000.000.000"
+      )
+      ## Vetor booleano dos campos que fracassaram
+      faile_cond_campos <- li > c(20,2000000000,2000000000) # Campos condicionais falhados
+      ## Algum fracassou
+      (failed <- any(faile_cond_campos))
       # browser()
       if(failed){ # Condição NÃO satisfeita
         # Mostrar msg de erro se o nome da espécie do Alevino for muito grande > 20
         showModal(
           modalDialog(
             title = "Erro no cadastro do Alevino !!!",
-            div(tags$b(HTML(paste(li_msg, collapse = "<br/>")), style = "color: red;")),
+            div(tags$b(HTML(paste(li_msg[faile_cond_campos], collapse = "<br/>")), style = "color: red;")),
             footer = modalButton("Fechar"),
             easyClose = TRUE,
             fade = TRUE
@@ -241,12 +466,10 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         shinyjs::reset("form_ale")
         # Atualizando os dados Alevino
         df_alevino({
-          golem::cat_dev("Importou os dados da Ração \n")
-          ## conectando com o DB PostgreSQL
           # Connect to DB
           con <- connect_to_db()
           # Query
-          query <- glue::glue("TABLE alevino;")
+          query <- glue::glue(read_sql_file(path = "SQL/TBalevino.sql"))
           # browser() # Shiny Debugging
           df_postgres <- DBI::dbGetQuery(con, statement = query)
           # Disconnect from the DB
@@ -259,10 +482,10 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         output$tb_alevino <- DT::renderDataTable({
           # browser()
           golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
-          # ale_tb <- subset(df_alevino(), Fase == "alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+          df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
           # Renderizando a tabela
           DT::datatable(
-            df_alevino(),
+            df_ale, # df_alevino(),
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
@@ -270,19 +493,11 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
             )
-          ) %>% DT::formatDate(c('created_at','data_init'), method = 'toLocaleString') # Consertando timestap para formato desejado
+          ) %>% DT::formatDate('created_at', method = 'toLocaleString') # Consertando timestap para formato desejado
         })
       }
       #---------------------------------------------------
     })
-
-
-
-
-
-
-
-
   })
 }
 
