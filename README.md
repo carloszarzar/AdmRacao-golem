@@ -32,7 +32,7 @@ Brasil, ano 3 - Edição 13 Junho de 2017).
 
 Considerando o contexto em regiões onde a aquicultura é incipiente e a
 produção de peixes é característico da agricultura familiar, a compra e
-administração desse principal insumo é mais desafiador. Portanto, afim
+administração desse principal insumo é mais desafiador. Portanto, a fim
 de fomentar essas regiões de grande potencial para a aquicultura e
 baixar o principal custo da produção, a ração, desenvolvemos o software
 ADMRação, uma aplicação Web que permite administrar estoques de compras

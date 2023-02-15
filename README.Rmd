@@ -34,7 +34,7 @@ A ração é um dos principais custo na produção aquícola. Esse insumo repres
  </tr>
 </table>
 
-Considerando o contexto em regiões onde a aquicultura é incipiente e a produção de peixes é característico da agricultura familiar, a compra e administração desse principal insumo é mais desafiador. Portanto, afim de fomentar essas regiões de grande potencial para a aquicultura e baixar o principal custo da produção, a ração, desenvolvemos o software ADMRação, uma aplicação Web que permite administrar estoques de compras coletivas de ração para peixes e camarão, e assim incentivar a produção aquícola de pequenos agricultores familiares na região de Monte Alegre do estado do Pará.
+Considerando o contexto em regiões onde a aquicultura é incipiente e a produção de peixes é característico da agricultura familiar, a compra e administração desse principal insumo é mais desafiador. Portanto, a fim de fomentar essas regiões de grande potencial para a aquicultura e baixar o principal custo da produção, a ração, desenvolvemos o software ADMRação, uma aplicação Web que permite administrar estoques de compras coletivas de ração para peixes e camarão, e assim incentivar a produção aquícola de pequenos agricultores familiares na região de Monte Alegre do estado do Pará.
 
 
 ## Instalação
