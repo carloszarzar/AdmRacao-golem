@@ -11,5 +11,6 @@ UPDATE alevino
       sexo = '{input$sexo_edit}',
       peso_init = {input$peso_init_edit},
       data_init = '{input$data_init_edit}',
-      dias_init = {input$dias_init_edit}
+      dias_init = {input$dias_init_edit},
+      modified_at = Now()
   WHERE id_alevino = {df_ale$id_alevino};

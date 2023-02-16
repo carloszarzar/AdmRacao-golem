@@ -54,20 +54,23 @@ CREATE TABLE proprietario(
 	id_proprietario SERIAL PRIMARY KEY NOT NULL,
 	nome VARCHAR(40) NOT NULL,
 	id_telefone INT NOT NULL REFERENCES telefone(id_telefone),
-	cpf INT NOT NULL
+	cpf VARCHAR(11) NOT NULL,
+	created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL
 );
 -- TABELA fazenda
 CREATE TABLE fazenda(
 	id_fazenda SERIAL PRIMARY KEY NOT NULL,
 	nome VARCHAR(40) NOT NULL,
 	id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco),
-	cnpj INT NULL,
+	cnpj VARCHAR(14) NULL,
 	id_telefone INT NOT NULL REFERENCES telefone(id_telefone),
 	num_tanque INT NOT NULL,
 	especie VARCHAR(20) NOT NULL,
-	id_proprietario SERIAL NOT NULL REFERENCES proprietario(id_proprietario),
+	id_proprietario SERIAL NOT NULL REFERENCES proprietario(id_proprietario) ON DELETE CASCADE,
 	sist_cultivo VARCHAR(20) NOT NULL,
-	created_at TIMESTAMPTZ DEFAULT Now() 
+	created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL
 );
 
 -- TABELA racao
@@ -93,7 +96,7 @@ CREATE TABLE racao(
 -- TABELA alevino
 CREATE TABLE alevino(
 	id_alevino SERIAL PRIMARY KEY NOT NULL,
-	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante),
+	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante) ON DELETE CASCADE,
 	prod_ale VARCHAR(20) NOT NULL,
 	especie VARCHAR(20) NULL,
 	sexo VARCHAR(10) NULL,

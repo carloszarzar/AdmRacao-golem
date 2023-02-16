@@ -21,7 +21,7 @@ SELECT DISTINCT id_racao,
             r.fosforo_min,
             r.vitamina_c_min
 FROM racao AS r
-INNER JOIN fabricante AS f USING(id_fabricante)
-INNER JOIN distribuidor AS d USING(id_fabricante)
-INNER JOIN telefone AS t ON t.id_telefone = d.id_telefone
+LEFT JOIN fabricante AS f USING(id_fabricante)
+LEFT JOIN distribuidor AS d USING(id_fabricante)
+LEFT JOIN telefone AS t ON t.id_telefone = d.id_telefone
 ORDER BY r.created_at DESC;

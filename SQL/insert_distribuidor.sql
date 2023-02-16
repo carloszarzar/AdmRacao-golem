@@ -18,5 +18,5 @@ WITH ins1 AS (
   FROM fabricante AS f
     WHERE f.nome_fabricante = '{input$fab_distribuidor}'
 )
-INSERT INTO distribuidor(nome_distribuidor,tipo_produto_dis, id_telefone, id_endereco,id_fabricante)
-SELECT '{input$nome_dis}','{input$tipo_produto_dis}',id_telefone,id_endereco,id_fabricante FROM ins2, ins1, ins3;
+INSERT INTO distribuidor(nome_distribuidor,tipo_produto_dis,created_at, id_telefone, id_endereco,id_fabricante)
+SELECT '{input$nome_dis}','{input$tipo_produto_dis}',Now(),id_telefone,id_endereco,id_fabricante FROM ins2, ins1, ins3;

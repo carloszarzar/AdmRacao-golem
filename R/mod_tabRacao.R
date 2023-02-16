@@ -65,7 +65,7 @@ mod_tabRacao_ui <- function(id){
                   shinyWidgets::radioGroupButtons(
                     inputId = ns("tipo_rac"),
                     label = labelMandatory("Fase de produção do tipo da Ração:"),
-                    choices = c("alevino","juvenil 1", "juvenil 2","engorda","finalização"),
+                    choices = c("Alevino","Juvenil 1", "Juvenil 2","Engorda","Finalização"),
                     individual = TRUE,
                     justified = TRUE,
                     checkIcon = list(
@@ -121,7 +121,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     output$TBracao_ale <- DT::renderDataTable({
       # browser()
       golem::cat_dev("Renderização da tabela Ração Alevino (I) \n")
-      df_ale <- subset(df_rac(), Fase == "alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+      df_ale <- subset(df_rac(), Fase == "Alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
       # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
       # Renderizando a tabela
       DT::datatable(
@@ -148,7 +148,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_ale <- df_rac() |>
-          subset(Fase == "alevino") |>
+          subset(Fase == "Alevino") |>
           # dplyr::arrange(`Tamanho pellet (mm)`) |>
           dplyr::slice(cond)
         ## Corpo da informação
@@ -187,7 +187,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_ale <- df_rac() |>
-        subset(Fase == "alevino") |>
+        subset(Fase == "Alevino") |>
         # dplyr::arrange(`Tamanho pellet (mm)`) |>
         dplyr::slice(cond)
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
@@ -216,7 +216,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_ale <- df_rac() |>
-        subset(Fase == "alevino") |>
+        subset(Fase == "Alevino") |>
         # dplyr::arrange(`Tamanho pellet (mm)`) |>
         dplyr::slice(cond)
       ## Apagando dados Ração Alevino
@@ -253,7 +253,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       # Renderizar a tabela novamente
       output$TBracao_ale <- DT::renderDataTable({
         golem::cat_dev("Renderização da tabela Ração Alevino (II) ATENCAO \n")
-        df_ale <- subset(df_rac(), Fase == "alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+        df_ale <- subset(df_rac(), Fase == "Alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
         # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
         # Renderizando a tabela
         DT::datatable(
@@ -271,11 +271,12 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     })
     ## Botão Editar Ração Alevino Clicado (edit_rac_ale)
     observeEvent(input$edit_rac_ale, {
+      # browser()
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_ale <- df_rac() |>
-        subset(Fase == "alevino") |>
+        subset(Fase == "Alevino") |>
         # dplyr::arrange(`Tamanho pellet (mm)`) |>
         dplyr::slice(cond)
       # Mostrando o Modal para Edição dos dados
@@ -295,7 +296,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
                    shinyWidgets::radioGroupButtons(
                      inputId = ns("tipo_rac_edit"),
                      label = labelMandatory("Fase de produção do tipo da Ração:"),
-                     choices = c("alevino","juvenil 1", "juvenil 2","engorda","finalização"),
+                     choices = c("Alevino","Juvenil 1", "Juvenil 2","Engorda","Finalização"),
                      individual = TRUE,
                      justified = TRUE,
                      direction = "vertical",
@@ -309,7 +310,8 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
                    numericInput(ns("tamanho_edit"),labelMandatory("Tamanho do pellet (mm):"), value = df_ale$`Tamanho pellet (mm)`, min = 0),
                    selectInput(inputId = ns("rac_fab_edit"),
                                label = labelMandatory("Fabricante da Ração"),
-                               choices = df_fab()[which(df_fab()$tipo_produto_fab == "Ração"),"nome_fabricante"]),
+                               choices = df_fab()[which(df_fab()$tipo_produto_fab == "Ração"),"nome_fabricante"],
+                               selected = df_ale$Fabricante),
                    numericInput(ns("proteina_edit"),labelMandatory("Proteína Bruta Mín. (%):"), value = df_ale$Proteína, min = 0)
             ),
             column(3,
@@ -332,8 +334,9 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     })
     ## Botão Editar Confirmação Clicado - Ração Alevino (ok_edit_rac_ale)
     observeEvent(input$ok_edit_rac_ale, {
+      # browser()
       # Segurança: Coferindo se todos os campos estão preenchidos corretamente
-      failed <- stringi::stri_stats_latex(input$nome_rac_edit)[1] > 20
+      failed <- stringi::stri_stats_latex(input$nome_rac_edit)[[1]] > 20
       # Testando a condição de segurança
       if(failed){
         # Fechando o modal
@@ -356,7 +359,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
         ## Obtendo id_racao que foi selecionado na linha da tabela
         slect_id_racao <- df_rac() |>
-          subset(Fase == "alevino") |>
+          subset(Fase == "Alevino") |>
           dplyr::slice(cond) |>
           dplyr::select(id_racao)
         # Connect to DB
@@ -387,7 +390,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar a tabela novamente
         output$TBracao_ale <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Alevino (2 vez) ATENCAO \n")
-          df_ale <- subset(df_rac(), Fase == "alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+          df_ale <- subset(df_rac(), Fase == "Alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
           # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
           DT::datatable(
@@ -402,6 +405,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
           ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
         })
         removeModal()
+        showNotification("Ração Editada com Sucesso !!!", type = "message")
       }
     })
     ####----Tab = aspecto_ale ----####
@@ -414,7 +418,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_ale <- df_rac() |>
-          subset(Fase == "alevino") |>
+          subset(Fase == "Alevino") |>
           # dplyr::arrange(`Tamanho pellet (mm)`) |>
           dplyr::slice(cond)
 
@@ -448,12 +452,12 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # browser()
         ## Obtendo o ID dos dados selecionados
         id_select <- df_rac() |>
-          subset(Fase == "alevino") |>
+          subset(Fase == "Alevino") |>
           dplyr::slice(cond) |>
           dplyr::select('id_racao')
         ## Obtendo os dados do vendedor para a ração selecionada
         df_ale <- df_rac() |>
-          # subset(Fase == "alevino") |>
+          # subset(Fase == "Alevino") |>
           dplyr::filter(id_racao == as.numeric(id_select)) |>
           dplyr::select('Distribuidor','Celular','Whatsapp')
         # Renderizando a tabela do vendedor da Ração Alevino
@@ -467,7 +471,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     # Renderização da tabela Ração Juvenil I e II
     output$TBracao_juv <- DT::renderDataTable({
       golem::cat_dev("Renderização da tabela Ração Juvenil I e II (1 vez) \n")
-      df_juv <- subset(df_rac(), Fase == "juvenil 1" | Fase == "juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+      df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
       # index <- order(df_juv$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
       # Renderizando a tabela
       DT::datatable(
@@ -494,7 +498,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_juv <- df_rac() |>
-          subset(Fase == "juvenil 1" | Fase == "juvenil 2") |>
+          subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
           dplyr::slice(cond)
         ## Corpo da informação
         # headT <- h3(paste("Ração selecionada: ",df_juv$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;')
@@ -532,7 +536,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_juv_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_juv <- df_rac() |>
-        subset(Fase == "juvenil 1" | Fase == "juvenil 2") |>
+        subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
         dplyr::slice(cond)
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
       showModal(
@@ -560,7 +564,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_juv_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_juv <- df_rac() |>
-        subset(Fase == "juvenil 1" | Fase == "juvenil 2") |>
+        subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
         dplyr::slice(cond)
       ## Apagando dados Ração Juvenil 1 e 2
       # Connect to DB
@@ -596,7 +600,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       # Renderizar a tabela novamente
       output$TBracao_juv <- DT::renderDataTable({
         golem::cat_dev("Renderização da tabela Ração Juvenil 1 e 2 (II) ATENCAO \n")
-        df_juv <- subset(df_rac(), Fase == "juvenil 1" | Fase == "juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+        df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
         # index <- order(df_juv$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
         # Renderizando a tabela
         DT::datatable(
@@ -618,7 +622,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_juv_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_juv <- df_rac() |>
-        subset(Fase == "juvenil 1" | Fase == "juvenil 2") |>
+        subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
         dplyr::slice(cond)
       # Mostrando o Modal para Edição dos dados
       showModal(
@@ -637,7 +641,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
                    shinyWidgets::radioGroupButtons(
                      inputId = ns("tipo_rac_edit"),
                      label = labelMandatory("Fase de produção do tipo da Ração:"),
-                     choices = c("alevino","juvenil 1", "juvenil 2","engorda","finalização"),
+                     choices = c("Alevino","Juvenil 1", "Juvenil 2","Engorda","Finalização"),
                      individual = TRUE,
                      justified = TRUE,
                      direction = "vertical",
@@ -698,7 +702,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         cond <- input$TBracao_juv_rows_selected # condição condiction selecionado (NULL ou n_linha)
         ## Obtendo id_racao que foi selecionado na linha da tabela
         slect_id_racao <- df_rac() |>
-          subset(Fase == "juvenil 1" | Fase == "juvenil 2") |>
+          subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
           dplyr::slice(cond) |>
           dplyr::select(id_racao)
         # Connect to DB
@@ -729,7 +733,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar a tabela novamente
         output$TBracao_juv <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Juvenil I e II (2 vez) ATENCAO \n")
-          df_juv <- subset(df_rac(), Fase == "juvenil 1" | Fase == "juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+          df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
           # index <- order(df_juv$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
           DT::datatable(
@@ -744,6 +748,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
           ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
         })
         removeModal()
+        showNotification("Ração Editada com Sucesso !!!", type = "message")
       }
     })
     ####----Tab = aspecto_juv ----####
@@ -756,7 +761,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_juv <- df_rac() |>
-          subset(Fase == "juvenil 1" | Fase == "juvenil 2") |>
+          subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
           dplyr::slice(cond)
         ## Corpo da informação
         ## Renderizando a informação da Ração
@@ -788,12 +793,12 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # browser()
         ## Obtendo o ID dos dados selecionados
         id_select <- df_rac() |>
-          subset(Fase == "juvenil 1" | Fase == "juvenil 2") |>
+          subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
           dplyr::slice(cond) |>
           dplyr::select('id_racao')
         ## Obtendo os dados do vendedor para a ração selecionada
         df_juv <- df_rac() |>
-          # subset(Fase == "alevino") |>
+          # subset(Fase == "Alevino") |>
           dplyr::filter(id_racao == as.numeric(id_select)) |>
           dplyr::select('Distribuidor','Celular','Whatsapp')
         # Renderizando a tabela do vendedor da Ração Alevino
@@ -807,7 +812,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     # Renderização da tabela Ração Engorda & Finalização
     output$TBracao_eng <- DT::renderDataTable({
       golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (I) \n")
-      df_eng <- subset(df_rac(), Fase == "engorda" | Fase == "finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+      df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
       # index <- order(df_eng$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
       # Renderizando a tabela
       DT::datatable(
@@ -834,7 +839,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_eng <- df_rac() |>
-          subset(Fase == "engorda" | Fase == "finalização") |>
+          subset(Fase == "Engorda" | Fase == "Finalização") |>
           dplyr::slice(cond)
         ## Corpo da informação
         # headT <- h3(paste("Ração selecionada: ",df_eng$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;')
@@ -872,7 +877,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_eng_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_eng <- df_rac() |>
-        subset(Fase == "engorda" | Fase == "finalização") |>
+        subset(Fase == "Engorda" | Fase == "Finalização") |>
         dplyr::slice(cond)
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
       showModal(
@@ -900,7 +905,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_eng_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_eng <- df_rac() |>
-        subset(Fase == "engorda" | Fase == "finalização") |>
+        subset(Fase == "Engorda" | Fase == "Finalização") |>
         dplyr::slice(cond)
       ## Apagando dados Ração Engorda & Finalização
       # Connect to DB
@@ -936,7 +941,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       # Renderizar a tabela novamente
       output$TBracao_eng <- DT::renderDataTable({
         golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (II) ATENCAO \n")
-        df_eng <- subset(df_rac(), Fase == "engorda" | Fase == "finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+        df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
         # index <- order(df_eng$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
         # Renderizando a tabela
         DT::datatable(
@@ -958,7 +963,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_eng_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_eng <- df_rac() |>
-        subset(Fase == "engorda" | Fase == "finalização") |>
+        subset(Fase == "Engorda" | Fase == "Finalização") |>
         dplyr::slice(cond)
       # Mostrando o Modal para Edição dos dados
       showModal(
@@ -977,7 +982,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
                    shinyWidgets::radioGroupButtons(
                      inputId = ns("tipo_rac_edit"),
                      label = labelMandatory("Fase de produção do tipo da Ração:"),
-                     choices = c("alevino","juvenil 1", "juvenil 2","engorda","finalização"),
+                     choices = c("Alevino","Juvenil 1", "Juvenil 2","Engorda","Finalização"),
                      individual = TRUE,
                      justified = TRUE,
                      direction = "vertical",
@@ -1038,7 +1043,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         cond <- input$TBracao_eng_rows_selected # condição condiction selecionado (NULL ou n_linha)
         ## Obtendo id_racao que foi selecionado na linha da tabela
         slect_id_racao <- df_rac() |>
-          subset(Fase == "engorda" | Fase == "finalização") |>
+          subset(Fase == "Engorda" | Fase == "Finalização") |>
           dplyr::slice(cond) |>
           dplyr::select(id_racao)
         # Connect to DB
@@ -1069,7 +1074,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar a tabela novamente
         output$TBracao_eng <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (2 vez) ATENCAO \n")
-          df_eng <- subset(df_rac(), Fase == "engorda" | Fase == "finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+          df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
           # index <- order(df_eng$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
           DT::datatable(
@@ -1084,6 +1089,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
           ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
         })
         removeModal()
+        showNotification("Ração Editada com Sucesso !!!", type = "message")
       }
     })
     ####----Tab = aspecto_eng ----####
@@ -1096,7 +1102,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_eng <- df_rac() |>
-          subset(Fase == "engorda" | Fase == "finalização") |>
+          subset(Fase == "Engorda" | Fase == "Finalização") |>
           dplyr::slice(cond)
         ## Corpo da informação
         ## Renderizando a informação da Ração
@@ -1128,12 +1134,12 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # browser()
         ## Obtendo o ID dos dados selecionados
         id_select <- df_rac() |>
-          subset(Fase == "engorda" | Fase == "finalização") |>
+          subset(Fase == "Engorda" | Fase == "Finalização") |>
           dplyr::slice(cond) |>
           dplyr::select('id_racao')
         ## Obtendo os dados do vendedor para a ração selecionada
         df_eng <- df_rac() |>
-          # subset(Fase == "alevino") |>
+          # subset(Fase == "Alevino") |>
           dplyr::filter(id_racao == as.numeric(id_select)) |>
           dplyr::select('Distribuidor','Celular','Whatsapp')
         # Renderizando a tabela do vendedor da Ração Alevino
@@ -1223,7 +1229,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderização da tabela Ração Alevino
         output$TBracao_ale <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Alevino (I) \n")
-          df_ale <- subset(df_rac(), Fase == "alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+          df_ale <- subset(df_rac(), Fase == "Alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
           # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
           DT::datatable(
@@ -1240,7 +1246,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderização da tabela Ração Juvenil I e II
         output$TBracao_juv <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Juvenil I e II (1 vez) \n")
-          df_juv <- subset(df_rac(), Fase == "juvenil 1" | Fase == "juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+          df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
           # index <- order(df_juv$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
           DT::datatable(
@@ -1257,7 +1263,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderização da tabela Ração Engorda e Finalização
         output$TBracao_eng <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (I) \n")
-          df_eng <- subset(df_rac(), Fase == "engorda" | Fase == "finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+          df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
           # index <- order(df_eng$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
           DT::datatable(

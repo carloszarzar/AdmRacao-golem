@@ -67,31 +67,31 @@ VALUES
 -- TABELA fazenda
 INSERT INTO fazenda(nome,id_endereco,cnpj,id_telefone,num_tanque,especie,id_proprietario,sist_cultivo)
 VALUES
-('Fazenda nova',9,1234654,9,5,'tambaqui',1,'extensivo'),
-('Fazenda Esperança',10,3549845,10,5,'tambaqui',2,'Semi-intensivo'),
-('Fazenda Peixão',11,24757777,11,8,'tambaqui',3,'intensivo'),
-('Fazenda Peixe bom',12,5465468,12,10,'tambaqui',4,'extensivo'),
-('Fazenda Peixe bonito',13,4568799,12,15,'tambaqui',4,'extensivo');
+('Fazenda nova',9,'1234654',9,5,'Tambaqui',1,'Extensivo'),
+('Fazenda Esperança',10,'3549845',10,5,'Tambaqui',2,'Semi-intensivo'),
+('Fazenda Peixão',11,'24757777',11,8,'Tambaqui',3,'Intensivo'),
+('Fazenda Peixe bom',12,'5465468',12,10,'Tambaqui',4,'Extensivo'),
+('Fazenda Peixe bonito',13,'4568799',12,15,'Tambaqui',4,'Extensivo');
 
 -- TABELA racao
 INSERT INTO racao(nome,tamanho,tipo,id_fabricante,proteina)
 VALUES
-('A',0.4,'alevino',1,40),
-('B',1.7,'alevino',1,40),
-('C',4.0,'alevino',1,36),
-('D',4.0,'juvenil 1',1,36),
-('E',6.0,'juvenil 1',1,36),
-('F',8.0,'juvenil 2',2,32),
-('G',8.0,'engorda',2,32),
-('H',10.0,'engorda',2,28),
-('I',10.0,'finalização',2,22);
+('A',0.4,'Alevino',1,40),
+('B',1.7,'Alevino',1,40),
+('C',4.0,'Alevino',1,36),
+('D',4.0,'Juvenil 1',1,36),
+('E',6.0,'Juvenil 1',1,36),
+('F',8.0,'Juvenil 2',2,32),
+('G',8.0,'Engorda',2,32),
+('H',10.0,'Engorda',2,28),
+('I',10.0,'Finalização',2,22);
 
 -- TABELA alevino
 INSERT INTO alevino(id_fabricante,prod_ale,especie,sexo,peso_init,data_init,dias_init)
 VALUES
-(2,'tambaqui','Colossoma macropomum','misto',5,'2022-02-28',15),
-(2,'tambaqui','Colossoma macropomum','macho',3,'2022-02-28',15),
-(3,'tambaqui','Colossoma macropomum','fêmea',7,'2022-02-28',20);
+(2,'Tambaqui','Colossoma macropomum','Misto',5,'2022-02-28',15),
+(2,'Tambaqui','Colossoma macropomum','Macho',3,'2022-02-28',15),
+(3,'Tambaqui','Colossoma macropomum','Fêmea',7,'2022-02-28',20);
 
 -- TABELA compra
 INSERT INTO compra(quantidade_itens,valor_total,data_compra,id_fabricante,data_chegada,tipo_compra)

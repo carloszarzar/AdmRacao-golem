@@ -24,7 +24,6 @@ mod_tabAlevino_ui <- function(id){
         #   "Box content here", br(), "More box content",
         #   htmlOutput(ns("inf_ale"))
         # )
-
         shinydashboard::tabBox(
           id = ns("tab_inf_ale"),
           title = tagList(shiny::icon("gear",verify_fa = FALSE), "Informação do Alevino"),
@@ -43,7 +42,7 @@ mod_tabAlevino_ui <- function(id){
                        shinyWidgets::radioGroupButtons(
                          inputId = ns("sexo"),
                          label = labelMandatory("Sexo do alevino:"),
-                         choices = c("misto","fêmea", "macho"),
+                         choices = c("Misto","Fêmea", "Macho"),
                          individual = TRUE,
                          justified = TRUE,
                          checkIcon = list(
@@ -126,11 +125,16 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         peso <- h4(paste("Peso médio inicial: ",df_ale$peso_init," (mg)"))
         dias <- h4(paste("Dias de vida: ",df_ale$dias_init))
         data <- h4(paste("Data de nascimento: ",df_ale$data_init))
-        if(df_ale$whatsapp){
-          what <- h4(paste("Whatsapp: Sim"))
-        } else {
-          what <- h4(paste("Whatsapp: Não"))
-        }
+        # ifelse(
+        #   is.na(df_ale$whatsapp),
+        #   what <- h4("Distribuidor ausente"),
+        #   if(df_ale$whatsapp){
+        #     what <- h4(paste("Whatsapp: Sim"))
+        #   } else {
+        #     what <- h4(paste("Whatsapp: Não"))
+        #   }
+        # )
+
         ## Renderizar informação do Alevino e os botões de apagar e editar
         div(
           h3(paste("Alevino selecionado: ",df_ale$nome_fabricante), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
@@ -259,7 +263,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
                    shinyWidgets::radioGroupButtons(
                      inputId = ns("sexo_edit"),
                      label = labelMandatory("Sexo do alevino:"),
-                     choices = c("misto","fêmea", "macho"),
+                     choices = c("Misto","Fêmea", "Macho"),
                      individual = TRUE,
                      justified = TRUE,
                      selected = df_ale$sexo,

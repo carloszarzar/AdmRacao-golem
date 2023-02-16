@@ -8,7 +8,7 @@
 */
 UPDATE racao
   SET nome = '{input$nome_rac_edit}',
-      tamanho = '{input$tamanho_edit}',
+      tamanho = {input$tamanho_edit},
       tipo = '{input$tipo_rac_edit}',
       id_fabricante = (SELECT id_fabricante FROM fabricante
   WHERE nome_fabricante = '{input$rac_fab_edit}'),

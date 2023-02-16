@@ -56,6 +56,7 @@ mod_tabFornecedor_ui <- function(id){
               textInput(ns("nome_fab"), labelMandatory("Nome do fabricante")),
               textInput(ns("tel_fab"), labelMandatory("Telefone da fábrica")),
               # Whatsapp
+              h4("Whatsapp"),
               shinyWidgets::switchInput(
                 inputId = ns("whats_fab"),
                 label = "<i class=\"fab fa-whatsapp\"></i>",
@@ -78,7 +79,7 @@ mod_tabFornecedor_ui <- function(id){
                               style = "color: steelblue"))
               ),
               # Botão submeter fabricante
-              h3("Cadastrar do Fabricante!"),
+              h3("Cadastrar o Fabricante!"),
               actionButton(ns("submit_fab"), "Cadastrar", icon("paper-plane"), class = "btn-primary"),
               h4("Endereço do Fabricante"),
               textInput(ns("logrador_fab"), label="Logrador", placeholder = "Rua, Avenida, Estrada ..."),
@@ -99,6 +100,7 @@ mod_tabFornecedor_ui <- function(id){
               textInput(ns("tel_dis"), labelMandatory("Telefone celular do Distribuidor (Vendedor representante)")),
               uiOutput(outputId = ns("fab_select")),
               # Whatsapp
+              h4("Whatsapp"),
               shinyWidgets::switchInput(
                 inputId = ns("whats_dis"),
                 label = "<i class=\"fab fa-whatsapp\"></i>",
@@ -148,7 +150,7 @@ mod_tabFornecedor_ui <- function(id){
 #' @importFrom shinyjs toggleState reset
 #'
 #' @noRd
-mod_tabFornecedor_server <- function(id,df_fab,df_dis){
+mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Box Resumo fornecedores
@@ -245,6 +247,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis){
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
       showModal(modalDialog(title = paste("Fabricante: ",select," vai ser deletado!"),
                             div(tags$b("Os distribuidores registrados a esse fabricante automaticamente também serão deletados")),
+                            div(tags$b("Inclusive todas as rações que etiverem cadastradas a esse Fabricante")),
                             div(tags$b("Você está seguro que deseja apagar o Fabricante do banco de dados?", style = "color: red;")),
                             footer = tagList(
                               modalButton("Cancelar"),
@@ -336,6 +339,77 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis){
           )
         ) %>% DT::formatDate(  'Data', method = 'toLocaleString') # Consertando timestap para formato desejado
       })
+      #---- Renderizando as tabelas das rações ---------------
+      # Atualizando os dados Ração
+      df_rac({
+        golem::cat_dev("Atualizou os dados da Ração \n")
+        ## conectando com o DB PostgreSQL
+        # Connect to DB
+        con <- connect_to_db()
+        # Query
+        query <- glue::glue(read_sql_file(path = "SQL/TBracao.sql"))
+        # browser() # Shiny Debugging
+        df_postgres <- DBI::dbGetQuery(con, statement = query)
+        # Disconnect from the DB
+        DBI::dbDisconnect(con)
+        # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+        # Convert to data.frame
+        data.frame(df_postgres,check.names = FALSE)
+      })
+      ## Ração Alevino
+      output$TBracao_ale <- DT::renderDataTable({
+        # Print no R
+        golem::cat_dev("Renderização da tabela Ração Alevino (II) ATENCAO \n")
+        # Subset dos dados da Ração
+        df_ale <- subset(df_rac(), Fase == "Alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+        # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
+        # Renderizando a tabela
+        DT::datatable(
+          df_ale, # df_ale[index,],
+          rownames = FALSE,
+          selection = "single",
+          class = 'compact row-border',
+          # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE # mantem a tabela dentro do conteiner
+          )
+        ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      })
+      # Ração Juvenil
+      output$TBracao_juv <- DT::renderDataTable({
+        golem::cat_dev("Renderização da tabela Ração Juvenil 1 e 2 (II) ATENCAO \n")
+        df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+        # index <- order(df_juv$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
+        # Renderizando a tabela
+        DT::datatable(
+          df_juv, # df_juv[index,],
+          rownames = FALSE,
+          selection = "single",
+          class = 'compact row-border',
+          # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE # mantem a tabela dentro do conteiner
+          )
+        ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      })
+      # Ração Engorda
+      output$TBracao_eng <- DT::renderDataTable({
+        golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (II) ATENCAO \n")
+        df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] # Selecionando o data frame
+        # index <- order(df_eng$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
+        # Renderizando a tabela
+        DT::datatable(
+          df_eng, # df_eng[index,],
+          rownames = FALSE,
+          selection = "single",
+          class = 'compact row-border',
+          # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE # mantem a tabela dentro do conteiner
+          )
+        ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      })
+      #-------------------------------------------------------
       # Removendo o modal
       removeModal()
     })
@@ -370,6 +444,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis){
                    textInput(ns("nome_fab_edit"), labelMandatory("Nome do fabricante"), value=select$nome_fabricante ),
                    textInput(ns("tel_fab_edit"), labelMandatory("Telefone da fábrica"),value=select$celular),
                    # Whatsapp
+                   h4("Whatsapp"),
                    shinyWidgets::switchInput(
                      inputId = ns("whats_fab_edit"),
                      label = "<i class=\"fab fa-whatsapp\"></i>",
@@ -693,6 +768,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis){
                                choices = df_fab()[,"nome_fabricante"],
                                selected = select$nome_fabricante),
                    # Whatsapp
+                   h4("Whatsapp"),
                    shinyWidgets::switchInput(
                      inputId = ns("whats_dis_edit"),
                      label = "<i class=\"fab fa-whatsapp\"></i>",
@@ -959,7 +1035,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis){
     })
     # INSERT INTO
     ## Inserindo os dados submition
-    ##Update data in Rpostgresql table
+    ## Update data in Rpostgresql table
     observeEvent(input$submit_dis,{
       # Coferindo se todos os campos estão corretor
       ## Listando os campos

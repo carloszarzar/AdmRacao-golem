@@ -13,5 +13,5 @@ WITH ins1 AS (
 	VALUES ('{input$tel_fab}',{input$whats_fab})
 	RETURNING id_telefone
    )
-INSERT INTO fabricante(nome_fabricante,tipo_produto_fab, id_telefone, id_endereco)
-SELECT '{input$nome_fab}','{input$tipo_produto_fab}',id_telefone,id_endereco FROM ins2, ins1;
+INSERT INTO fabricante(nome_fabricante,tipo_produto_fab,created_at, id_telefone, id_endereco)
+SELECT '{input$nome_fab}','{input$tipo_produto_fab}',Now(),id_telefone,id_endereco FROM ins2, ins1;
