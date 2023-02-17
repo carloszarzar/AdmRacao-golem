@@ -150,7 +150,7 @@ mod_tabFornecedor_ui <- function(id){
 #' @importFrom shinyjs toggleState reset
 #'
 #' @noRd
-mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac){
+mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Box Resumo fornecedores
@@ -247,7 +247,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac){
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
       showModal(modalDialog(title = paste("Fabricante: ",select," vai ser deletado!"),
                             div(tags$b("Os distribuidores registrados a esse fabricante automaticamente também serão deletados")),
-                            div(tags$b("Inclusive todas as rações que etiverem cadastradas a esse Fabricante")),
+                            div(tags$b("Inclusive todas as rações ou alevinos que etiverem cadastrados a esse Fabricante")),
                             div(tags$b("Você está seguro que deseja apagar o Fabricante do banco de dados?", style = "color: red;")),
                             footer = tagList(
                               modalButton("Cancelar"),
@@ -273,7 +273,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac){
       DBI::dbExecute(conn = con, statement = query)
       # Disconnect from the DB
       DBI::dbDisconnect(con)
-      # Preciso melhorar essa renderização aqui!
+      # Renderização table fabricante
       output$fabricante <- DT::renderDataTable({
         golem::cat_dev("Renderizou a tabela Resumo Fabricante (2 vez) \n")
         # Atualizar a renderizacao da tabela resumo
@@ -408,6 +408,41 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac){
                          scrollX = TRUE # mantem a tabela dentro do conteiner
           )
         ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      })
+      #---- Renderizando a Tabela Alevino -------------------
+      # Renderização da tabela Alevino
+      output$tb_alevino <- DT::renderDataTable({
+        # Atualizando os dados Alevino
+        df_alevino({
+          # Connect to DB
+          con <- connect_to_db()
+          # Query
+          query <- glue::glue(read_sql_file(path = "SQL/TBalevino.sql"))
+          # browser() # Shiny Debugging
+          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+          # Convert to data.frame
+          data.frame(df_postgres,check.names = FALSE)
+        })
+        # Preparando para renderizar
+        golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
+        df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
+        # Renderizando a tabela
+        DT::datatable(
+          df_ale, # df_alevino(),
+          colnames=c("Nome do Fabricante", "Tipo do Produto","Sexo",
+                     "Espécie","Peso inicial","Data nasc.","Dias vida",
+                     "Criado em:"),
+          rownames = FALSE,
+          selection = "single",
+          class = 'compact row-border',
+          # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE # mantem a tabela dentro do conteiner
+          )
+        ) %>% DT::formatDate('created_at', method = 'toLocaleString') # Consertando timestap para formato desejado
       })
       #-------------------------------------------------------
       # Removendo o modal

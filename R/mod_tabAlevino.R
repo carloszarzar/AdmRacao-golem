@@ -351,7 +351,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
           # Convert to data.frame
           data.frame(df_postgres,check.names = FALSE)
         })
-        # Renderização da tabela Ração Alevino
+        # Renderização da tabela Alevino
         output$tb_alevino <- DT::renderDataTable({
           # browser()
           golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
@@ -372,6 +372,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
           ) %>% DT::formatDate('created_at', method = 'toLocaleString') # Consertando timestap para formato desejado
         })
         removeModal()
+        showNotification("Alevino Editado com Sucesso !!!", type = "message")
       }
     })
     ####---- Tabpanel ven_ale ----#####

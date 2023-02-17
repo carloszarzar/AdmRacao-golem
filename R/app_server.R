@@ -124,7 +124,7 @@ app_server <- function(input, output, session) {
   ####----- tabInicio ----####
   mod_tabInicio_server("global")
   ####----- tabFornecedor ----####
-  mod_tabFornecedor_server("global",df_fab,df_dis,df_rac)
+  mod_tabFornecedor_server("global",df_fab,df_dis,df_rac,df_alevino)
   ####----- tabRacao ----####
   mod_tabRacao_server("global",df_fab,df_rac)
   ####----- tabAlevino ----####
