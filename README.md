@@ -69,7 +69,7 @@ utilização.
 
 ### Aba Cadastro de Fornecedores
 
-<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_inicio.pnghttps://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_fornecedor.png">
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_fornecedor.png">
 <img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_fornecedor.png" width="630" height="252"/>
 </a>
 
@@ -77,6 +77,14 @@ utilização.
 
 <a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_racao.png">
 <img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_racao.png" width="630" height="252"/>
+</a>
+
+### Aba Cadastro de Fazenda
+
+#### Editando dados
+
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_fazenda.png">
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/app_fazenda.png" width="630" height="252"/>
 </a>
 
 ## Informações técnicas
@@ -91,3 +99,7 @@ projeto serão bem vindos. Podem entrar em contato com:
 - E-mail: <carlos.zarzar@ufopa.edu.br>
 - Professor: Dr. Carlos Antônio Zarzar;
 - Universidade Federal do Oeste do Pará (Campus Monte Alegre);
+
+<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/UFOPA_Logo.jpg">
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/UFOPA_Logo.jpg" width="330" height="152"/>
+</a>
