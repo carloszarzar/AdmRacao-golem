@@ -100,6 +100,6 @@ projeto serão bem vindos. Podem entrar em contato com:
 - Professor: Dr. Carlos Antônio Zarzar;
 - Universidade Federal do Oeste do Pará (Campus Monte Alegre);
 
-<a href="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/UFOPA_Logo.jpg">
+<a href="http://www.ufopa.edu.br/montealegre/">
 <img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/UFOPA_Logo.jpg" width="330" height="152"/>
 </a>
