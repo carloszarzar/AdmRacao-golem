@@ -131,6 +131,10 @@ app_server <- function(input, output, session) {
   mod_tabAlevino_server("global",df_alevino,df_fab)
   ####----- tabFazenda ----####
   mod_tabFazenda_server("global",df_prop,df_faz)
+  ####----- tabCompRac ----####
+  mod_tabCompRac_server("global",df_rac)
+  ####----- tabCompAle ----####
+  mod_tabCompAle_server("global")
 
 
 }

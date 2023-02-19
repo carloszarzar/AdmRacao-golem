@@ -27,6 +27,8 @@ golem::add_module(name = "tabFornecedor", with_test = TRUE) # Módulo para tab (
 golem::add_module(name = "tabRacao", with_test = TRUE) # Módulo para tab (aba) Ração
 golem::add_module(name = "tabAlevino", with_test = TRUE) # Módulo para tab (aba) Alevino
 golem::add_module(name = "tabFazenda", with_test = TRUE) # Módulo para tab (aba) Fazenda
+golem::add_module(name = "tabCompRac", with_test = TRUE) # Módulo para tab (aba) Compra de Ração
+golem::add_module(name = "tabCompAle", with_test = TRUE) # Módulo para tab (aba) Compra de Alevino
 
 
 ## Add helper functions ----

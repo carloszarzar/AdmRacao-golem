@@ -18,18 +18,23 @@ app_ui <- function(request) {
       # Sidebar é a barra lateral do App
       sidebar = dashboardSidebar(
         # Início do menu do sidebar
-        sidebarMenu(id="global-cadastro-tabs",
-                    menuItem("Início", tabName = "global-cadastro-tabInicio", icon = icon("th")),
+        sidebarMenu(id="global-tabs",
+                    menuItem("Início", tabName = "global-tabInicio", icon = icon("th")),
                     menuItem("Estoque", tabName = "tabEstqoue", icon = icon("th")),
                     menuItem("Cadastro", tabName = "tabCadastro", icon = icon("th"),
                              # O Cadastro subdivide em:
-                             menuSubItem('Fornecedor', tabName = 'global-cadastro-tabFornecedor'),
-                             menuSubItem('Ração', tabName = 'global-cadastro-tabRacao'),
-                             menuSubItem('Alevino', tabName = 'global-cadastro-tabAlevino'),
-                             menuSubItem('Fazenda', tabName = 'global-cadastro-tabFazenda')
+                             menuSubItem('Fornecedor', tabName = 'global-tabFornecedor'),
+                             menuSubItem('Ração', tabName = 'global-tabRacao'),
+                             menuSubItem('Alevino', tabName = 'global-tabAlevino'),
+                             menuSubItem('Fazenda', tabName = 'global-tabFazenda')
 
                     ),
-                    menuItem("Compras", tabName = "tabCompras", icon = icon("th")),
+                    menuItem("Compras", tabName = "tabCompras", icon = icon("th"),
+                             menuSubItem('Ração', tabName = 'global-tabCompRac'), # Tab Compras Rações
+                             menuSubItem('Alevino', tabName = 'global-tabCompAle')  # Tab Compras Alevinos
+
+
+                    ),
                     menuItem("Saída", tabName = "tabSaida", icon = icon("th"))
         )#,
         # add some buttons
@@ -50,32 +55,42 @@ app_ui <- function(request) {
         shinydashboard::tabItems(
           #---- tabInicio ----####
           shinydashboard::tabItem(
-            tabName = "global-cadastro-tabInicio",
+            tabName = "global-tabInicio",
             mod_tabInicio_ui("global")
           ),
           #---- tabEstqoue ----####
           #---- tabCadastro
           #---- tabFornecedor ----####
           tabItem( # tabFornecedor (Fornecedor= Fabricante + Distribuidor)
-            tabName = "global-cadastro-tabFornecedor",
+            tabName = "global-tabFornecedor",
             mod_tabFornecedor_ui("global")
           ),
           #---- tabRacao ----####
           tabItem( # tabRacao (Ração)
-            tabName = "global-cadastro-tabRacao",
+            tabName = "global-tabRacao",
             mod_tabRacao_ui("global")
           ),
           #---- tabAlevino ----####
           tabItem(
-            tabName = "global-cadastro-tabAlevino",
+            tabName = "global-tabAlevino",
             mod_tabAlevino_ui("global")
           ),
           #---- tabFazenda ----####
           tabItem(
-            tabName = "global-cadastro-tabFazenda",
+            tabName = "global-tabFazenda",
             mod_tabFazenda_ui("global")
+          ),
+          #---- tabCompras
+          #---- tabCompRac ----####
+          tabItem(
+            tabName = "global-tabCompRac",
+            mod_tabCompRac_ui("global")
+          ),
+          #---- tabCompAle ----####
+          tabItem(
+            tabName = "global-tabCompAle",
+            mod_tabCompAle_ui("global")
           )
-          #---- tabCompras ----####
           #---- tabSaida ----####
 
 
