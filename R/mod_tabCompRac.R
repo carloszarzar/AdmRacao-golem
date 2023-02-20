@@ -60,35 +60,40 @@ mod_tabCompRac_server <- function(id,df_rac){
       # browser()
       if(!is.null(cond)){ # Linha selecionada:
         ## Selecionando os dados
-        list_rac <- df_rac()[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+        list_rac <- df_rac() |> # [,c("id_racao","Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
           dplyr::slice(cond) # Selecionando o data frame
-        browser()
+        # browser()
+
+        div(
+          apply(list_rac, 1, function(x){
+            tagList(
+              h3(paste("Ração: ",x['Nome da ração'],"\n")),
+
+              selectInput(inputId =ns(paste0("dist",x['id_racao'])), # Distribuidor (Vendedor)
+                          label = labelMandatory("Vendedor (distribuidor) da Ração"),
+                          choices = df_rac()[which(df_rac()$id_racao == x['id_racao']),"Distribuidor"]   ),
+
+              textInput(ns(paste0("quant",x['id_racao'])),
+                        labelMandatory("Quantidade da Ração (kg):"))
+            )
+          })
+        )
+
+        # Corrigir bug de table ração duplicada.
+        # Deve ser algum problema no LEFT JOIN do postgreSQL.
+        # Duplicata quando fazemos a consulta no PostgreSQL ele mostra os dois distribuidores (vendedores) da ração
+        # Posso retirar isso pelo prórpio R
 
 
 
 
-        ## Importar dados das ração a serem compradas (fazer pedido))
-
-        ## Tenho que fazer o div para o usuário importar os dados de cada ração comprada
-        ## ela tem que redenrizar o número de vezes conforme o numero de ração selecionada
 
 
-        # div(
-        #   h3(paste("Ração selecionada: ",list_rac$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
-        #   HTML(paste(# headT,
-        #     tam,prot,fase,
-        #     fab #,dis,tel,what
-        #   )),
-        #   actionButton(inputId = ns("apagar_rac_ale"),label = "Apagar",
-        #                style = "vertical-align: middle; height: 50px; width: 100%; font-size: 22px;"),
-        #   actionButton(inputId = ns("edit_rac_ale"),label = "Editar",
-        #                style = "vertical-align: middle; height: 50px; width: 100%; font-size: 22px; margin-top: 5px;")
-        # )
 
 
 
       } else { # Linha NÃO selecionada
-
+        h1("Selecione uma Rações ou mais que deseja comprar")
       }
 
 
