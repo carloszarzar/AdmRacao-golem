@@ -20,9 +20,13 @@ mod_tabCompRac_ui <- function(id){
       ####---- Dados do pedido ----####
       box(
         title = "Dados do Pedido", status = "primary",
-        collapsible = TRUE, width = 6,# height = 550,
+        collapsible = TRUE, width = 8,# height = 550,
         uiOutput(ns("dados_pedido"))
       )
+    ),
+    ####---- InforBox - informação sobre compra da ração ----####
+    fluidRow(
+      uiOutput(ns("inf_box"))
     )
 
   )
@@ -45,6 +49,7 @@ mod_tabCompRac_server <- function(id,df_rac){
         rownames = FALSE,
         # selection = "single",
         extensions = 'RowGroup',
+        colnames = c("Nome","Tamanho","Fase","Proteína","Fabricante"),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE, # mantem a tabela dentro do conteiner
@@ -57,24 +62,43 @@ mod_tabCompRac_server <- function(id,df_rac){
     output$dados_pedido <- renderUI({
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$list_rac_tb_rows_selected # condição condiction selecionado (NULL ou n_linha)
-      # browser()
       if(!is.null(cond)){ # Linha selecionada:
         ## Selecionando os dados
         list_rac <- df_rac() |> # [,c("id_racao","Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
           dplyr::slice(cond) # Selecionando o data frame
         # browser()
-
         div(
           apply(list_rac, 1, function(x){
             tagList(
-              h3(paste("Ração: ",x['Nome da ração'],"\n")),
-
-              selectInput(inputId =ns(paste0("dist",x['id_racao'])), # Distribuidor (Vendedor)
-                          label = labelMandatory("Vendedor (distribuidor) da Ração"),
-                          choices = df_rac()[which(df_rac()$id_racao == x['id_racao']),"Distribuidor"]   ),
-
-              textInput(ns(paste0("quant",x['id_racao'])),
-                        labelMandatory("Quantidade da Ração (kg):"))
+              h3(paste("Ração: ",x['Nome da ração'],"\n"), style = "margin-top: 2px; margin-bottom: 2px;"),
+              fluidRow(
+                column(3,
+                       selectInput(inputId =ns(paste0("dist",x['id_racao'])), # Distribuidor (Vendedor)
+                                   label = labelMandatory("Vendedor"),
+                                   choices = df_rac()[which(df_rac()$id_racao == x['id_racao']),"Distribuidor"]   )
+                       ),
+                column(2,
+                       textInput(ns(paste0("preco",x['id_racao'])),
+                                 labelMandatory("Preço (R$/kg):")),
+                       tags$style(".shiny-input-container {margin-top: 5px;}")
+                ),
+                column(3,
+                       textInput(ns(paste0("quant",x['id_racao'])),
+                                 labelMandatory("Quantidade (kg):")),
+                       tags$style(".shiny-input-container {margin-top: 5px;}")
+                       ),
+                column(2,
+                       textInput(ns(paste0("codigo",x['id_racao'])),
+                                 labelMandatory("Código lote:")),
+                       tags$style(".shiny-input-container {margin-top: 5px;}")
+                       ),
+                column(2,
+                       dateInput(ns(paste0("date",x['id_racao'])),
+                                 format = "dd-mm-yyyy", label = labelMandatory('Validade'),
+                                 # width = "200px",
+                                 value=Sys.Date())
+                       )
+              )
             )
           })
         )
@@ -83,6 +107,8 @@ mod_tabCompRac_server <- function(id,df_rac){
         # Deve ser algum problema no LEFT JOIN do postgreSQL.
         # Duplicata quando fazemos a consulta no PostgreSQL ele mostra os dois distribuidores (vendedores) da ração
         # Posso retirar isso pelo prórpio R
+
+
 
 
 
@@ -103,6 +129,39 @@ mod_tabCompRac_server <- function(id,df_rac){
 
 
     })
+    ####---- InforBox - informação sobre compra da ração ----####
+    output$inf_box <- renderUI({
+      # Conferindo se a linha da tabela foi selecionado
+      cond <- input$list_rac_tb_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      if(!is.null(cond)){ # Linha selecionada:
+        ## Selecionando os dados
+        list_rac <- df_rac() |> # [,c("id_racao","Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+          dplyr::slice(cond) # Selecionando o data frame
+        # browser()
+        tagList(
+          infoBoxOutput(ns("rac_select")),
+          infoBoxOutput(ns("approvalBox"))
+        )
+      }
+
+
+    })
+
+    output$rac_select <- renderInfoBox({
+      infoBox(
+        "Ração Selecionada", paste0(25, "%"), icon = icon("list"),
+        color = "purple", fill = TRUE
+      )
+    })
+    output$approvalBox <- renderInfoBox({
+      infoBox(
+        "Approval", "80%", icon = icon("thumbs-up", lib = "glyphicon"),
+        color = "yellow", fill = TRUE
+      )
+    })
+
+
+
 
 
 
