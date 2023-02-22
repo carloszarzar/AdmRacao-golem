@@ -124,11 +124,11 @@ CREATE TABLE compra_racao(
 	id_comp_racao SERIAL PRIMARY KEY NOT NULL,
 	id_compra SERIAL NOT NULL REFERENCES compra(id_compra),
 	id_racao SERIAL NOT NULL REFERENCES racao(id_racao),
-	valor_uni NUMERIC NOT NULL,
-	quantidade REAL NOT NULL,
-	valor_entrada NUMERIC NOT NULL,
-	validade DATE NOT NULL,
-	cod_lote INT NOT NULL,
+	valor_uni NUMERIC NOT NULL, -- Real R$/kg da ração
+	quantidade REAL NOT NULL, -- quantidade comprada (kg)
+	valor_entrada NUMERIC NOT NULL, -- Valor total da compra para essa ração (R$)
+	validade DATE NOT NULL, -- Data de validade da ração
+	cod_lote INT NOT NULL, -- Código da ração do fabricante para rastreio
 	created_at TIMESTAMPTZ DEFAULT Now() 
 );
 
