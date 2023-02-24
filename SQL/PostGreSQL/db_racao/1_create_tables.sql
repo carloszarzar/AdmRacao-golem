@@ -111,9 +111,9 @@ CREATE TABLE alevino(
 CREATE TABLE compra(
 	id_compra SERIAL PRIMARY KEY NOT NULL,
 	quantidade_itens INT NOT NULL,
+    	quantidade_total NUMERIC NOT NULL, -- quantidade total comprada kg de ração ou milheiro de alevino
 	valor_total NUMERIC NOT NULL,
 	data_compra TIMESTAMP NOT NULL,
-	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante),
 	data_chegada TIMESTAMP NULL,
 	tipo_compra VARCHAR(10) NOT NULL,
 	created_at TIMESTAMPTZ DEFAULT Now() 
@@ -124,11 +124,13 @@ CREATE TABLE compra_racao(
 	id_comp_racao SERIAL PRIMARY KEY NOT NULL,
 	id_compra SERIAL NOT NULL REFERENCES compra(id_compra),
 	id_racao SERIAL NOT NULL REFERENCES racao(id_racao),
+     	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante),
+    	id_distribuidor SERIAL NOT NULL REFERENCES distribuidor(id_distribuidor),
 	valor_uni NUMERIC NOT NULL, -- Real R$/kg da ração
 	quantidade REAL NOT NULL, -- quantidade comprada (kg)
 	valor_entrada NUMERIC NOT NULL, -- Valor total da compra para essa ração (R$)
 	validade DATE NOT NULL, -- Data de validade da ração
-	cod_lote INT NOT NULL, -- Código da ração do fabricante para rastreio
+	cod_lote VARCHAR(30) NULL, -- Código da ração do fabricante para rastreio
 	created_at TIMESTAMPTZ DEFAULT Now() 
 );
 
@@ -142,7 +144,7 @@ CREATE TABLE compra_alevino(
 	valor_entrada NUMERIC NOT NULL,
 	peso REAL NOT NULL,
 	dias INT NOT NULL,
-	cod_lote INT NOT NULL,
+	cod_lote VARCHAR(30) NULL,
 	created_at TIMESTAMPTZ DEFAULT Now() 
 );
 
