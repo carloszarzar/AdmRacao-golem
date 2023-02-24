@@ -3,13 +3,15 @@
    # Autor: Carlos A. Zarzar
 */
 SELECT DISTINCT id_racao,
-            r.nome AS "Nome da ração",
-            r.tamanho AS "Tamanho pellet (mm)",
+            r.nome,
+            r.tamanho,
             r.tipo AS "Fase",
             f.nome_fabricante "Fabricante",
+            f.id_fabricante,
             r.proteina AS "Proteína",
             r.created_at AS "Data",
             d.nome_distribuidor AS "Distribuidor",
+            d.id_distribuidor,
             t.celular AS "Celular",
             t.whatsapp AS "Whatsapp",
             r.extrato_etereo_min,

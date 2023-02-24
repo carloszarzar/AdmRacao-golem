@@ -1144,10 +1144,26 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
           # Convert to data.frame
           data.frame(df_postgres,check.names = FALSE)
         })
-        df <- df_dis()[c("nome_distribuidor","tipo_produto_dis","nome_fabricante","created_at")]
-        names(df) <- c("Distribuidor","Produto","Nome do Fabricante","Data")
+        # Atualizando a tabela ração
+        df_rac({
+          golem::cat_dev("Importou os dados da Ração \n")
+          ## conectando com o DB PostgreSQL
+          # Connect to DB
+          con <- connect_to_db()
+          # Query
+          query <- glue::glue(read_sql_file(path = "SQL/TBracao.sql"))
+          # browser() # Shiny Debugging
+          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+          # Convert to data.frame
+          data.frame(df_postgres,check.names = FALSE)
+        })
         ## Render table
         output$distribuidor <- DT::renderDataTable({
+          df <- df_dis()[c("nome_distribuidor","tipo_produto_dis","nome_fabricante","created_at")]
+          names(df) <- c("Distribuidor","Produto","Nome do Fabricante","Data")
           DT::datatable(
             # Convert to data.frame
             df,

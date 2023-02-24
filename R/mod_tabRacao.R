@@ -121,7 +121,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     output$TBracao_ale <- DT::renderDataTable({
       # browser()
       golem::cat_dev("Renderização da tabela Ração Alevino (I) \n")
-      df_ale <- subset(df_rac(), Fase == "Alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+      df_ale <- subset(df_rac(), Fase == "Alevino")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
         dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
       # Renderizando a tabela
       DT::datatable(
@@ -129,6 +129,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         rownames = FALSE,
         selection = "single",
         class = 'compact row-border',
+        colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
         # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -148,13 +149,13 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_ale <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Alevino") |>
           dplyr::slice(cond)
         ## Corpo da informação
         # headT <- h3(paste("Ração selecionada: ",df_ale$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;')
-        tam <- h4(paste("Tamanho do pellet: ",df_ale$Tamanho," (mm)"))
+        tam <- h4(paste("Tamanho do pellet: ",df_ale$tamanho," (mm)"))
         prot <- h4(paste("Proteína: ",df_ale$Proteína, " %"))
         fase <- h4(paste("Fase de cultivo: ",df_ale$Fase))
         fab <- h4(paste("Fabricante: ",df_ale$Fabricante))
@@ -167,7 +168,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # }
         ## Renderizar o Status da ração e os botões de apagar e editar
         div(
-          h3(paste("Ração selecionada: ",df_ale$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
+          h3(paste("Ração selecionada: ",df_ale$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           HTML(paste(# headT,
             tam,prot,fase,
             fab #,dis,tel,what
@@ -189,17 +190,17 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_ale <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         subset(Fase == "Alevino") |>
         dplyr::slice(cond)
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
       showModal(
-        modalDialog(title = paste("Ração selecionada: ",df_ale$`Nome da ração`," vai ser excluída!"),
+        modalDialog(title = paste("Ração selecionada: ",df_ale$nome," vai ser excluída!"),
                             div(
                               tags$ul(
-                                tags$li(paste("Nome da Ração: ",df_ale$`Nome da ração`)),
-                                tags$li(paste("Tamanho: ",df_ale$`Tamanho pellet (mm)`," (mm)")),
+                                tags$li(paste("Nome da Ração: ",df_ale$nome)),
+                                tags$li(paste("Tamanho: ",df_ale$tamanho," (mm)")),
                                 tags$li(paste("Fase: ",df_ale$Fase)),
                                 tags$li(paste("Fabricante: ",df_ale$Fabricante))
                                 )
@@ -219,7 +220,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_ale <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         subset(Fase == "Alevino") |>
         dplyr::slice(cond)
@@ -257,7 +258,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       # Renderizar a tabela novamente
       output$TBracao_ale <- DT::renderDataTable({
         golem::cat_dev("Renderização da tabela Ração Alevino (II) ATENCAO \n")
-        df_ale <- subset(df_rac(), Fase == "Alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+        df_ale <- subset(df_rac(), Fase == "Alevino")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
           dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
         # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
         # Renderizando a tabela
@@ -266,6 +267,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
           rownames = FALSE,
           selection = "single",
           class = 'compact row-border',
+          colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
           # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -281,14 +283,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_ale <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         subset(Fase == "Alevino") |>
         dplyr::slice(cond)
       # Mostrando o Modal para Edição dos dados
       showModal(
         modalDialog(
-          title = paste("Edição da Ração: ",df_ale$`Nome da ração`,"!"),
+          title = paste("Edição da Ração: ",df_ale$nome,"!"),
           size = "l",
           style = "width: fit-content !important;",
           footer = tagList(
@@ -298,7 +300,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
           # Formulário de Edição
           fluidRow(
             column(5,
-                   textInput(ns("nome_rac_edit"), labelMandatory("Nome ou Apelido da Ração"),value = df_ale$`Nome da ração`),
+                   textInput(ns("nome_rac_edit"), labelMandatory("Nome ou Apelido da Ração"),value = df_ale$nome),
                    shinyWidgets::radioGroupButtons(
                      inputId = ns("tipo_rac_edit"),
                      label = labelMandatory("Fase de produção do tipo da Ração:"),
@@ -313,7 +315,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
                        no = tags$i(class = "fa fa-square-o",
                                    style = "color: steelblue"))
                    ),
-                   numericInput(ns("tamanho_edit"),labelMandatory("Tamanho do pellet (mm):"), value = df_ale$`Tamanho pellet (mm)`, min = 0),
+                   numericInput(ns("tamanho_edit"),labelMandatory("Tamanho do pellet (mm):"), value = df_ale$tamanho, min = 0),
                    selectInput(inputId = ns("rac_fab_edit"),
                                label = labelMandatory("Fabricante da Ração"),
                                choices = df_fab()[which(df_fab()$tipo_produto_fab == "Ração"),"nome_fabricante"],
@@ -365,7 +367,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         cond <- input$TBracao_ale_rows_selected # condição condiction selecionado (NULL ou n_linha)
         ## Obtendo id_racao que foi selecionado na linha da tabela
         slect_id_racao <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Alevino") |>
           dplyr::slice(cond) |>
@@ -398,7 +400,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar a tabela novamente
         output$TBracao_ale <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Alevino (2 vez) ATENCAO \n")
-          df_ale <- subset(df_rac(), Fase == "Alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+          df_ale <- subset(df_rac(), Fase == "Alevino")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
             dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
           # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
@@ -407,6 +409,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
+            colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
             # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -427,7 +430,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_ale <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Alevino") |>
           # dplyr::arrange(`Tamanho pellet (mm)`) |>
@@ -436,7 +439,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         ## Corpo da informação
         ## Renderizando a informação da Ração
         div(
-          h3(paste("Ração selecionada: ",df_ale$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
+          h3(paste("Ração selecionada: ",df_ale$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           tags$ul(
             tags$li(h4(paste("Proteína Bruta (Mín.): ",df_ale$Proteína, " %"))),
             tags$li(h4(paste("Extrato Etéreo (Mín.): ",df_ale$extrato_etereo_min))),
@@ -463,14 +466,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # browser()
         ## Obtendo o ID dos dados selecionados
         id_select <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Alevino") |>
           dplyr::slice(cond) |>
-          dplyr::select(c('id_racao','Nome da ração'))
+          dplyr::select(c('id_racao','nome'))
         # Renderizando a tabela do vendedor da Ração Alevino
         div(
-          h3(paste("Ração selecionada: ",id_select$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
+          h3(paste("Ração selecionada: ",id_select$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           renderDataTable({
             ## Obtendo os dados do vendedor para a ração selecionada
             df_ale <- df_rac() |>
@@ -499,7 +502,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     # Renderização da tabela Ração Juvenil I e II
     output$TBracao_juv <- DT::renderDataTable({
       golem::cat_dev("Renderização da tabela Ração Juvenil I e II (1 vez) \n")
-      df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+      df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
         dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
       # Renderizando a tabela
       DT::datatable(
@@ -507,6 +510,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         rownames = FALSE,
         selection = "single",
         class = 'compact row-border',
+        colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
         # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -526,7 +530,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_juv <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
           dplyr::slice(cond)
@@ -545,7 +549,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # }
         ## Renderizar o Status da ração e os botões de apagar e editar
         div(
-          h3(paste("Ração selecionada: ",df_juv$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
+          h3(paste("Ração selecionada: ",df_juv$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           HTML(paste(# headT,
             tam,prot,fase,
             fab #,dis,tel,what
@@ -566,17 +570,17 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_juv_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_juv <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
         dplyr::slice(cond)
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
       showModal(
-        modalDialog(title = paste("Ração selecionada: ",df_juv$`Nome da ração`," vai ser excluída!"),
+        modalDialog(title = paste("Ração selecionada: ",df_juv$nome," vai ser excluída!"),
                     div(
                       tags$ul(
-                        tags$li(paste("Nome da Ração: ",df_juv$`Nome da ração`)),
-                        tags$li(paste("Tamanho: ",df_juv$`Tamanho pellet (mm)`," (mm)")),
+                        tags$li(paste("Nome da Ração: ",df_juv$nome)),
+                        tags$li(paste("Tamanho: ",df_juv$tamanho," (mm)")),
                         tags$li(paste("Fase: ",df_juv$Fase)),
                         tags$li(paste("Fabricante: ",df_juv$Fabricante))
                       )
@@ -596,7 +600,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_juv_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_juv <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
         dplyr::slice(cond)
@@ -634,7 +638,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       # Renderizar a tabela novamente
       output$TBracao_juv <- DT::renderDataTable({
         golem::cat_dev("Renderização da tabela Ração Juvenil 1 e 2 (II) ATENCAO \n")
-        df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+        df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
           dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
         # Renderizando a tabela
         DT::datatable(
@@ -642,6 +646,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
           rownames = FALSE,
           selection = "single",
           class = 'compact row-border',
+          colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
           # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -656,14 +661,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_juv_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_juv <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
         dplyr::slice(cond)
       # Mostrando o Modal para Edição dos dados
       showModal(
         modalDialog(
-          title = paste("Edição do Ração: ",df_juv$`Nome da ração`,"!"),
+          title = paste("Edição do Ração: ",df_juv$nome,"!"),
           size = "l",
           style = "width: fit-content !important;",
           footer = tagList(
@@ -673,7 +678,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
           # Formulário de Edição
           fluidRow(
             column(5,
-                   textInput(ns("nome_rac_edit"), labelMandatory("Nome ou Apelido da Ração"),value = df_juv$`Nome da ração`),
+                   textInput(ns("nome_rac_edit"), labelMandatory("Nome ou Apelido da Ração"),value = df_juv$nome),
                    shinyWidgets::radioGroupButtons(
                      inputId = ns("tipo_rac_edit"),
                      label = labelMandatory("Fase de produção do tipo da Ração:"),
@@ -688,7 +693,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
                        no = tags$i(class = "fa fa-square-o",
                                    style = "color: steelblue"))
                    ),
-                   numericInput(ns("tamanho_edit"),labelMandatory("Tamanho do pellet (mm):"), value = df_juv$`Tamanho pellet (mm)`, min = 0),
+                   numericInput(ns("tamanho_edit"),labelMandatory("Tamanho do pellet (mm):"), value = df_juv$tamanho, min = 0),
                    selectInput(inputId = ns("rac_fab_edit"),
                                label = labelMandatory("Fabricante da Ração"),
                                choices = df_fab()[which(df_fab()$tipo_produto_fab == "Ração"),"nome_fabricante"],
@@ -739,7 +744,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         cond <- input$TBracao_juv_rows_selected # condição condiction selecionado (NULL ou n_linha)
         ## Obtendo id_racao que foi selecionado na linha da tabela
         slect_id_racao <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
           dplyr::slice(cond) |>
@@ -772,7 +777,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar a tabela novamente
         output$TBracao_juv <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Juvenil I e II (2 vez) ATENCAO \n")
-          df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+          df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
             dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
           # Renderizando a tabela
           DT::datatable(
@@ -780,6 +785,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
+            colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
             # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -800,14 +806,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_juv <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
           dplyr::slice(cond)
         ## Corpo da informação
         ## Renderizando a informação da Ração
         div(
-          h3(paste("Ração selecionada: ",df_juv$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
+          h3(paste("Ração selecionada: ",df_juv$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           tags$ul(
             tags$li(h4(paste("Proteína Bruta (Mín.): ",df_juv$Proteína, " %"))),
             tags$li(h4(paste("Extrato Etéreo (Mín.): ",df_juv$extrato_etereo_min))),
@@ -834,14 +840,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # browser()
         ## Obtendo o ID dos dados selecionados
         id_select <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Juvenil 1" | Fase == "Juvenil 2") |>
           dplyr::slice(cond) |>
-          dplyr::select(c('id_racao','Nome da ração'))
+          dplyr::select(c('id_racao','nome'))
         # Renderizando a tabela do vendedor da Ração Alevino
         div(
-          h3(paste("Ração selecionada: ",id_select$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
+          h3(paste("Ração selecionada: ",id_select$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           renderDataTable({
             ## Obtendo os dados do vendedor para a ração selecionada
             df_juv <- df_rac() |>
@@ -869,7 +875,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
     # Renderização da tabela Ração Engorda & Finalização
     output$TBracao_eng <- DT::renderDataTable({
       golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (I) \n")
-      df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+      df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
         dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
       # Renderizando a tabela
       DT::datatable(
@@ -877,6 +883,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         rownames = FALSE,
         selection = "single",
         class = 'compact row-border',
+        colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
         # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -896,7 +903,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_eng <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Engorda" | Fase == "Finalização") |>
           dplyr::slice(cond)
@@ -915,7 +922,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # }
         ## Renderizar o Status da ração e os botões de apagar e editar
         div(
-          h3(paste("Ração selecionada: ",df_eng$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
+          h3(paste("Ração selecionada: ",df_eng$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           HTML(paste(# headT,
             tam,prot,fase,
             fab #,dis,tel,what
@@ -936,17 +943,17 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_eng_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_eng <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         subset(Fase == "Engorda" | Fase == "Finalização") |>
         dplyr::slice(cond)
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
       showModal(
-        modalDialog(title = paste("Ração selecionada: ",df_eng$`Nome da ração`," vai ser excluída!"),
+        modalDialog(title = paste("Ração selecionada: ",df_eng$nome," vai ser excluída!"),
                     div(
                       tags$ul(
-                        tags$li(paste("Nome da Ração: ",df_eng$`Nome da ração`)),
-                        tags$li(paste("Tamanho: ",df_eng$`Tamanho pellet (mm)`," (mm)")),
+                        tags$li(paste("Nome da Ração: ",df_eng$nome)),
+                        tags$li(paste("Tamanho: ",df_eng$tamanho," (mm)")),
                         tags$li(paste("Fase: ",df_eng$Fase)),
                         tags$li(paste("Fabricante: ",df_eng$Fabricante))
                       )
@@ -966,7 +973,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_eng_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_eng <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         subset(Fase == "Engorda" | Fase == "Finalização") |>
         dplyr::slice(cond)
@@ -1004,7 +1011,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       # Renderizar a tabela novamente
       output$TBracao_eng <- DT::renderDataTable({
         golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (II) ATENCAO \n")
-        df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+        df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
           dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
         # Renderizando a tabela
         DT::datatable(
@@ -1012,6 +1019,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
           rownames = FALSE,
           selection = "single",
           class = 'compact row-border',
+          colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
           # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -1026,14 +1034,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
       cond <- input$TBracao_eng_rows_selected # condição condiction selecionado (NULL ou n_linha)
       ## Obtendo os dados
       df_eng <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         subset(Fase == "Engorda" | Fase == "Finalização") |>
         dplyr::slice(cond)
       # Mostrando o Modal para Edição dos dados
       showModal(
         modalDialog(
-          title = paste("Edição do Ração: ",df_eng$`Nome da ração`,"!"),
+          title = paste("Edição do Ração: ",df_eng$nome,"!"),
           size = "l",
           style = "width: fit-content !important;",
           footer = tagList(
@@ -1043,7 +1051,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
           # Formulário de Edição
           fluidRow(
             column(5,
-                   textInput(ns("nome_rac_edit"), labelMandatory("Nome ou Apelido da Ração"),value = df_eng$`Nome da ração`),
+                   textInput(ns("nome_rac_edit"), labelMandatory("Nome ou Apelido da Ração"),value = df_eng$nome),
                    shinyWidgets::radioGroupButtons(
                      inputId = ns("tipo_rac_edit"),
                      label = labelMandatory("Fase de produção do tipo da Ração:"),
@@ -1058,7 +1066,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
                        no = tags$i(class = "fa fa-square-o",
                                    style = "color: steelblue"))
                    ),
-                   numericInput(ns("tamanho_edit"),labelMandatory("Tamanho do pellet (mm):"), value = df_eng$`Tamanho pellet (mm)`, min = 0),
+                   numericInput(ns("tamanho_edit"),labelMandatory("Tamanho do pellet (mm):"), value = df_eng$tamanho, min = 0),
                    selectInput(inputId = ns("rac_fab_edit"),
                                label = labelMandatory("Fabricante da Ração"),
                                choices = df_fab()[which(df_fab()$tipo_produto_fab == "Ração"),"nome_fabricante"],
@@ -1109,7 +1117,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         cond <- input$TBracao_eng_rows_selected # condição condiction selecionado (NULL ou n_linha)
         ## Obtendo id_racao que foi selecionado na linha da tabela
         slect_id_racao <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Engorda" | Fase == "Finalização") |>
           dplyr::slice(cond) |>
@@ -1142,7 +1150,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar a tabela novamente
         output$TBracao_eng <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (2 vez) ATENCAO \n")
-          df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+          df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
             dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
           # Renderizando a tabela
           DT::datatable(
@@ -1150,6 +1158,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
+            colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
             # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -1170,14 +1179,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderizar o Status da ração. Toda informação da ração.
         ## Obtendo os dados
         df_eng <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Engorda" | Fase == "Finalização") |>
           dplyr::slice(cond)
         ## Corpo da informação
         ## Renderizando a informação da Ração
         div(
-          h3(paste("Ração selecionada: ",df_eng$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
+          h3(paste("Ração selecionada: ",df_eng$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           tags$ul(
             tags$li(h4(paste("Proteína Bruta (Mín.): ",df_eng$Proteína, " %"))),
             tags$li(h4(paste("Extrato Etéreo (Mín.): ",df_eng$extrato_etereo_min))),
@@ -1204,14 +1213,14 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # browser()
         ## Obtendo o ID dos dados selecionados
         id_select <- df_rac() |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           subset(Fase == "Engorda" | Fase == "Finalização") |>
           dplyr::slice(cond) |>
-          dplyr::select(c('id_racao','Nome da ração'))
+          dplyr::select(c('id_racao','nome'))
         # Renderizando a tabela do vendedor da Ração Alevino
         div(
-          h3(paste("Ração selecionada: ",id_select$`Nome da ração`), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
+          h3(paste("Ração selecionada: ",id_select$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           renderDataTable({
             ## Obtendo os dados do vendedor para a ração selecionada
             df_eng <- df_rac() |>
@@ -1315,7 +1324,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderização da tabela Ração Alevino
         output$TBracao_ale <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Alevino (I) \n")
-          df_ale <- subset(df_rac(), Fase == "Alevino")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+          df_ale <- subset(df_rac(), Fase == "Alevino")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
             dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
           # index <- order(df_ale$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
@@ -1324,6 +1333,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
+            colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
             # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -1333,7 +1343,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderização da tabela Ração Juvenil I e II
         output$TBracao_juv <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Juvenil I e II (1 vez) \n")
-          df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+          df_juv <- subset(df_rac(), Fase == "Juvenil 1" | Fase == "Juvenil 2")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
             dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
           # index <- order(df_juv$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
@@ -1342,6 +1352,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
+            colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
             # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -1351,7 +1362,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
         # Renderização da tabela Ração Engorda e Finalização
         output$TBracao_eng <- DT::renderDataTable({
           golem::cat_dev("Renderização da tabela Ração Engorda & Finalização (I) \n")
-          df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+          df_eng <- subset(df_rac(), Fase == "Engorda" | Fase == "Finalização")[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
             dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
           # index <- order(df_eng$`Tamanho pellet (mm)`) # ordenar por tamanho pellet
           # Renderizando a tabela
@@ -1360,6 +1371,7 @@ mod_tabRacao_server <- function(id,df_fab,df_rac){
             rownames = FALSE,
             selection = "single",
             class = 'compact row-border',
+            colnames = c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante"),
             # class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
