@@ -42,7 +42,7 @@ mod_tabCompRac_server <- function(id,df_rac){
     ####---- Tablea Lista de Ração para Compra (list_rac) ----####
     output$list_rac_tb <- DT::renderDataTable({
       # browser()
-      list_rac <- df_rac()[,c("Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
+      list_rac <- df_rac()[,c("nome","tamanho","Fase","Proteína","Fabricante")] |>
         dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
       # Renderizando a tabela
       DT::datatable(
@@ -50,7 +50,7 @@ mod_tabCompRac_server <- function(id,df_rac){
         rownames = FALSE,
         # selection = "single",
         extensions = 'RowGroup',
-        colnames = c("Nome","Tamanho","Fase","Proteína","Fabricante"),
+        colnames = c("Nome","Tamanho (mm)","Fase","Proteína","Fabricante"),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE, # mantem a tabela dentro do conteiner
@@ -70,22 +70,22 @@ mod_tabCompRac_server <- function(id,df_rac){
         #   dplyr::slice(cond) # Selecionando o data frame
         ## Selecionando os dados
         list_rac <- df_rac() |> # [,c("id_racao","Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
-          dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+          dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
           dplyr::distinct() |>
           dplyr::slice(cond)
         # browser()
         div(
           apply(list_rac, 1, function(x){
             tagList(
-              h3(paste("Ração: ",x['Nome da ração'],"\n"), style = "margin-top: 2px; margin-bottom: 2px;"),
+              h3(paste("Ração: ",x['nome'],"\n"), style = "margin-top: 2px; margin-bottom: 2px;"),
               fluidRow(
                 column(3,
                        selectInput(inputId = ns(paste0("dist",x['id_racao'])), # Distribuidor (Vendedor)
                                    label = labelMandatory("Vendedor"),
-                                   choices = df_rac() |>
-                                     dplyr::filter(id_racao == x[['id_racao']]) |>
-                                     dplyr::select("Distribuidor")
-                                   # choices = df_rac()[which(df_rac()$id_racao == x[['id_racao']]),"Distribuidor"]
+                                   # choices = df_rac() |>
+                                   #   dplyr::filter(id_racao == x['id_racao']) |>
+                                   #   dplyr::select("Distribuidor")
+                                   choices = df_rac()[which(df_rac()$id_racao == x[['id_racao']]),"Distribuidor"]
                                    )
                        ),
                 column(2,
@@ -151,7 +151,7 @@ mod_tabCompRac_server <- function(id,df_rac){
       req(!is.null(cond), cancelOutput = FALSE)
       ## Obtendo os id_racao selecionados
       list_IDrac <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         dplyr::slice(cond) |>
         dplyr::pull('id_racao') # Extraindo a coluna ID_racao
@@ -178,7 +178,7 @@ mod_tabCompRac_server <- function(id,df_rac){
       req(!is.null(cond), cancelOutput = FALSE)
       ## Obtendo os id_racao selecionados
       list_IDrac <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         dplyr::slice(cond) |>
         dplyr::pull('id_racao') # Extraindo a coluna ID_racao
@@ -192,29 +192,95 @@ mod_tabCompRac_server <- function(id,df_rac){
       ## Todos foram aprovados?
       aprovado <- all(list_input_aprovada)
       if(aprovado){ # Condições satisfeita
-        browser()
-
+        # browser()
         #------------ Criar um data frame para inserir as informações na tabela compra_racao
+        ## Obtendo os dados da ração selecionados
+        list_rac <- df_rac() |>
+          # dplyr::select(!c('Distribuidor','id_distribuidor','id_distribuidor','Celular','Whatsapp')) |>
+          dplyr::distinct() |>
+          dplyr::slice(cond)
 
-        # data.frame(
-        #   id_racao = list_IDrac,
-        #   id_fabricante = ,
-        # )
-        # compra_racao(id_racao,id_fabricante,id_distribuidor,valor_uni,quantidade,valor_entrada,validade,cod_lote,id_compra)
+        ## Transformando os id_racao nos nomes dos input$quant_id
+        (list_preco_select <- paste0("preco",list_IDrac))
+        # Conferindo a condição
+        valor_uni <- sapply(list_preco_select, function(x){
+          req(input[[x]])
+        })
+        ## Transformando os id_racao nos nomes dos input$quant_id
+        (list_quant_select <- paste0("quant",list_IDrac))
+        # Conferindo a condição
+        quantidade <- sapply(list_quant_select, function(x){
+          req(input[[x]])
+        })
+        ## Transformando os id_racao nos nomes dos input$quant_id
+        (list_date_select <- paste0("date",list_IDrac))
+        # Conferindo a condição
+        date <- sapply(list_date_select, function(x){
+          format(req(input[[x]]), "%Y-%m-%d")
+        })
+        date
+        ## Transformando os id_racao nos nomes dos input$quant_id
+        (list_codigo_select <- paste0("codigo",list_IDrac))
+        # Conferindo a condição
+        codigo <- sapply(list_codigo_select, function(x){
+          req(input[[x]])
+        })
 
+        # dados inseridos na tabela compra_racao
+        insertCompRac <- data.frame(
+          id_racao = list_rac$id_racao,
+          id_fabricante = list_rac$id_fabricante,
+          id_distribuidor = list_rac$id_distribuidor,
+          valor_uni = as.vector(valor_uni),
+          quantidade = as.vector(quantidade),
+          valor_entrada = as.vector(valor_uni*quantidade),
+          validade = format(as.vector(date)),
+          cod_lote = as.vector(codigo)
+          # id_compra =
+        )
+        # insertCompRac
+        # str(insertCompRac)
+
+        # Dados inseridos na tabela compra
+        insertCompra <- data.frame(
+          quantidade_itens = length(cond),
+          quantidade_total = Reduce("+", quantidade),
+          valor_total = Reduce("+", quantidade*valor_uni),
+          data_compra = format(input$data_pedido),
+          data_chegada = as.POSIXct(input$data_pedido),
+          tipo_compra = 'ração'
+        )
+        # insertCompra
 
         #------------- INSERT INTO --------------
         # browser()
         # Connect to DB
         con <- connect_to_db()
+        # DBI::dbWriteTable(con, "compra", insertCompra, row.names=FALSE, append=TRUE)
+        # Criando tabela temporária no DB para inserir os valores
+        DBI::dbWriteTable(con, "valores_a_inserir", insertCompRac, row.names=FALSE, append=TRUE)
+
         ## Inserindo dados fornecedor
         query <- glue::glue(read_sql_file(path = "SQL/insert_compra_racao.sql"))
         ### Query to send to database
         insert_prop <- DBI::dbSendQuery(conn = con, statement = query)
         DBI::dbClearResult(insert_prop) # limpando resultados
+
+        # Removendo a tabela temporária criada para inserir os valores
+        DBI::dbRemoveTable(con, "valores_a_inserir")
         # Disconnect from the DB
         DBI::dbDisconnect(con)
         #----------------------------------------
+        ###shinyModal to show to user when the update to the database table is successful
+        showModal(
+          modalDialog( title=paste0("Pedido realizado com sucesso!!!"),
+                       br(),
+                       div(tags$b(paste0("A tabela de Pedidos foi atualizada."), style = "color: green;")),
+                       footer = modalButton("Ok")
+          )
+        )
+        #----------------- Criar uma tabela de todos os pedido realizados -----------------------
+
 
       } else { # Condições NÃO satisfeita
         # Mostrar msg de erro se alguma condição não for satisfeita e selecione a msg correta
@@ -228,23 +294,7 @@ mod_tabCompRac_server <- function(id,df_rac){
           )
         )
       }
-
-
-
-
-
       #---------------
-
-      ## Lista de mensagens imprimidas no app quando tier erro
-      li_msg <- list(
-        nome_prop = c("Nome do Proprietário não pode ultrapassar 40 letras"),
-        tel_prop = c("Telefone do Proprietário deve ter no máximo 15 caracteres e eles devem ser numéricos"),
-        cpf_prop = c("O CPF (Cadastro de Pessoas Físicas) deve ter 11 caracteres e eles devem ser numéricos")
-      )
-      # browser()
-
-
-
     })
 
 
@@ -284,7 +334,7 @@ mod_tabCompRac_server <- function(id,df_rac){
       req(!is.null(cond), cancelOutput = FALSE)
       ## Obtendo os id_racao selecionados
       list_IDrac <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         dplyr::slice(cond) |>
         dplyr::pull('id_racao') # Extraindo a coluna ID_racao
@@ -309,7 +359,7 @@ mod_tabCompRac_server <- function(id,df_rac){
       req(!is.null(cond), cancelOutput = FALSE)
       ## Obtendo os id_racao selecionados
       list_IDrac <- df_rac() |>
-        dplyr::select(!c('Distribuidor','Celular','Whatsapp')) |>
+        dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         dplyr::slice(cond) |>
         dplyr::pull('id_racao') # Extraindo a coluna ID_racao
