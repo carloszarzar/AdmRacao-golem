@@ -129,7 +129,7 @@ CREATE TABLE compra_racao(
 	valor_uni NUMERIC NOT NULL, -- Real R$/kg da ração
 	quantidade REAL NOT NULL, -- quantidade comprada (kg)
 	valor_entrada NUMERIC NOT NULL, -- Valor total da compra para essa ração (R$)
-	validade DATE NOT NULL, -- Data de validade da ração
+	validade VARCHAR(10) NOT NULL, -- Data de validade da ração. Pode ser VARCHAR(10) ou DATE
 	cod_lote VARCHAR(30) NULL, -- Código da ração do fabricante para rastreio
 	created_at TIMESTAMPTZ DEFAULT Now() 
 );
