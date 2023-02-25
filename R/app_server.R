@@ -120,6 +120,22 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
+  # Dados da Tabela Compra
+  df_comp <- reactiveVal({
+    golem::cat_dev("Importou os dados da Compra \n")
+    ## conectando com o DB PostgreSQL
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue("TABLE compra;")
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
 
   ####----- tabInicio ----####
   mod_tabInicio_server("global")
@@ -132,7 +148,7 @@ app_server <- function(input, output, session) {
   ####----- tabFazenda ----####
   mod_tabFazenda_server("global",df_prop,df_faz)
   ####----- tabCompRac ----####
-  mod_tabCompRac_server("global",df_rac)
+  mod_tabCompRac_server("global",df_rac,df_comp)
   ####----- tabCompAle ----####
   mod_tabCompAle_server("global")
 

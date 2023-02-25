@@ -12,31 +12,50 @@ mod_tabCompRac_ui <- function(id){
   tagList(
     fluidRow(
       ####---- Tablea Lista de Ração para Compra (list_rac) ----####
-      box(
-        title = "Lista de Ração Cadastradas", status = "primary",
-        collapsible = TRUE, width = 4,# height = 550,
-        DT::dataTableOutput(ns("list_rac_tb"))
+      column(4,
+             box(
+               title = "Lista de Ração Cadastradas", status = "primary",
+               collapsible = TRUE, width = 12,# height = 550,
+               DT::dataTableOutput(ns("list_rac_tb"))
+             )
       ),
       ####---- Dados do pedido ----####
-      box(
-        title = "Dados do Pedido", status = "primary",
-        collapsible = TRUE, width = 8,# height = 550,
-        uiOutput(ns("dados_pedido"))
-      ),
-      uiOutput(ns("realizar_pedido"))
+      column(8,
+             box(
+               title = "Dados do Pedido", status = "primary",
+               collapsible = TRUE, width = 12,# height = 550,
+               uiOutput(ns("dados_pedido"))
+             ),
+             uiOutput(ns("realizar_pedido"))
+      )
     ),
     ####---- InforBox - informação sobre compra da ração ----####
     fluidRow(
       uiOutput(ns("inf_box"))
+    ),
+    ####---- Confirmação de pagamento ----####
+    fluidRow(
+      box(
+        title = "Pedidos realizados", status = "primary",
+        collapsible = TRUE, width = 4,# height = 550,
+        DT::dataTableOutput(ns("list_pedido"))
+      )
+    ),
+    ####---- Tabela Pedidos Realizados (Histórico) ----####
+    fluidRow(
+      box(
+        title = "Histórico de Pedidos", status = "primary",
+        collapsible = TRUE, width = 4,# height = 550,
+        DT::dataTableOutput(ns("hist_pedido"))
+      )
     )
-
   )
 }
 
 #' tabCompRac Server Functions
 #'
 #' @noRd
-mod_tabCompRac_server <- function(id,df_rac){
+mod_tabCompRac_server <- function(id,df_rac,df_comp){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Tablea Lista de Ração para Compra (list_rac) ----####
@@ -126,7 +145,7 @@ mod_tabCompRac_server <- function(id,df_rac){
       if(!is.null(cond)){
         box(
           title = "Realizar o Pedido", status = "danger",
-          collapsible = FALSE, width = 8,
+          collapsible = FALSE, width = 12,
           # Corpo do box
           fluidRow(
             column(5,
@@ -394,8 +413,25 @@ mod_tabCompRac_server <- function(id,df_rac){
       )
 
     })
-
-
+    ####---- Tabela Pedidos Realizados (Histórico) ----####
+    output$hist_pedido <- DT::renderDataTable({
+      # browser()
+      list_comp <- df_comp() |>
+        dplyr::filter(tipo_compra == 'ração') |>
+        dplyr::select(c("id_compra","data_compra","quantidade_total","valor_total","quantidade_itens"))
+      # Renderizando a tabela
+      DT::datatable(
+        list_comp, # df_ale[index,],
+        rownames = FALSE,
+        # selection = "single",
+        extensions = 'RowGroup',
+        colnames = c("ID","Data do pedido","Quant. (kg)","Valor (R$)","Ítens"),
+        class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+        options = list(searching = FALSE, lengthChange = FALSE,
+                       scrollX = TRUE # mantem a tabela dentro do conteiner
+        )
+      ) %>% DT::formatDate('data_compra', method = 'toLocaleString') # Consertando timestap para formato desejado
+    })
 
 
 
