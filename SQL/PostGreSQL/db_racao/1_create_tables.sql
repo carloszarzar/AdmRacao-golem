@@ -113,7 +113,7 @@ CREATE TABLE compra(
 	quantidade_itens INT NOT NULL,
     	quantidade_total NUMERIC NOT NULL, -- quantidade total comprada kg de ração ou milheiro de alevino
 	valor_total NUMERIC NOT NULL,
-	data_compra TIMESTAMP NOT NULL,
+	data_compra TIMESTAMP NOT NULL, -- Data que foi pago o pedido
 	data_chegada TIMESTAMP NULL,
 	tipo_compra VARCHAR(10) NOT NULL,
 	created_at TIMESTAMPTZ DEFAULT Now() 
