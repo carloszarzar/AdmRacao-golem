@@ -22,7 +22,7 @@ mod_tabCompRac_ui <- function(id){
       ####---- Dados do pedido ----####
       column(8,
              box(
-               title = "Dados do Pedido", status = "primary",
+               title = "Realizando o Pedido", status = "primary",
                collapsible = TRUE, width = 12,# height = 550,
                uiOutput(ns("dados_pedido"))
              ),
@@ -33,19 +33,16 @@ mod_tabCompRac_ui <- function(id){
     fluidRow(
       uiOutput(ns("inf_box"))
     ),
-    ####---- Confirmação de pagamento ----####
-    fluidRow(
-      box(
-        title = "Pedidos realizados", status = "primary",
-        collapsible = TRUE, width = 4,# height = 550,
-        DT::dataTableOutput(ns("list_pedido"))
-      )
-    ),
     ####---- Tabela Pedidos Realizados (Histórico) ----####
     fluidRow(
       box(
+        title = "Dados do pedido", status = "primary",
+        collapsible = TRUE, width = 6,# height = 550,
+        uiOutput(ns("status_pedido"))
+      ),
+      box(
         title = "Histórico de Pedidos", status = "primary",
-        collapsible = TRUE, width = 4,# height = 550,
+        collapsible = TRUE, width = 6,# height = 550,
         DT::dataTableOutput(ns("hist_pedido"))
       )
     )
@@ -148,11 +145,17 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp){
           collapsible = FALSE, width = 12,
           # Corpo do box
           fluidRow(
-            column(5,
+            column(4,
                     dateInput(ns("data_pedido"),
                               format = "dd-mm-yyyy", label = labelMandatory('Data da realização do pedido'),
                               # width = "200px",
                               value=Sys.Date())
+            ),
+            column(4,
+                   dateInput(ns("data_chegada"),
+                             format = "dd-mm-yyyy", label = labelMandatory('Previsão de chegada'),
+                             # width = "200px",
+                             value=Sys.Date())
             ),
             column(4, style = "padding-top: 30px;",
                    actionButton(ns("pedido"),"Realizar Pedido", icon("paper-plane"), class = "btn-success")
@@ -188,9 +191,9 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp){
       mandatoryFilled_fab <- all(mandatoryFilled_fab)
       shinyjs::toggleState(id = "pedido", condition = mandatoryFilled_fab)
     })
-    #-------------------------------------------------------------
     # Apertando o botão Realizar Pedido (pedido)
     observeEvent(input$pedido,{
+      # browser()
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$list_rac_tb_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # Corrigindo um erro caso não tenha nenhuma linha selecionada na tabela
@@ -220,30 +223,33 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp){
           dplyr::slice(cond)
 
         ## Transformando os id_racao nos nomes dos input$quant_id
-        (list_preco_select <- paste0("preco",list_IDrac))
+        list_preco_select <- paste0("preco",list_IDrac)
         # Conferindo a condição
         valor_uni <- sapply(list_preco_select, function(x){
           req(input[[x]])
         })
+        valor_uni
         ## Transformando os id_racao nos nomes dos input$quant_id
-        (list_quant_select <- paste0("quant",list_IDrac))
+        list_quant_select <- paste0("quant",list_IDrac)
         # Conferindo a condição
         quantidade <- sapply(list_quant_select, function(x){
           req(input[[x]])
         })
+        quantidade
         ## Transformando os id_racao nos nomes dos input$quant_id
-        (list_date_select <- paste0("date",list_IDrac))
+        list_date_select <- paste0("date",list_IDrac)
         # Conferindo a condição
         date <- sapply(list_date_select, function(x){
           format(req(input[[x]]), "%Y-%m-%d")
         })
         date
         ## Transformando os id_racao nos nomes dos input$quant_id
-        (list_codigo_select <- paste0("codigo",list_IDrac))
+        list_codigo_select <- paste0("codigo",list_IDrac)
         # Conferindo a condição
         codigo <- sapply(list_codigo_select, function(x){
-          req(input[[x]])
+          input[[x]]
         })
+        codigo
 
         # dados inseridos na tabela compra_racao
         insertCompRac <- data.frame(
@@ -266,7 +272,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp){
           quantidade_total = Reduce("+", quantidade),
           valor_total = Reduce("+", quantidade*valor_uni),
           data_compra = format(input$data_pedido),
-          data_chegada = as.POSIXct(input$data_pedido),
+          data_chegada = format(input$data_chegada),  # as.POSIXct(input$data_chegada),
           tipo_compra = 'ração'
         )
         # insertCompra
@@ -298,8 +304,44 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp){
                        footer = modalButton("Ok")
           )
         )
-        #----------------- Criar uma tabela de todos os pedido realizados -----------------------
-
+        # Atualização da tabela compra histórico
+        output$hist_pedido <- DT::renderDataTable({
+          # browser()
+          # Atualizando tabela compra
+          # Dados da Tabela Compra
+          df_comp({
+            golem::cat_dev("Importou os dados da Compra \n")
+            ## conectando com o DB PostgreSQL
+            # Connect to DB
+            con <- connect_to_db()
+            # Query
+            query <- glue::glue("TABLE compra;")
+            # browser() # Shiny Debugging
+            df_postgres <- DBI::dbGetQuery(con, statement = query)
+            # Disconnect from the DB
+            DBI::dbDisconnect(con)
+            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+            # Convert to data.frame
+            data.frame(df_postgres,check.names = FALSE)
+          })
+          list_comp <- df_comp() |>
+            dplyr::filter(tipo_compra == 'ração') |>
+            dplyr::select(c("id_compra","data_compra","quantidade_total","valor_total","quantidade_itens","data_chegada"))
+          # Renderizando a tabela
+          DT::datatable(
+            list_comp, # df_ale[index,],
+            rownames = FALSE,
+            selection = "single",
+            extensions = 'RowGroup',
+            colnames = c("ID","Data do pedido","Quant. (kg)","Valor (R$)","Ítens","Previsão chegada"),
+            class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+            options = list(searching = FALSE, lengthChange = FALSE,
+                           scrollX = TRUE # mantem a tabela dentro do conteiner
+            )
+          ) %>% DT::formatDate(c('data_compra','data_chegada'), method = "toLocaleDateString") # Consertando timestap para formato desejado
+        })
+        # Desabilitando UI dinamico (linhas selecionadas)
+        shinyjs::disable("dados_pedido")
 
       } else { # Condições NÃO satisfeita
         # Mostrar msg de erro se alguma condição não for satisfeita e selecione a msg correta
@@ -315,11 +357,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp){
       }
       #---------------
     })
-
-
-
     #-------------------------------------------------------------
-
     ####---- InforBox - informação sobre compra da ração ----####
     # Renderizando o outputUI
     output$inf_box <- renderUI({
@@ -418,19 +456,19 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp){
       # browser()
       list_comp <- df_comp() |>
         dplyr::filter(tipo_compra == 'ração') |>
-        dplyr::select(c("id_compra","data_compra","quantidade_total","valor_total","quantidade_itens"))
+        dplyr::select(c("id_compra","data_compra","quantidade_total","valor_total","quantidade_itens","data_chegada"))
       # Renderizando a tabela
       DT::datatable(
         list_comp, # df_ale[index,],
         rownames = FALSE,
-        # selection = "single",
+        selection = "single",
         extensions = 'RowGroup',
-        colnames = c("ID","Data do pedido","Quant. (kg)","Valor (R$)","Ítens"),
+        colnames = c("ID","Data do pedido","Quant. (kg)","Valor (R$)","Ítens","Previsão chegada"),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
         )
-      ) %>% DT::formatDate('data_compra', method = 'toLocaleString') # Consertando timestap para formato desejado
+      ) %>% DT::formatDate(c('data_compra','data_chegada'), method = "toLocaleDateString") # Consertando timestap para formato desejado
     })
 
 
