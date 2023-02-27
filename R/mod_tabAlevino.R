@@ -108,7 +108,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         )
       ) %>% DT::formatDate('created_at', method = 'toLocaleString') # Consertando timestap para formato desejado
     })
-    ####---- BOX informação Alevino ----####
+    ####---- BOX informação Alevino
     ####---- Tabpanel inf_ale ----####
     output$inf_ale <- renderUI({
       # Conferindo se a linha da tabela foi selecionado

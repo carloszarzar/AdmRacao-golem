@@ -20,7 +20,7 @@ app_ui <- function(request) {
         # Início do menu do sidebar
         sidebarMenu(id="global-tabs",
                     menuItem("Início", tabName = "global-tabInicio", icon = icon("th")),
-                    menuItem("Estoque", tabName = "tabEstqoue", icon = icon("th")),
+                    menuItem("Estoque", tabName = "tabEstoque", icon = icon("th")),
                     menuItem("Cadastro", tabName = "tabCadastro", icon = icon("th"),
                              # O Cadastro subdivide em:
                              menuSubItem('Fornecedor', tabName = 'global-tabFornecedor'),
@@ -58,7 +58,11 @@ app_ui <- function(request) {
             tabName = "global-tabInicio",
             mod_tabInicio_ui("global")
           ),
-          #---- tabEstqoue ----####
+          #---- tabEstoque ----####
+          tabItem(
+            tabName = "global-tabEstoque",
+            mod_tabEstoque_ui("global")
+          ),
           #---- tabCadastro
           #---- tabFornecedor ----####
           tabItem( # tabFornecedor (Fornecedor= Fabricante + Distribuidor)

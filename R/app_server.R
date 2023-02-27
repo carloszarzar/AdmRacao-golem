@@ -148,9 +148,11 @@ app_server <- function(input, output, session) {
   ####----- tabFazenda ----####
   mod_tabFazenda_server("global",df_prop,df_faz)
   ####----- tabCompRac ----####
-  mod_tabCompRac_server("global",df_rac,df_comp)
+  mod_tabCompRac_server("global",df_rac,df_comp,df_comp_rac)
   ####----- tabCompAle ----####
   mod_tabCompAle_server("global")
+  ####----- tabEstoque ----####
+  mod_tabEstoque_server("global")
 
 
 }
