@@ -4,7 +4,5 @@
    # Inserindo dados editados na tabela compra_racao no DB
 */
 UPDATE compra_racao
-SET valor_uni = {preco_edit}, quantidade = {quant_edit},
-    valor_entrada = {valor_entrada},
-    validade = '{val_edit}', cod_lote = '{cod_lote}'
-WHERE id_comp_racao = {id_compRac_select};
+  SET validade = '{val_edit}', cod_lote = '{cod_lote}'
+  WHERE id_comp_racao = {id_compRac_select};

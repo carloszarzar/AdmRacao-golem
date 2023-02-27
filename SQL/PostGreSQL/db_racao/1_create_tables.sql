@@ -122,7 +122,7 @@ CREATE TABLE compra(
 -- TABELA compra_racao
 CREATE TABLE compra_racao(
 	id_comp_racao SERIAL PRIMARY KEY NOT NULL,
-	id_compra SERIAL NOT NULL REFERENCES compra(id_compra),
+	id_compra SERIAL NOT NULL REFERENCES compra(id_compra) ON DELETE CASCADE,
 	id_racao SERIAL NOT NULL REFERENCES racao(id_racao),
      	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante),
     	id_distribuidor SERIAL NOT NULL REFERENCES distribuidor(id_distribuidor),
