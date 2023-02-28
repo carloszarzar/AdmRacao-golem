@@ -138,7 +138,7 @@ CREATE TABLE compra_racao(
 CREATE TABLE compra_alevino(
 	id_comp_alevino SERIAL PRIMARY KEY NOT NULL,
 	id_compra SERIAL NOT NULL REFERENCES compra(id_compra),
-	id_alevino SERIAL NOT NULL REFERENCES alevino(id_alevino),
+	id_alevino SERIAL NOT NULL REFERENCES alevino(id_alevino) ON DELETE CASCADE,
 	valor_uni NUMERIC NOT NULL,
 	quantidade REAL NOT NULL,
 	valor_entrada NUMERIC NOT NULL,
@@ -167,7 +167,7 @@ CREATE TABLE saida_alevino(
 	valor_saida NUMERIC NOT NULL,
 	id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda),
 	data_saida TIMESTAMP NOT NULL,
-	id_comp_alevino SERIAL NOT NULL REFERENCES compra_alevino(id_comp_alevino),
+	id_comp_alevino SERIAL NOT NULL REFERENCES compra_alevino(id_comp_alevino) ON DELETE CASCADE,
 	created_at TIMESTAMPTZ DEFAULT Now() 
 );
 

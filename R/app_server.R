@@ -150,7 +150,7 @@ app_server <- function(input, output, session) {
   ####----- tabCompRac ----####
   mod_tabCompRac_server("global",df_rac,df_comp,df_comp_rac)
   ####----- tabCompAle ----####
-  mod_tabCompAle_server("global")
+  mod_tabCompAle_server("global",df_alevino,df_fab)
   ####----- tabEstoque ----####
   mod_tabEstoque_server("global")
 

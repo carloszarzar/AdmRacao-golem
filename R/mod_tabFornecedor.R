@@ -98,6 +98,20 @@ mod_tabFornecedor_ui <- function(id){
               # Conteúdo do box
               textInput(ns("nome_dis"), labelMandatory("Name Distribuidor (Vendedor representante)")),
               textInput(ns("tel_dis"), labelMandatory("Telefone celular do Distribuidor (Vendedor representante)")),
+              # Box check Tipo do produto vendedor
+              shinyWidgets::radioGroupButtons(
+                inputId = ns("tipo_produto_dis"),
+                label = labelMandatory("Produto(s) vendido(s):"),
+                choices = c("Ração","Alevino"
+                            # ,"Ração/Alevino"
+                            ),
+                individual = TRUE,
+                checkIcon = list(
+                  yes = tags$i(class = "fa fa-circle",
+                               style = "color: steelblue"),
+                  no = tags$i(class = "fa fa-circle-o",
+                              style = "color: steelblue"))
+              ),
               uiOutput(outputId = ns("fab_select")),
               # Whatsapp
               h4("Whatsapp"),
@@ -108,18 +122,6 @@ mod_tabFornecedor_ui <- function(id){
                 onLabel = "Sim",
                 offLabel = "Não",
                 value = TRUE
-              ),
-              # Box check Tipo do produto vendedor
-              shinyWidgets::radioGroupButtons(
-                inputId = ns("tipo_produto_dis"),
-                label = labelMandatory("Produto(s) vendido(s):"),
-                choices = c("Ração","Alevino","Ração/Alevino"),
-                individual = TRUE,
-                checkIcon = list(
-                  yes = tags$i(class = "fa fa-circle",
-                               style = "color: steelblue"),
-                  no = tags$i(class = "fa fa-circle-o",
-                              style = "color: steelblue"))
               ),
               # Botão submeter fabricante
               h3("Cadastrar o Distribuidor (Vendedor representante)!"),
@@ -1180,9 +1182,10 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
     # Select Input do Fabricante (Form)
     ## Seleção do fabricante para o distribuidor. Só tem no distribuidor essa informação
     output$fab_select <- renderUI({
+      # browser()
       selectInput(inputId = ns("fab_distribuidor"),
                   label = labelMandatory("Fabricante (Fábrica) do Distribuidor (vendedor)"),
-                  choices = df_fab()[,"nome_fabricante"])
+                  choices = df_fab()[df_fab()$tipo_produto_fab == input$tipo_produto_dis,"nome_fabricante"])
     })
     # browser()
     # reactiveConsole(TRUE)
