@@ -521,7 +521,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
         )
 
       } else { # Linha NÃO selecionada
-        h1("Selecione uma Compra na tabela ao lado !")
+        h1("Selecione um Pedido na tabela ao lado !")
       }
     })
     ##---- Botão Apagar ----##
