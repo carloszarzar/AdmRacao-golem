@@ -330,6 +330,23 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
             # Convert to data.frame
             data.frame(df_postgres,check.names = FALSE)
           })
+          # Atualizando tabela compra_racao
+          # Dados da Tabela Compra_Ração
+          df_comp_rac({
+            golem::cat_dev("Importou os dados da Compra de Ração \n")
+            ## conectando com o DB PostgreSQL
+            # Connect to DB
+            con <- connect_to_db()
+            # Query
+            query <- glue::glue("TABLE compra_racao;")
+            # browser() # Shiny Debugging
+            df_postgres <- DBI::dbGetQuery(con, statement = query)
+            # Disconnect from the DB
+            DBI::dbDisconnect(con)
+            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+            # Convert to data.frame
+            data.frame(df_postgres,check.names = FALSE)
+          })
           list_comp <- df_comp() |>
             dplyr::filter(tipo_compra == 'ração') |>
             dplyr::select(c("id_compra","data_compra","quantidade_total","valor_total","quantidade_itens","data_chegada"))
