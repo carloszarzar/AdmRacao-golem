@@ -203,13 +203,14 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$list_rac_tb_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # Corrigindo um erro caso não tenha nenhuma linha selecionada na tabela
-      req(!is.null(cond), cancelOutput = FALSE)
+      req(cond, cancelOutput = FALSE)
       ## Obtendo os id_racao selecionados
       list_IDrac <- df_rac() |>
         dplyr::select(!c('Distribuidor','id_distribuidor','id_distribuidor','Celular','Whatsapp')) |>
         dplyr::distinct() |>
         dplyr::slice(cond) |>
         dplyr::pull('id_racao') # Extraindo a coluna ID_racao
+      # browser()
       ## Transformando os id_racao nos nomes dos input$quant_id
       (list_codigo_select <- paste0("codigo",list_IDrac))
       # Conferindo a condição
@@ -217,8 +218,18 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
         # req(input[[x]])
         stringi::stri_stats_latex(input[[x]])[[1]] <= 30
       })
+      ## Transformando os id_racao nos nomes dos input$quant_id
+      (list_preco_select <- paste0("preco",list_IDrac))
+      (list_quant_select <- paste0("quant",list_IDrac))
+      # Observe se todos os campos estão preenchidos para liberar o botão submeter (realizar pedido)
+      mandatoryFille <- vapply(c(list_preco_select,list_quant_select),
+                                    function(x) {
+                                      !is.null(input[[x]]) && input[[x]] != "" && input[[x]] > 0
+                                    },
+                                    logical(1)
+      )
       ## Todos foram aprovados?
-      aprovado <- all(list_input_aprovada)
+      aprovado <- all(list_input_aprovada,mandatoryFille)
       if(aprovado){ # Condições satisfeita
         # browser()
         #------------ Criar um data frame para inserir as informações na tabela compra_racao
@@ -368,11 +379,18 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
         shinyjs::disable("realizar_pedido")
       }
       else { # Condições NÃO satisfeita
+        # Lista de msg a ser printada na tela
+        list_msg <- list(
+          codigo = "Código do Lote não pode ultrapassar 30 caractéres",
+          num = "O Preço unitário e a quantidade a ser comprada devem ser maiores que 0 (zero)"
+        )
+        # Seleção de qual msg deve ser printada
+        list_print <- c(!all(list_input_aprovada),!all(mandatoryFille))
         # Mostrar msg de erro se alguma condição não for satisfeita e selecione a msg correta
         showModal(
           modalDialog(
             title = "Erro no cadastro do Pedido !!!",
-            div(tags$b(HTML(paste("Código do Lote não pode ultrapassar 30 caractéres", collapse = "<br/>")), style = "color: red;")),
+            div(tags$b(HTML(paste(list_msg[list_print], collapse = "<br/>")), style = "color: red;")),
             footer = modalButton("Fechar"),
             easyClose = TRUE,
             fade = TRUE
