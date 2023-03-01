@@ -98,11 +98,11 @@ CREATE TABLE alevino(
 	id_alevino SERIAL PRIMARY KEY NOT NULL,
 	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante) ON DELETE CASCADE,
 	prod_ale VARCHAR(20) NOT NULL,
-	especie VARCHAR(20) NULL,
+	apelido VARCHAR(20) NULL, -- apelido do alevino
 	sexo VARCHAR(10) NULL,
-	peso_init REAL NOT NULL, -- mg
-	data_init TIMESTAMPTZ NOT NULL, -- Data de eclosão
-	dias_init INT NULL, -- dias de vida
+	peso_init REAL NOT NULL, -- mg (APAGAR Sair daqui)
+	data_init TIMESTAMPTZ NOT NULL, -- Data de eclosão (APAGAR Sair daqui)
+	dias_init INT NULL, -- dias de vida (APAGAR Sair daqui)
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL 
 );
@@ -129,7 +129,7 @@ CREATE TABLE compra_racao(
 	valor_uni NUMERIC NOT NULL, -- Real R$/kg da ração
 	quantidade REAL NOT NULL, -- quantidade comprada (kg)
 	valor_entrada NUMERIC NOT NULL, -- Valor total da compra para essa ração (R$)
-	validade VARCHAR(10) NOT NULL, -- Data de validade da ração. Pode ser VARCHAR(10) ou DATE
+	validade VARCHAR(10) NOT NULL, -- Corrigir validade para = TIMESTAMPTZ NOT NULL
 	cod_lote VARCHAR(30) NULL, -- Código da ração do fabricante para rastreio
 	created_at TIMESTAMPTZ DEFAULT Now() 
 );
@@ -139,13 +139,17 @@ CREATE TABLE compra_alevino(
 	id_comp_alevino SERIAL PRIMARY KEY NOT NULL,
 	id_compra SERIAL NOT NULL REFERENCES compra(id_compra) ON DELETE CASCADE,
 	id_alevino SERIAL NOT NULL REFERENCES alevino(id_alevino) ON DELETE CASCADE,
-	valor_uni NUMERIC NOT NULL,
-	quantidade REAL NOT NULL,
-	valor_entrada NUMERIC NOT NULL,
-	peso REAL NOT NULL,
-	dias INT NOT NULL,
+	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante) ON DELETE CASCADE,
+	id_distribuidor SERIAL NOT NULL REFERENCES distribuidor(id_distribuidor) ON DELETE CASCADE,
+	valor_uni NUMERIC NOT NULL, -- valor do milheiro
+	quantidade REAL NOT NULL, -- quanto milheiros
+	valor_entrada NUMERIC NOT NULL, -- quanto no total ta pagando (R$ x quant.)
+	peso_init REAL NOT NULL, -- g
+	data_init TIMESTAMPTZ NOT NULL, -- Data de eclosão (nascimento)
+	dias_init INT NULL, -- dias de vida
 	cod_lote VARCHAR(30) NULL,
-	created_at TIMESTAMPTZ DEFAULT Now() 
+	created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL
 );
 
 -- TABELA saida_racao

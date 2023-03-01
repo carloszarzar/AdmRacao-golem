@@ -60,7 +60,7 @@ mod_tabAlevino_ui <- function(id){
                                     choices = list("Tambaqui" = "Tambaqui", "Tilápia" = "Tilápia", "Camarão" = "Camarão", "Outros" = "Outros"),
                                     selected = "Tambaqui"),
                        # uiOutput(outputId = ns("ale_fabe_render")),
-                       textInput(ns("especie"), "Nome da Espécie do Alevino"),
+                       textInput(ns("apelido"), "Nome (apelido) do Alevino"),
                        dateInput(ns("data_init"), label = labelMandatory("Data de nascimento (eclosão)"), value = Sys.Date()),
                        actionButton(ns("submit_ale"), "Cadastrar", icon("paper-plane"), class = "btn-primary")
                 )
@@ -86,13 +86,13 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       # df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
       df_ale <- df_alevino() |>
         dplyr::mutate(data_nasci = as.character( format(as.Date(data_init), "%d-%m-%Y") )) |>
-        dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_nasci","dias_init","created_at")) |>
+        dplyr::select(c("nome_fabricante","prod_ale","sexo","apelido","peso_init","data_nasci","dias_init","created_at")) |>
         dplyr::distinct()
       # Renderizando a tabela
       DT::datatable(
         df_ale, # df_alevino(),
         colnames=c("Nome do Fabricante", "Tipo do Produto","Sexo",
-                   "Espécie","Peso inicial","Data nasc.","Dias vida",
+                   "Apelido","Peso inicial","Data nasc.","Dias vida",
                    "Criado em:"),
         rownames = FALSE,
         selection = "single",
@@ -112,13 +112,13 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       if(!is.null(cond)){ # Linha selecionada:
         # Obtendo os dados slecionado correspondente a linha
         df_ale <- df_alevino() |>
-          dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")) |>
+          dplyr::select(c("nome_fabricante","prod_ale","sexo","apelido","peso_init","data_init","dias_init","created_at")) |>
           dplyr::distinct() |>
           dplyr::slice(cond)
         ## Corpo da informação
         prod <- h4(paste("Produto: ",df_ale$prod_ale))
         sexo <- h4(paste("Sexo: ",df_ale$sexo))
-        especie <- h4(paste("Espécie: ",df_ale$especie))
+        apelido <- h4(paste("Apelido: ",df_ale$apelido))
         peso <- h4(paste("Peso médio inicial: ",df_ale$peso_init," (mg)"))
         dias <- h4(paste("Dias de vida: ",df_ale$dias_init))
         data <- h4(paste("Data de nascimento: ",format(df_ale$data_init,format = "%d-%m-%Y")))
@@ -136,7 +136,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         div(
           h3(paste("Alevino selecionado: ",df_ale$nome_fabricante), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
           HTML(paste(
-            prod,sexo,especie,peso,dias,data
+            prod,sexo,apelido,peso,dias,data
           )),
           actionButton(inputId = ns("apagar_ale"),label = "Apagar",
                        style = "vertical-align: middle; height: 50px; width: 100%; font-size: 22px;"),
@@ -154,7 +154,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       # browser()
       # Obtendo os dados slecionado correspondente a linha
       df_ale <- df_alevino() |>
-        dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")) |>
+        dplyr::select(c("nome_fabricante","prod_ale","sexo","apelido","peso_init","data_init","dias_init","created_at")) |>
         dplyr::distinct() |>
         dplyr::slice(cond)
       # Confirmacao: Perguntando ao usuario se realmente quer apagar
@@ -165,7 +165,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
                         tags$li(paste("Nome do Fabricante: ",df_ale$nome_fabricante)),
                         tags$li(paste("Tipo de Alevino: ",df_ale$prod_ale)),
                         tags$li(paste("Sexo: ",df_ale$sexo)),
-                        tags$li(paste("Espécie: ",df_ale$especie)),
+                        tags$li(paste("Apelido: ",df_ale$apelido)),
                         tags$li(paste("Péso médio inicial: ",df_ale$peso_init)),
                         tags$li(paste("Data nascimento: ",df_ale$data_init)),
                         tags$li(paste("Dias (idade): ",df_ale$dias_init)),
@@ -186,7 +186,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       cond <- input$tb_alevino_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # Obtendo os dados slecionado correspondente a linha
       df_ale <- df_alevino() |>
-        dplyr::select(c("id_alevino","nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")) |>
+        dplyr::select(c("id_alevino","nome_fabricante","prod_ale","sexo","apelido","peso_init","data_init","dias_init","created_at")) |>
         dplyr::distinct() |>
         dplyr::slice(cond)
       # df_ale <- df_alevino() |>
@@ -226,13 +226,13 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         # df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
         df_ale <- df_alevino() |>
           dplyr::mutate(data_nasci = as.character( format(as.Date(data_init), "%d-%m-%Y") )) |>
-          dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_nasci","dias_init","created_at")) |>
+          dplyr::select(c("nome_fabricante","prod_ale","sexo","apelido","peso_init","data_nasci","dias_init","created_at")) |>
           dplyr::distinct()
         # Renderizando a tabela
         DT::datatable(
           df_ale, # df_alevino(),
           colnames=c("Nome do Fabricante", "Tipo do Produto","Sexo",
-                     "Espécie","Peso inicial","Data nasc.","Dias vida",
+                     "Apelido","Peso inicial","Data nasc.","Dias vida",
                      "Criado em:"),
           rownames = FALSE,
           selection = "single",
@@ -252,7 +252,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       # browser()
       # Obtendo os dados slecionado correspondente a linha
       df_ale <- df_alevino() |>
-        dplyr::select(c("id_alevino","nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")) |>
+        dplyr::select(c("id_alevino","nome_fabricante","prod_ale","sexo","apelido","peso_init","data_init","dias_init","created_at")) |>
         dplyr::distinct() |>
         dplyr::slice(cond)
       # Mostrando o Modal para Edição dos dados
@@ -291,7 +291,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
                    radioButtons(ns("prod_ale_edit"), label = labelMandatory("Tipo de produto Alevino"),
                                 choices = list("Tambaqui" = "Tambaqui", "Tilápia" = "Tilápia", "Camarão" = "Camarão", "Outros" = "Outros"),
                                 selected = df_ale$prod_ale),
-                   textInput(ns("especie_edit"), "Nome da Espécie do Alevino", value = df_ale$especie),
+                   textInput(ns("apelido_edit"), "Nome (Apelido) do Alevino", value = df_ale$apelido),
                    dateInput(ns("data_init_edit"), label = labelMandatory("Data de nascimento (eclosão)"), value = df_ale$data_init)
             )
           )
@@ -303,11 +303,11 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       # Segurança: Coferindo se todos os campos estão preenchidos corretamente
       ## Listando os campos condicionados
       li <- c(
-        stringi::stri_stats_latex(input$especie_edit)[1],input$peso_init_edit,input$dias_init_edit
+        stringi::stri_stats_latex(input$apelido_edit)[1],input$peso_init_edit,input$dias_init_edit
       )
       ## Lista de mensagens imprimidas no app
       li_msg <- list(
-        especie = "Nome da Espécie deve ter no máximo 20 letras",
+        apelido = "Nome (Apelido) do Alevino deve ter no máximo 20 letras",
         peso_init = "Número máximo aceitável do peso (mg) é 2.000.000.000",
         dias_init = "Número máximo aceitável em dias é 2.000.000.000"
       )
@@ -336,7 +336,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         # browser()
         # Obtendo os dados slecionado correspondente a linha
         df_ale <- df_alevino() |>
-          dplyr::select(c("id_alevino","nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")) |>
+          dplyr::select(c("id_alevino","nome_fabricante","prod_ale","sexo","apelido","peso_init","data_init","dias_init","created_at")) |>
           dplyr::distinct() |>
           dplyr::slice(cond)
         # Connect to DB
@@ -366,16 +366,16 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         output$tb_alevino <- DT::renderDataTable({
           # browser()
           golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
-          # df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
+          # df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","apelido","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
           df_ale <- df_alevino() |>
             dplyr::mutate(data_nasci = as.character( format(as.Date(data_init), "%d-%m-%Y") )) |>
-            dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_nasci","dias_init","created_at")) |>
+            dplyr::select(c("nome_fabricante","prod_ale","sexo","apelido","peso_init","data_nasci","dias_init","created_at")) |>
             dplyr::distinct()
           # Renderizando a tabela
           DT::datatable(
             df_ale, # df_alevino(),
             colnames=c("Nome do Fabricante", "Tipo do Produto","Sexo",
-                       "Espécie","Peso inicial","Data nasc.","Dias vida",
+                       "Apelido","Peso inicial","Data nasc.","Dias vida",
                        "Criado em:"),
             rownames = FALSE,
             selection = "single",
@@ -441,11 +441,11 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       # Segurança: Coferindo se todos os campos estão preenchidos corretamente
       ## Listando os campos condicionados
       li <- c(
-        stringi::stri_stats_latex(input$especie)[1],input$peso_init,input$dias_init
+        stringi::stri_stats_latex(input$apelido)[1],input$peso_init,input$dias_init
       )
       ## Lista de mensagens imprimidas no app
       li_msg <- list(
-        especie = "Nome da Espécie deve ter no máximo 20 letras",
+        apelido = "Nome (Apelido) do Alevino deve ter no máximo 20 letras",
         peso_init = "Número máximo aceitável do peso (mg) é 2.000.000.000",
         dias_init = "Número máximo aceitável em dias é 2.000.000.000"
       )
@@ -455,7 +455,7 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       (failed <- any(faile_cond_campos))
       # browser()
       if(failed){ # Condição NÃO satisfeita
-        # Mostrar msg de erro se o nome da espécie do Alevino for muito grande > 20
+        # Mostrar msg de erro se o nome (Apelido) do Alevino for muito grande > 20
         showModal(
           modalDialog(
             title = "Erro no cadastro do Alevino !!!",
@@ -506,16 +506,16 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         output$tb_alevino <- DT::renderDataTable({
           # browser()
           golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
-          # df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
+          # df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","apelido","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
           df_ale <- df_alevino() |>
             dplyr::mutate(data_nasci = as.character( format(as.Date(data_init), "%d-%m-%Y") )) |>
-            dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_nasci","dias_init","created_at")) |>
+            dplyr::select(c("nome_fabricante","prod_ale","sexo","apelido","peso_init","data_nasci","dias_init","created_at")) |>
             dplyr::distinct()
           # Renderizando a tabela
           DT::datatable(
             df_ale, # df_alevino(),
             colnames=c("Nome do Fabricante", "Tipo do Produto","Sexo",
-                       "Espécie","Peso inicial","Data nasc.","Dias vida",
+                       "Apelido","Peso inicial","Data nasc.","Dias vida",
                        "Criado em:"),
             rownames = FALSE,
             selection = "single",

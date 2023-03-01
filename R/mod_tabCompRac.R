@@ -130,7 +130,8 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
                                  # width = "200px",
                                  value=Sys.Date())
                        )
-              )
+              ),
+              hr()
             )
           })
         )

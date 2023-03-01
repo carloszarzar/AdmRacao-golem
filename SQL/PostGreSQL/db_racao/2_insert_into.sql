@@ -87,11 +87,11 @@ VALUES
 ('I',10.0,'Finalização',2,22);
 
 -- TABELA alevino
-INSERT INTO alevino(id_fabricante,prod_ale,especie,sexo,peso_init,data_init,dias_init)
+INSERT INTO alevino(id_fabricante,prod_ale,apelido,sexo,peso_init,data_init,dias_init)
 VALUES
-(2,'Tambaqui','Colossoma macropomum','Misto',5,'2022-02-28',15),
-(2,'Tambaqui','Colossoma macropomum','Macho',3,'2022-02-28',15),
-(3,'Tambaqui','Colossoma macropomum','Fêmea',7,'2022-02-28',20);
+(2,'Tambaqui','Médio','Misto',5,'2022-02-28',15),
+(2,'Tambaqui','Pequeno','Macho',3,'2022-02-28',15),
+(3,'Tambaqui','Grande','Fêmea',7,'2022-02-28',20);
 
 -- TABELA compra
 INSERT INTO compra(quantidade_itens,quantidade_total,valor_total,data_compra,data_chegada,tipo_compra)
@@ -116,13 +116,13 @@ VALUES
 (7,4,1,1,2.5,2500,6250,'2025-01-01',789);
 
 -- TABELA compra_alevino
-INSERT INTO compra_alevino(id_compra,id_alevino,valor_uni,quantidade,valor_entrada,peso,dias,cod_lote)
+INSERT INTO compra_alevino(id_compra,id_alevino,id_fabricante,id_distribuidor,valor_uni,quantidade,valor_entrada,peso_init,data_init,dias_init,cod_lote)
 VALUES
-(3,1,125,10,1250,5,10,123),
-(5,2,125,10,1250,7,15,321),
-(5,3,140,10,1400,5,12,654),
-(6,2,125,7,875,6,12,456),
-(6,3,140,8,1120,5,10,987);
+(3,1,3,4,125,10,1250,5,'2025-01-01',10,123),
+(5,2,3,4,125,10,1250,7,'2025-01-01',15,321),
+(5,3,4,3,140,10,1400,5,'2025-01-01',12,654),
+(6,2,4,3,125,7,875,6,'2025-01-01',12,456),
+(6,3,3,4,140,8,1120,5,'2025-01-01',10,987);
 
 -- TABELA saida_racao
 INSERT INTO saida_racao(quantidade,valor_saida,id_fazenda,data_saida,id_comp_racao,id_racao)
@@ -147,3 +147,4 @@ VALUES
 (20,1995,2,'2022-09-30 00:00:00',3),
 (7,875,3,'2022-10-05 00:00:00',4),
 (8,1120,1,'2022-10-05 00:00:00',5);
+
