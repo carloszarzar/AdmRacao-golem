@@ -63,7 +63,6 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_fab,df_comp){
     output$list_ale_tb <- DT::renderDataTable({
       # browser()
       list_ale <- df_alevino() |>
-        dplyr::mutate(data_nasci = as.character( format(as.Date(data_init), "%d-%m-%Y") )) |>
         dplyr::select(c("nome_fabricante","apelido","prod_ale","sexo")) |>
         dplyr::distinct() # Selecionando o data frame e retirando linhas duplicadas
       # Renderizando a tabela
@@ -88,7 +87,6 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_fab,df_comp){
       if(!is.null(cond)){ # Linha selecionada:
         ## Selecionando os dados
         list_ale <- df_alevino() |>
-          dplyr::mutate(data_nasci = as.character( format(as.Date(data_init), "%d-%m-%Y") )) |>
           dplyr::select(c("id_alevino","nome_fabricante","apelido","prod_ale","sexo")) |>
           dplyr::distinct() |>
           dplyr::slice(cond)

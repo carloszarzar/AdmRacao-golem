@@ -11,7 +11,7 @@ SELECT * FROM alevino AS ale
   INNER JOIN telefone AS tel ON tel.id_telefone = dis.id_telefone
   ORDER BY ale.created_at DESC;
 */
-SELECT fab.id_fabricante, ale.id_alevino, dis.id_distribuidor, fab.nome_fabricante,ale.prod_ale,ale.sexo,ale.apelido,ale.peso_init,ale.data_init,ale.dias_init,
+SELECT fab.id_fabricante, ale.id_alevino, dis.id_distribuidor, fab.nome_fabricante,ale.prod_ale,ale.sexo,ale.apelido,
 dis.nome_distribuidor,ende.logrador,ende.bairro,ende.cidade,ende.estado,ende.num_ende,ende.cep,ende.referencia,
 tel.celular,tel.whatsapp, ale.created_at
 FROM alevino AS ale

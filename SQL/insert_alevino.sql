@@ -5,10 +5,8 @@
    # NULLIF(argument_1,argument_2) retorna NULL se argument_1=argument_2
 */
 INSERT INTO alevino(
-  id_fabricante,prod_ale,apelido,sexo,
-  peso_init,data_init,dias_init,created_at)
+  id_fabricante,prod_ale,apelido,sexo,created_at)
 VALUES(
   (SELECT id_fabricante FROM fabricante WHERE nome_fabricante = '{input$ale_fab}'),
-  '{input$prod_ale}','{input$apelido}','{input$sexo}',
-  {input$peso_init},'{input$data_init}',{input$dias_init},Now()
+  '{input$prod_ale}','{input$apelido}','{input$sexo}',Now()
 );

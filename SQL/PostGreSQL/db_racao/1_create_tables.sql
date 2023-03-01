@@ -100,9 +100,6 @@ CREATE TABLE alevino(
 	prod_ale VARCHAR(20) NOT NULL,
 	apelido VARCHAR(20) NULL, -- apelido do alevino
 	sexo VARCHAR(10) NULL,
-	peso_init REAL NOT NULL, -- mg (APAGAR Sair daqui)
-	data_init TIMESTAMPTZ NOT NULL, -- Data de eclosão (APAGAR Sair daqui)
-	dias_init INT NULL, -- dias de vida (APAGAR Sair daqui)
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL 
 );
