@@ -82,6 +82,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
     output$dados_pedido <- renderUI({
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$list_rac_tb_rows_selected # condição condiction selecionado (NULL ou n_linha)
+      # browser()
       if(!is.null(cond)){ # Linha selecionada:
         # ## Selecionando os dados
         # list_rac <- df_rac() |> # [,c("id_racao","Nome da ração","Tamanho pellet (mm)","Fase","Proteína","Fabricante")] |>
@@ -172,7 +173,8 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$list_rac_tb_rows_selected # condição condiction selecionado (NULL ou n_linha)
       # Corrigindo um erro caso não tenha nenhuma linha selecionada na tabela
-      req(!is.null(cond), cancelOutput = FALSE)
+      # req(!is.null(cond), cancelOutput = FALSE)
+      req(cond, cancelOutput = FALSE)
       ## Obtendo os id_racao selecionados
       list_IDrac <- df_rac() |>
         dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
@@ -190,8 +192,10 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
                                     },
                                     logical(1)
       )
-      mandatoryFilled_fab <- all(mandatoryFilled_fab)
-      shinyjs::toggleState(id = "pedido", condition = mandatoryFilled_fab)
+      mandatoryFilled_fab
+      # browser()
+      mandatory <- all(mandatoryFilled_fab)
+      shinyjs::toggleState(id = "pedido", condition = mandatory)
     })
     # Apertando o botão Realizar Pedido (pedido)
     observeEvent(input$pedido,{

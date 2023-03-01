@@ -31,8 +31,8 @@ CREATE TABLE telefone(
 CREATE TABLE fabricante(
 	id_fabricante SERIAL PRIMARY KEY,
 	nome_fabricante VARCHAR(20) NOT NULL,
-	id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco),
-	id_telefone INT NULL REFERENCES telefone(id_telefone),
+	id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco) ON DELETE CASCADE,
+	id_telefone INT NULL REFERENCES telefone(id_telefone) ON DELETE CASCADE,
 	tipo_produto_fab VARCHAR(15) NOT NULL,
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL 
@@ -42,8 +42,8 @@ CREATE TABLE fabricante(
 CREATE TABLE distribuidor(
   id_distribuidor SERIAL PRIMARY KEY,
   nome_distribuidor VARCHAR (20) NOT NULL,
-  id_telefone INT NOT NULL REFERENCES telefone(id_telefone),
-  id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco),
+  id_telefone INT NOT NULL REFERENCES telefone(id_telefone) ON DELETE CASCADE,
+  id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco) ON DELETE CASCADE,
   tipo_produto_dis VARCHAR(15) NOT NULL,
   created_at TIMESTAMPTZ DEFAULT Now(),
   modified_at TIMESTAMPTZ NULL,
@@ -53,7 +53,7 @@ CREATE TABLE distribuidor(
 CREATE TABLE proprietario(
 	id_proprietario SERIAL PRIMARY KEY NOT NULL,
 	nome VARCHAR(40) NOT NULL,
-	id_telefone INT NOT NULL REFERENCES telefone(id_telefone),
+	id_telefone INT NOT NULL REFERENCES telefone(id_telefone) ON DELETE CASCADE,
 	cpf VARCHAR(11) NOT NULL,
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL
@@ -62,9 +62,9 @@ CREATE TABLE proprietario(
 CREATE TABLE fazenda(
 	id_fazenda SERIAL PRIMARY KEY NOT NULL,
 	nome VARCHAR(40) NOT NULL,
-	id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco),
+	id_endereco SERIAL NOT NULL REFERENCES endereco(id_endereco) ON DELETE CASCADE,
 	cnpj VARCHAR(14) NULL,
-	id_telefone INT NOT NULL REFERENCES telefone(id_telefone),
+	id_telefone INT NOT NULL REFERENCES telefone(id_telefone) ON DELETE CASCADE,
 	num_tanque INT NOT NULL,
 	especie VARCHAR(20) NOT NULL,
 	id_proprietario SERIAL NOT NULL REFERENCES proprietario(id_proprietario) ON DELETE CASCADE,
@@ -123,9 +123,9 @@ CREATE TABLE compra(
 CREATE TABLE compra_racao(
 	id_comp_racao SERIAL PRIMARY KEY NOT NULL,
 	id_compra SERIAL NOT NULL REFERENCES compra(id_compra) ON DELETE CASCADE,
-	id_racao SERIAL NOT NULL REFERENCES racao(id_racao),
-     	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante),
-    	id_distribuidor SERIAL NOT NULL REFERENCES distribuidor(id_distribuidor),
+	id_racao SERIAL NOT NULL REFERENCES racao(id_racao) ON DELETE CASCADE,
+     	id_fabricante SERIAL NOT NULL REFERENCES fabricante(id_fabricante) ON DELETE CASCADE,
+    	id_distribuidor SERIAL NOT NULL REFERENCES distribuidor(id_distribuidor) ON DELETE CASCADE,
 	valor_uni NUMERIC NOT NULL, -- Real R$/kg da ração
 	quantidade REAL NOT NULL, -- quantidade comprada (kg)
 	valor_entrada NUMERIC NOT NULL, -- Valor total da compra para essa ração (R$)
@@ -137,7 +137,7 @@ CREATE TABLE compra_racao(
 -- TABELA compra_alevino
 CREATE TABLE compra_alevino(
 	id_comp_alevino SERIAL PRIMARY KEY NOT NULL,
-	id_compra SERIAL NOT NULL REFERENCES compra(id_compra),
+	id_compra SERIAL NOT NULL REFERENCES compra(id_compra) ON DELETE CASCADE,
 	id_alevino SERIAL NOT NULL REFERENCES alevino(id_alevino) ON DELETE CASCADE,
 	valor_uni NUMERIC NOT NULL,
 	quantidade REAL NOT NULL,
@@ -153,10 +153,10 @@ CREATE TABLE saida_racao(
 	id_saida_racao SERIAL PRIMARY KEY NOT NULL,
 	quantidade REAL NOT NULL,
 	valor_saida NUMERIC NOT NULL,
-	id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda),
+	id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda) ON DELETE CASCADE,
 	data_saida TIMESTAMP NOT NULL,
-	id_comp_racao SERIAL NOT NULL REFERENCES compra_racao(id_comp_racao),
-	id_racao SERIAL NOT NULL REFERENCES racao(id_racao),
+	id_comp_racao SERIAL NOT NULL REFERENCES compra_racao(id_comp_racao) ON DELETE CASCADE,
+	id_racao SERIAL NOT NULL REFERENCES racao(id_racao) ON DELETE CASCADE,
 	created_at TIMESTAMPTZ DEFAULT Now() 
 );
 
@@ -165,7 +165,7 @@ CREATE TABLE saida_alevino(
 	id_saida_alevino SERIAL PRIMARY KEY NOT NULL,
 	quantidade INT NOT NULL,
 	valor_saida NUMERIC NOT NULL,
-	id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda),
+	id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda) ON DELETE CASCADE,
 	data_saida TIMESTAMP NOT NULL,
 	id_comp_alevino SERIAL NOT NULL REFERENCES compra_alevino(id_comp_alevino) ON DELETE CASCADE,
 	created_at TIMESTAMPTZ DEFAULT Now() 

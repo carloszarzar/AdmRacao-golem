@@ -56,17 +56,6 @@ mod_tabAlevino_ui <- function(id){
                        numericInput(ns("dias_init"),labelMandatory("Dias de vida do alevino (dias):"), value = NULL, min = 0)
                 ),
                 column(4,
-                       # shinyWidgets::radioGroupButtons(
-                       #   inputId = ns("prod_ale"),
-                       #   label = labelMandatory("Tipo de produto Alevino"),
-                       #   choices = c("Tambaqui",
-                       #               "Tilápia", "Camarão", "Outro"),
-                       #   # status = "primary",
-                       #   direction = "vertical",
-                       #   checkIcon = list(
-                       #     yes = icon("ok",
-                       #                lib = "glyphicon"))
-                       # ),
                        radioButtons(ns("prod_ale"), label = labelMandatory("Tipo de produto Alevino"),
                                     choices = list("Tambaqui" = "Tambaqui", "Tilápia" = "Tilápia", "Camarão" = "Camarão", "Outros" = "Outros"),
                                     selected = "Tambaqui"),
@@ -96,7 +85,8 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
       golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
       # df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
       df_ale <- df_alevino() |>
-        dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")) |>
+        dplyr::mutate(data_nasci = as.character( format(as.Date(data_init), "%d-%m-%Y") )) |>
+        dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_nasci","dias_init","created_at")) |>
         dplyr::distinct()
       # Renderizando a tabela
       DT::datatable(
@@ -235,7 +225,8 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
         golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
         # df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
         df_ale <- df_alevino() |>
-          dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")) |>
+          dplyr::mutate(data_nasci = as.character( format(as.Date(data_init), "%d-%m-%Y") )) |>
+          dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_nasci","dias_init","created_at")) |>
           dplyr::distinct()
         # Renderizando a tabela
         DT::datatable(
@@ -377,7 +368,8 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
           golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
           # df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
           df_ale <- df_alevino() |>
-            dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")) |>
+            dplyr::mutate(data_nasci = as.character( format(as.Date(data_init), "%d-%m-%Y") )) |>
+            dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_nasci","dias_init","created_at")) |>
             dplyr::distinct()
           # Renderizando a tabela
           DT::datatable(
@@ -516,7 +508,8 @@ mod_tabAlevino_server <- function(id,df_alevino,df_fab){
           golem::cat_dev("Renderização da tabela Alevino (1 vez) \n")
           # df_ale <- df_alevino()[,c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")] # Selecionando o data frame
           df_ale <- df_alevino() |>
-            dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_init","dias_init","created_at")) |>
+            dplyr::mutate(data_nasci = as.character( format(as.Date(data_init), "%d-%m-%Y") )) |>
+            dplyr::select(c("nome_fabricante","prod_ale","sexo","especie","peso_init","data_nasci","dias_init","created_at")) |>
             dplyr::distinct()
           # Renderizando a tabela
           DT::datatable(

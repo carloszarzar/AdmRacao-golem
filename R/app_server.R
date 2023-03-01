@@ -88,6 +88,22 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
+  # Dados da Tabela Compra_Alevino
+  df_comp_ale <- reactiveVal({
+    golem::cat_dev("Importou os dados da Compra de Alevino \n")
+    ## conectando com o DB PostgreSQL
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue("TABLE compra_alevino;")
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
   # Dados da Tabela Proprietário
   df_prop <- reactiveVal({
     golem::cat_dev("Importou os dados Proprietário \n")
@@ -150,7 +166,7 @@ app_server <- function(input, output, session) {
   ####----- tabCompRac ----####
   mod_tabCompRac_server("global",df_rac,df_comp,df_comp_rac)
   ####----- tabCompAle ----####
-  mod_tabCompAle_server("global",df_alevino,df_fab)
+  mod_tabCompAle_server("global",df_comp_ale,df_alevino,df_fab)
   ####----- tabEstoque ----####
   mod_tabEstoque_server("global")
 
