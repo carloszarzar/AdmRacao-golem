@@ -126,12 +126,13 @@ mod_tabFazenda_server <- function(id,df_prop,df_faz){
       golem::cat_dev("Renderização da tabela Resumo Proprietário (1 vez) \n")
       # browser()
       df_prop()
-      df <- df_prop()[,c('nome','cpf','created_at','modified_at')]
+      df <- df_prop()[,c('nome','cpf','created_at')]
       # Renderizando a tabela
       DT::datatable(
         df,
         rownames = FALSE,
         selection = "single",
+        colnames=c("Nome","CPF","Criado em"),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -150,6 +151,7 @@ mod_tabFazenda_server <- function(id,df_prop,df_faz){
         df,
         rownames = FALSE,
         selection = "single",
+        colnames=c("Nome","CNPJ","Nº viveiros","Espécie","Sist. Cult.","Proprietário","Criado em"),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -179,7 +181,7 @@ mod_tabFazenda_server <- function(id,df_prop,df_faz){
             what <- h4(paste("Whatsapp: Não"))
           )
         )
-        created <- h4(paste("Data de cadastro: ",df$created_at))
+        created <- h4(paste("Data de cadastro: ", format(df$created_at,"%d-%m-%Y")))
         ## Renderizar informação do Alevino e os botões de apagar e editar
         div(
           h3(paste("Proprietário selecionado: ",df$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
@@ -260,12 +262,13 @@ mod_tabFazenda_server <- function(id,df_prop,df_faz){
         golem::cat_dev("Renderização da tabela Resumo Proprietário (1 vez) \n")
         # browser()
         df_prop()
-        df <- df_prop()[,c('nome','cpf','created_at','modified_at')]
+        df <- df_prop()[,c('nome','cpf','created_at')]
         # Renderizando a tabela
         DT::datatable(
           df,
           rownames = FALSE,
           selection = "single",
+          colnames=c("Nome","CPF","Criado em"),
           class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -375,12 +378,13 @@ mod_tabFazenda_server <- function(id,df_prop,df_faz){
           golem::cat_dev("Renderização da tabela Resumo Proprietário (1 vez) \n")
           # browser()
           df_prop()
-          df <- df_prop()[,c('nome','cpf','created_at','modified_at')]
+          df <- df_prop()[,c('nome','cpf','created_at')]
           # Renderizando a tabela
           DT::datatable(
             df,
             rownames = FALSE,
             selection = "single",
+            colnames=c("Nome","CPF","Criado em"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -433,7 +437,7 @@ mod_tabFazenda_server <- function(id,df_prop,df_faz){
         num_tq <- h4(paste("Número de tanques: ",df$num_tanque))
         sp <- h4(paste("Espécie principal: ",df$especie))
         sist <- h4(paste("Sistema de cultivo: ",df$sist_cultivo))
-        created <- h4(paste("Data de cadastro: ",df$created_at))
+        created <- h4(paste("Data de cadastro: ",format(df$created_at,"%d-%m-%Y")))
         ## Renderizar informação do Alevino e os botões de apagar e editar
         div(
           h3(paste("Fazenda selecionada: ",df$nome), style = 'color:#4FC3F7; font-weight: bold; margin-top: 5px; text-align: center;'),
@@ -521,6 +525,7 @@ mod_tabFazenda_server <- function(id,df_prop,df_faz){
           df,
           rownames = FALSE,
           selection = "single",
+          colnames=c("Nome","CNPJ","Nº viveiros","Espécie","Sist. Cult.","Proprietário","Criado em"),
           class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -689,6 +694,7 @@ mod_tabFazenda_server <- function(id,df_prop,df_faz){
             df,
             rownames = FALSE,
             selection = "single",
+            colnames=c("Nome","CNPJ","Nº viveiros","Espécie","Sist. Cult.","Proprietário","Criado em"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -825,12 +831,13 @@ mod_tabFazenda_server <- function(id,df_prop,df_faz){
           golem::cat_dev("Renderização da tabela Resumo Proprietário (1 vez) \n")
           # browser()
           df_prop()
-          df <- df_prop()[,c('nome','cpf','created_at','modified_at')]
+          df <- df_prop()[,c('nome','cpf','created_at')]
           # Renderizando a tabela
           DT::datatable(
             df,
             rownames = FALSE,
             selection = "single",
+            colnames=c("Nome","CPF","Criado em"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -962,6 +969,7 @@ mod_tabFazenda_server <- function(id,df_prop,df_faz){
             df,
             rownames = FALSE,
             selection = "single",
+            colnames=c("Nome","CNPJ","Nº viveiros","Espécie","Sist. Cult.","Proprietário","Criado em"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner

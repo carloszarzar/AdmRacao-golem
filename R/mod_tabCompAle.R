@@ -534,6 +534,8 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
       # browser()
       list_comp <- df_comp() |>
         dplyr::filter(tipo_compra == 'alevino') |>
+        dplyr::mutate(data_chegada = as.character( format(as.Date(data_chegada), "%d-%m-%Y")),
+                      data_compra = as.character( format(as.Date(data_compra), "%d-%m-%Y")) ) |>
         dplyr::select(c("id_compra","data_compra","quantidade_total","valor_total","quantidade_itens","data_chegada"))
       # Renderizando a tabela
       DT::datatable(
@@ -546,7 +548,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
         )
-      ) %>% DT::formatDate(c('data_compra','data_chegada'), method = "toLocaleDateString") # Consertando timestap para formato desejado
+      ) # %>% DT::formatDate(c('data_compra','data_chegada'), method = "toLocaleDateString") # Consertando timestap para formato desejado
     })
     # Informação da compra (Aba 1)
     output$inf_compra_ale <- renderUI({
@@ -755,6 +757,8 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
           # browser()
           list_comp <- df_comp() |>
             dplyr::filter(tipo_compra == 'alevino') |>
+            dplyr::mutate(data_chegada = as.character( format(as.Date(data_chegada), "%d-%m-%Y")),
+                          data_compra = as.character( format(as.Date(data_compra), "%d-%m-%Y")) ) |>
             dplyr::select(c("id_compra","data_compra","quantidade_total","valor_total","quantidade_itens","data_chegada"))
           # Renderizando a tabela
           DT::datatable(
@@ -767,7 +771,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
             )
-          ) %>% DT::formatDate(c('data_compra','data_chegada'), method = "toLocaleDateString") # Consertando timestap para formato desejado
+          ) # %>% DT::formatDate(c('data_compra','data_chegada'), method = "toLocaleDateString") # Consertando timestap para formato desejado
         })
         removeModal()
       }
@@ -834,7 +838,8 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
                         "peso_init","dias_init","data_init",
                         "cod_lote"
                         )
-                      )
+                      ) |>
+        dplyr::mutate(data_init = as.character( format(as.Date(data_init), "%d-%m-%Y") ))
       # Renderizando a tabela
       DT::datatable(
         df,
@@ -874,7 +879,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
       list_condict <- c(isDate,cod_menor30,peso_init_validacao,dias_init_validacao)
       condict <- all(list_condict)
       if(all(condict)){ # Edição permitida
-        browser()
+        # browser()
         #---- Selecionando ID_compra_ração que está sendo editado ----#
         # Linha selecionada para edição
         row <- unique(input$inf_ped_table_ale_cell_edit$row)
@@ -899,7 +904,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
         ## Código do lote
         cod_lote <- input$inf_ped_table_ale_cell_edit$value[12]
         ## data init
-        data_init <- input$inf_ped_table_ale_cell_edit$value[11]
+        data_init <- as.Date(input$inf_ped_table_ale_cell_edit$value[11],"%d-%m-%Y")
         dias_init <- as.numeric(input$inf_ped_table_ale_cell_edit$value[10])
         peso_init <- as.numeric(input$inf_ped_table_ale_cell_edit$value[9])
 
@@ -914,6 +919,22 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
         # Disconnect from the DB
         DBI::dbDisconnect(con)
         #----------------------------------------
+        # Atualizando table compra_alevino
+        df_comp_ale({
+          golem::cat_dev("Importou os dados da Compra de Alevino \n")
+          ## conectando com o DB PostgreSQL
+          # Connect to DB
+          con <- connect_to_db()
+          # Query
+          query <- glue::glue("TABLE compra_alevino;")
+          # browser() # Shiny Debugging
+          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+          # Convert to data.frame
+          data.frame(df_postgres,check.names = FALSE)
+        })
         #============== Renderiza novamente a tabela ======================
         # Renderizando a tabela de pedidos dento da aba 2
         output$inf_ped_table_ale <- DT::renderDT({
@@ -941,8 +962,9 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
                             "valor_uni","quantidade","valor_entrada",
                             "peso_init","dias_init","data_init",
                             "cod_lote"
-            )
-            )
+              )
+            ) |>
+            dplyr::mutate(data_init = as.character( format(as.Date(data_init), "%d-%m-%Y") ))
           # Renderizando a tabela
           DT::datatable(
             df,

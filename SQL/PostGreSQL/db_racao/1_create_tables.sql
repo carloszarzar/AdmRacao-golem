@@ -19,7 +19,9 @@ CREATE TABLE endereco(
 	estado VARCHAR(30) NULL,
 	num_ende VARCHAR(10) NULL,
 	cep VARCHAR(15) NULL,
-	referencia TEXT NULL
+	referencia TEXT NULL,
+  created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL 
 );
 -- TABELA telefone
 CREATE TABLE telefone(
@@ -110,10 +112,11 @@ CREATE TABLE compra(
 	quantidade_itens INT NOT NULL,
     	quantidade_total NUMERIC NOT NULL, -- quantidade total comprada kg de ração ou milheiro de alevino
 	valor_total NUMERIC NOT NULL,
-	data_compra TIMESTAMP NOT NULL, -- Data que foi pago e realizado o pedido
-	data_chegada TIMESTAMP NULL, -- Previsão de chegada
+	data_compra DATE NOT NULL, -- Data que foi pago e realizado o pedido
+	data_chegada DATE NULL, -- Previsão de chegada
 	tipo_compra VARCHAR(10) NOT NULL,
-	created_at TIMESTAMPTZ DEFAULT Now() 
+    created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL 
 );
 
 -- TABELA compra_racao
@@ -128,7 +131,8 @@ CREATE TABLE compra_racao(
 	valor_entrada NUMERIC NOT NULL, -- Valor total da compra para essa ração (R$)
 	validade VARCHAR(10) NOT NULL, -- Corrigir validade para = TIMESTAMPTZ NOT NULL
 	cod_lote VARCHAR(30) NULL, -- Código da ração do fabricante para rastreio
-	created_at TIMESTAMPTZ DEFAULT Now() 
+	created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL  
 );
 
 -- TABELA compra_alevino
@@ -142,7 +146,7 @@ CREATE TABLE compra_alevino(
 	quantidade REAL NOT NULL, -- quanto milheiros
 	valor_entrada NUMERIC NOT NULL, -- quanto no total ta pagando (R$ x quant.)
 	peso_init REAL NOT NULL, -- g
-	data_init TIMESTAMPTZ NOT NULL, -- Data de eclosão (nascimento)
+	data_init DATE NOT NULL, -- Data de eclosão (nascimento)
 	dias_init INT NULL, -- dias de vida
 	cod_lote VARCHAR(30) NULL,
 	created_at TIMESTAMPTZ DEFAULT Now(),
@@ -158,7 +162,8 @@ CREATE TABLE saida_racao(
 	data_saida TIMESTAMP NOT NULL,
 	id_comp_racao SERIAL NOT NULL REFERENCES compra_racao(id_comp_racao) ON DELETE CASCADE,
 	id_racao SERIAL NOT NULL REFERENCES racao(id_racao) ON DELETE CASCADE,
-	created_at TIMESTAMPTZ DEFAULT Now() 
+	created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL 
 );
 
 -- TABELA saida_alevino
@@ -169,6 +174,7 @@ CREATE TABLE saida_alevino(
 	id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda) ON DELETE CASCADE,
 	data_saida TIMESTAMP NOT NULL,
 	id_comp_alevino SERIAL NOT NULL REFERENCES compra_alevino(id_comp_alevino) ON DELETE CASCADE,
-	created_at TIMESTAMPTZ DEFAULT Now() 
+	created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL 
 );
 

@@ -169,6 +169,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
         df,
         rownames = FALSE,
         selection = "single",
+        colnames=c("Fabricante","Produto","Criado em"),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -188,6 +189,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
         # table_dis(),
         rownames = FALSE,
         selection = "single",
+        colnames=c("Distribuidor","Produto","Nome do Fabricante","Criado em"),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -302,6 +304,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
           df,
           rownames = FALSE,
           selection = "single",
+          colnames=c("Fabricante","Produto","Criado em"),
           class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -335,6 +338,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
           df,
           rownames = FALSE,
           selection = "single",
+          colnames=c("Distribuidor","Produto","Nome do Fabricante","Criado em"),
           class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -603,6 +607,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
             df,
             rownames = FALSE,
             selection = "single",
+            colnames=c("Fabricante","Produto","Criado em"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -636,6 +641,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
             df,
             rownames = FALSE,
             selection = "single",
+            colnames=c("Distribuidor","Produto","Nome do Fabricante","Criado em"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -761,6 +767,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
           df,
           rownames = FALSE,
           selection = "single",
+          colnames=c("Distribuidor","Produto","Nome do Fabricante","Criado em"),
           class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
           options = list(searching = FALSE, lengthChange = FALSE,
                          scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -926,6 +933,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
             df,
             rownames = FALSE,
             selection = "single",
+            colnames=c("Distribuidor","Produto","Nome do Fabricante","Criado em"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -1050,6 +1058,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
               df,
               rownames = FALSE,
               selection = "single",
+              colnames=c("Fabricante","Produto","Criado em"),
               class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
               options = list(searching = FALSE, lengthChange = FALSE,
                              scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -1171,6 +1180,7 @@ mod_tabFornecedor_server <- function(id,df_fab,df_dis,df_rac,df_alevino){
             df,
             rownames = FALSE,
             selection = "single",
+            colnames=c("Distribuidor","Produto","Nome do Fabricante","Criado em"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
