@@ -30,6 +30,8 @@ golem::add_module(name = "tabFazenda", with_test = TRUE) # Módulo para tab (aba
 golem::add_module(name = "tabCompRac", with_test = TRUE) # Módulo para tab (aba) Compra de Ração
 golem::add_module(name = "tabCompAle", with_test = TRUE) # Módulo para tab (aba) Compra de Alevino
 golem::add_module(name = "tabEstoque", with_test = TRUE) # Módulo para tab (aba) Estoque
+golem::add_module(name = "tabSaidaRac", with_test = TRUE) # Módulo para tab (aba) Saída de Ração
+golem::add_module(name = "tabSaidaAle", with_test = TRUE) # Módulo para tab (aba) Saída de Alevino
 
 
 ## Add helper functions ----

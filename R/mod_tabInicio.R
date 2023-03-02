@@ -56,9 +56,11 @@ mod_tabInicio_ui <- function(id){
         box(title = "Saída", status = "primary",
             width = 6, height = 250,
             box(title = "Ração", width = 6, background = "light-blue",
-                "Enviar a ração para a fazenda cadastrada parceira da cooperativa."),
+                "Enviar a ração para a fazenda cadastrada.", br(),
+                actionButton(ns('btnSaidaRac'), 'Eniar')),
             box(title = "Alevino", width = 6, background = "light-blue",
-                "Enviar a alevino para a fazenda cadastrada."))
+                "Enviar a alevino para a fazenda cadastrada.", br(),
+                actionButton(ns('btnSaidaAle'), 'Enviar')))
         )
       )
     )
@@ -97,9 +99,7 @@ mod_tabInicio_server <- function(id){
       newtab <- switch(input$tabs,"global-tabInicio" = "global-tabFazenda")
       updateTabItems(session,"tabs",newtab)
     })
-    # Trabalhar uma forma de reduzir essa repetição. Construir modulos para cada tab.
-    # Assim cada botao acima desse servidor ficará dentro da modularização
-    ####---- Botões Compras ----#####
+   ####---- Botões Compras ----#####
     # Botão Compras:
     ## Botão Compra Ração: btnCompRac
     observeEvent(input$btnCompRac, {
@@ -111,9 +111,17 @@ mod_tabInicio_server <- function(id){
       newtab <- switch(input$tabs,"global-tabInicio" = "global-tabCompAle")
       updateTabItems(session,"tabs",newtab)
     })
-
-    #---------------------------------
-
+    ####---- Botões Saida (enviar) ----#####
+    ## Botão Saida Ração: btnSaidaRac
+    observeEvent(input$btnSaidaRac, {
+      newtab <- switch(input$tabs,"global-tabInicio" = "global-tabSaidaRac")
+      updateTabItems(session,"tabs",newtab)
+    })
+    ## Botão Saida Alevino: btnSaidaAle
+    observeEvent(input$btnSaidaAle, {
+      newtab <- switch(input$tabs,"global-tabInicio" = "global-tabSaidaAle")
+      updateTabItems(session,"tabs",newtab)
+    })
 
   })
 }

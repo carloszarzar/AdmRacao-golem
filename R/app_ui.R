@@ -35,7 +35,10 @@ app_ui <- function(request) {
 
 
                     ),
-                    menuItem("Saída", tabName = "tabSaida", icon = icon("th"))
+                    menuItem("Saída", tabName = "tabSaida", icon = icon("th"),
+                             menuSubItem('Ração', tabName = 'global-tabSaidaRac'), # Tab Saida Rações
+                             menuSubItem('Alevino', tabName = 'global-tabSaidaAle')  # Tab Saida Alevinos
+                    )
         )#,
         # add some buttons
         # fluidRow(
@@ -94,9 +97,18 @@ app_ui <- function(request) {
           tabItem(
             tabName = "global-tabCompAle",
             mod_tabCompAle_ui("global")
+          ),
+          #---- tabSaida
+          #---- tabSaidaRac ----####
+          tabItem(
+            tabName = "global-tabSaidaRac",
+            mod_tabSaidaRac_ui("global")
+          ),
+          #---- tabSaidaAle ----####
+          tabItem(
+            tabName = "global-tabSaidaAle",
+            mod_tabSaidaAle_ui("global")
           )
-          #---- tabSaida ----####
-
 
         ),
         h2("Alguma informação permanente para todas tabPanel")
