@@ -56,7 +56,7 @@ mod_tabCompAle_ui <- function(id){
 #' tabCompAle Server Functions
 #'
 #' @noRd
-mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_fab,df_comp){
+mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Listagem de alevinos para compra ----#####
@@ -562,8 +562,8 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_fab,df_comp){
         ## Corpo da informação
         data_compra <- h4(paste("Data do Pedido: ", format(list_comp$data_compra,"%d-%m-%Y")))
         data_chegada <- h4(paste("Previsão de chegada: ", format(list_comp$data_chegada,"%d-%m-%Y")))
-        itens <- h4(paste("Quantidade de itens comprados: ", list_comp$quantidade_itens, " tipos de rações"))
-        quant <- h4(paste("Quantidade total em kg comprado: ", list_comp$quantidade_total," kg"))
+        itens <- h4(paste("Quantidade de itens comprados: ", list_comp$quantidade_itens, " tipos de Alevinos"))
+        quant <- h4(paste("Quantidade total de milheiros comprados: ", list_comp$quantidade_total," milheiro(s)"))
         money <- cleaner::as.currency(list_comp$valor_total)
         valor <- h4(paste("Valor total pago: ",format(money, currency_symbol = "R$", decimal.mark = ",")))
         ## Renderizar informação do Alevino e os botões de apagar e editar
@@ -808,12 +808,6 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_fab,df_comp){
       }
     })
     # Renderizando a tabela de pedidos dento da aba 2
-
-    # Parei aqui
-    # Nesse momento tenho que consertar a aba Alevino retirando algumas
-    # variáveis na tabela alevino e simplificando o box cadastro
-
-
     output$inf_ped_table_ale <- DT::renderDT({
       # browser()
       # Conferindo se a linha da tabela foi selecionado
@@ -828,86 +822,92 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_fab,df_comp){
       list_compAle <- df_comp_ale() |>
         dplyr::filter(id_compra == list_comp$id_compra)
       # Colunas em comum
-      # intersect(colnames(list_compAle),colnames(df_alevino()))[c(1:3)]
+      # intersect(colnames(list_compAle),colnames(df_alevino()))
       # merge os dois bancos de dados para renderizar o nome da ração
       merge <- merge(list_compAle,df_alevino(),
-                     by=intersect(colnames(list_compAle),colnames(df_alevino())))
-      #------- Apagar depois que remover peso_init, data_init e dias_init na tabela alevino --------
-      # As variáveis: peso_init, data_init e dias_init irão ficar apenas na tabela compra_alevino
-      merge <- merge(list_compAle,df_alevino(),
-                     by = intersect(colnames(list_compAle),colnames(df_alevino()))[c(1:3)]
-                     )
-      #----------------------------------------------------------------------
-
+                     by="id_alevino")
       # Selecionando os dados para renderizar na tabela
       df <- merge |>
-        dplyr::select(c("nome","tamanho","Fase","Proteína","Fabricante",
-                        "valor_uni","quantidade","validade","cod_lote",
-                        "valor_entrada","Distribuidor"))
+        dplyr::select(c("nome_fabricante","apelido","prod_ale",
+                        "nome_distribuidor","sexo",
+                        "valor_uni","quantidade","valor_entrada",
+                        "peso_init","dias_init","data_init",
+                        "cod_lote"
+                        )
+                      )
       # Renderizando a tabela
       DT::datatable(
         df,
         rownames = FALSE,
         selection = "single",
         # editable = TRUE,
-        colnames = c("Nome","Tamanho (mm)","Fase","Proteína","Fabricante","Preço (R$/kg)","Quant. (kg)","Validade","Código lote","Valor pedido","Distribuidor"),
+        colnames = c("Fabricante","Apelido","Produto","Distribuidor","Sexo","Preço (R$/mil.)","Quant. (mil.)","Valor pedido","Peso alevino (kg)","Dias vida","Data nasc.","Código lote"),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
         ),
-        editable = list(target = "row", disable = list(columns = c(0:6,9,10) ))
+        editable = list(target = "row", disable = list(columns = c(0:7) ))
       )
     })
     # Editando a tabela Pedido (compra_racao) (linha selecionada)
-    observeEvent(input$inf_ped_table_cell_edit,{
+    observeEvent(input$inf_ped_table_ale_cell_edit,{
       # browser()
       #== Segurança edição ==#
       # 1) Conferindo se Data da validade é um valor válido
       ## validade
-      val_edit <- input$inf_ped_table_cell_edit$value[8]
+      val_edit <- input$inf_ped_table_ale_cell_edit$value[11]
       # Verificando se o character pode ser um Date
       is.convertible.to.date <- function(x) !is.na(as.Date(as.character(x), tz = 'UTC', format = '%Y-%m-%d'))
       (isDate <- is.convertible.to.date(val_edit))
       # 2) Conferindo se o código do lote é menor que 30
-      cod_menor30 <- stringi::stri_stats_latex(input$inf_ped_table_cell_edit$value[9])[[1]] < 30
-      # Testando as 2 condições de segurança
-      condict <- c(isDate,cod_menor30)
+      cod_menor30 <- stringi::stri_stats_latex(input$inf_ped_table_ale_cell_edit$value[12])[[1]] < 30
+      # 3) peso_inicial
+      peso_init_valido <- as.numeric(input$inf_ped_table_ale_cell_edit$value[9])
+      peso_init_validacao <- peso_init_valido > 0 && peso_init_valido < 200000
+      # 4) dias de vida
+      dias_init_valido <- as.numeric(input$inf_ped_table_ale_cell_edit$value[10])
+      dias_init_validacao <- dias_init_valido > 0 && dias_init_valido < 200000
       # req(is.convertible.to.date(val_edit))
       # isDate <- lubridate::is.Date("val_edit")
       # browser()
-      all(condict)
+      # Testando as 2 condições de segurança
+      list_condict <- c(isDate,cod_menor30,peso_init_validacao,dias_init_validacao)
+      condict <- all(list_condict)
       if(all(condict)){ # Edição permitida
-        # browser()
+        browser()
         #---- Selecionando ID_compra_ração que está sendo editado ----#
         # Linha selecionada para edição
-        row <- unique(input$inf_ped_table_cell_edit$row)
+        row <- unique(input$inf_ped_table_ale_cell_edit$row)
         # Conferindo se a linha da tabela foi selecionado
-        cond <- input$hist_pedido_rows_selected
+        cond <- input$hist_pedido_ale_rows_selected
         req(cond)
         # Obtendo os dados COMPRA slecionado correspondente a linha
         list_comp <- df_comp() |>
-          dplyr::filter(tipo_compra == 'ração') |>
+          dplyr::filter(tipo_compra == 'alevino') |>
           dplyr::select(c("id_compra","data_compra","quantidade_total","valor_total","quantidade_itens","data_chegada")) |>
           dplyr::slice(cond)
         # Identificando compra_Ração da compra selecionada
-        list_compRac <- df_comp_rac() |>
+        list_compAle <- df_comp_ale() |>
           dplyr::filter(id_compra == list_comp$id_compra)
         # Identificando a na tabela Ração os itemns comprados
-        intersect(colnames(list_compRac),colnames(df_rac()))
+        intersect(colnames(list_compAle),colnames(df_alevino()))
         # merge two data frames by ID and Country
-        id_compRac_select <- merge(list_compRac,df_rac(),
-                                   by=intersect(colnames(list_compRac),colnames(df_rac())))[row,"id_comp_racao"]
-        id_compRac_select
+        id_compAle_select <- merge(list_compAle,df_alevino(),
+                                   by="id_alevino")[row,"id_comp_alevino"]
+        id_compAle_select
         #---- Dados editados ----#
         ## Código do lote
-        cod_lote <- input$inf_ped_table_cell_edit$value[9]
-        ## validade
-        val_edit <- input$inf_ped_table_cell_edit$value[8]
+        cod_lote <- input$inf_ped_table_ale_cell_edit$value[12]
+        ## data init
+        data_init <- input$inf_ped_table_ale_cell_edit$value[11]
+        dias_init <- as.numeric(input$inf_ped_table_ale_cell_edit$value[10])
+        peso_init <- as.numeric(input$inf_ped_table_ale_cell_edit$value[9])
+
         #------------- UPDATE SET --------------
         # Connect to DB
         con <- connect_to_db()
         ## Inserindo dados fornecedor
-        query <- glue::glue(read_sql_file(path = "SQL/edit_compra_racao.sql"))
+        query <- glue::glue(read_sql_file(path = "SQL/edit_compra_alevino.sql"))
         ### Query to send to database
         insert_compRac <- DBI::dbSendQuery(conn = con, statement = query)
         DBI::dbClearResult(insert_compRac) # limpando resultados
@@ -916,65 +916,45 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_fab,df_comp){
         #----------------------------------------
         #============== Renderiza novamente a tabela ======================
         # Renderizando a tabela de pedidos dento da aba 2
-        output$inf_ped_table <- DT::renderDT({
-          # Ataulizando dados
-          # Dados da Tabela Compra_Ração
-          df_comp_rac({
-            golem::cat_dev("Importou os dados da Compra de Ração \n")
-            ## conectando com o DB PostgreSQL
-            # Connect to DB
-            con <- connect_to_db()
-            # Query
-            query <- glue::glue("TABLE compra_racao;")
-            # browser() # Shiny Debugging
-            df_postgres <- DBI::dbGetQuery(con, statement = query)
-            # Disconnect from the DB
-            DBI::dbDisconnect(con)
-            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
-            # Convert to data.frame
-            data.frame(df_postgres,check.names = FALSE)
-          })
-          # Conferindo se a linha da tabela foi selecionado
-          cond <- input$hist_pedido_rows_selected
-          req(cond)
-          # if(!is.null(cond)){ # Linha selecionada:
+        output$inf_ped_table_ale <- DT::renderDT({
           # browser()
+          # Conferindo se a linha da tabela foi selecionado
+          cond <- input$hist_pedido_ale_rows_selected
+          req(cond)
           # Obtendo os dados COMPRA slecionado correspondente a linha
           list_comp <- df_comp() |>
-            dplyr::filter(tipo_compra == 'ração') |>
+            dplyr::filter(tipo_compra == 'alevino') |>
             dplyr::select(c("id_compra","data_compra","quantidade_total","valor_total","quantidade_itens","data_chegada")) |>
             dplyr::slice(cond)
-          # Identificando compra_Ração da compra selecionada
-          list_compRac <- df_comp_rac() |>
+          # Identificando compra_alevino da compra selecionada
+          list_compAle <- df_comp_ale() |>
             dplyr::filter(id_compra == list_comp$id_compra)
-          # Identificando a na tabela Ração os itemns comprados
-          df_rac() |>
-            dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
-            dplyr::distinct() |>
-            dplyr::filter(id_racao %in% list_compRac$id_racao)
           # Colunas em comum
-          intersect(colnames(list_compRac),colnames(df_rac()))
-          # merge two data frames by ID and Country
-          merge <- merge(list_compRac,df_rac(),
-                         by=intersect(colnames(list_compRac),colnames(df_rac())))
-          # browser()
+          # intersect(colnames(list_compAle),colnames(df_alevino()))
+          # merge os dois bancos de dados para renderizar o nome da ração
+          merge <- merge(list_compAle,df_alevino(),
+                         by="id_alevino")
           # Selecionando os dados para renderizar na tabela
           df <- merge |>
-            dplyr::select(c("nome","tamanho","Fase","Proteína","Fabricante",
-                            "valor_uni","quantidade","validade","cod_lote",
-                            "valor_entrada","Distribuidor"))
+            dplyr::select(c("nome_fabricante","apelido","prod_ale",
+                            "nome_distribuidor","sexo",
+                            "valor_uni","quantidade","valor_entrada",
+                            "peso_init","dias_init","data_init",
+                            "cod_lote"
+            )
+            )
           # Renderizando a tabela
           DT::datatable(
             df,
             rownames = FALSE,
             selection = "single",
             # editable = TRUE,
-            colnames = c("Nome","Tamanho (mm)","Fase","Proteína","Fabricante","Preço (R$/kg)","Quant. (kg)","Validade","Código lote","Valor pedido","Distribuidor"),
+            colnames = c("Fabricante","Apelido","Produto","Distribuidor","Sexo","Preço (R$/mil.)","Quant. (mil.)","Valor pedido","Peso alevino (kg)","Dias vida","Data nasc.","Código lote"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
             ),
-            editable = list(target = "row", disable = list(columns = c(0:6,9,10) ))
+            editable = list(target = "row", disable = list(columns = c(0:7) ))
           )
         })
         #==============================================
@@ -986,103 +966,22 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_fab,df_comp){
             div(tags$b(paste0("Data não válida. É importante conferir o formato editado da data."), style = "color: red;")),
             div(tags$b(paste0("Deve seguir o modelo: ano-mês-dia",Sys.Date()))),
           ),
-          cod_lot = div(tags$b(paste0("O Código do lote deve ter menos que 30 caracteres."), style = "color: red;"))
+          cod_lot = div(tags$b(paste0("O Código do lote deve ter menos que 30 caracteres."), style = "color: red;")),
+          peso = div(tags$b(paste0("O peso inicial deve ser maior que 0 (zero) e menor que 200000 kg."), style = "color: red;")),
+          dias = div(tags$b(paste0("Os dias de vida do animal deve ser maior que 0 (zero) e menor que 200000 dias."), style = "color: red;"))
         )
         # Mostrar o modal informando o problema
         showModal(modalDialog(
           title = "Ocorreu um problema",
-          list_msg[!condict],
+          list_msg[!list_condict],
           footer = modalButton("Ok")
         ))
         #============== Renderiza novamente a tabela ======================
         # Renderizando a tabela de pedidos dento da aba 2
-        output$inf_ped_table <- DT::renderDT({
-          # Atualizando tabela compra
-          # Dados da Tabela Compra_Ração
-          df_comp_rac({
-            golem::cat_dev("Importou os dados da Compra de Ração \n")
-            ## conectando com o DB PostgreSQL
-            # Connect to DB
-            con <- connect_to_db()
-            # Query
-            query <- glue::glue("TABLE compra_racao;")
-            # browser() # Shiny Debugging
-            df_postgres <- DBI::dbGetQuery(con, statement = query)
-            # Disconnect from the DB
-            DBI::dbDisconnect(con)
-            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
-            # Convert to data.frame
-            data.frame(df_postgres,check.names = FALSE)
-          })
-          # Dados da Tabela Compra
-          df_comp({
-            golem::cat_dev("Importou os dados da Compra \n")
-            ## conectando com o DB PostgreSQL
-            # Connect to DB
-            con <- connect_to_db()
-            # Query
-            query <- glue::glue("TABLE compra ORDER BY created_at DESC;")
-            # browser() # Shiny Debugging
-            df_postgres <- DBI::dbGetQuery(con, statement = query)
-            # Disconnect from the DB
-            DBI::dbDisconnect(con)
-            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
-            # Convert to data.frame
-            data.frame(df_postgres,check.names = FALSE)
-          })
-          # Conferindo se a linha da tabela foi selecionado
-          cond <- input$hist_pedido_rows_selected
-          req(cond)
-          # if(!is.null(cond)){ # Linha selecionada:
-          # browser()
-          # Obtendo os dados COMPRA slecionado correspondente a linha
-          list_comp <- df_comp() |>
-            dplyr::filter(tipo_compra == 'ração') |>
-            dplyr::select(c("id_compra","data_compra","quantidade_total","valor_total","quantidade_itens","data_chegada")) |>
-            dplyr::slice(cond)
-          # Identificando compra_Ração da compra selecionada
-          list_compRac <- df_comp_rac() |>
-            dplyr::filter(id_compra == list_comp$id_compra)
-          # Identificando a na tabela Ração os itemns comprados
-          df_rac() |>
-            dplyr::select(!c('Distribuidor','id_distribuidor','Celular','Whatsapp')) |>
-            dplyr::distinct() |>
-            dplyr::filter(id_racao %in% list_compRac$id_racao)
-          # Colunas em comum
-          intersect(colnames(list_compRac),colnames(df_rac()))
-          # merge two data frames by ID and Country
-          merge <- merge(list_compRac,df_rac(),
-                         by=intersect(colnames(list_compRac),colnames(df_rac())))
-          # browser()
-          # Selecionando os dados para renderizar na tabela
-          df <- merge |>
-            dplyr::select(c("nome","tamanho","Fase","Proteína","Fabricante",
-                            "valor_uni","quantidade","validade","cod_lote",
-                            "valor_entrada","Distribuidor"))
-          # Renderizando a tabela
-          DT::datatable(
-            df,
-            rownames = FALSE,
-            selection = "single",
-            # editable = TRUE,
-            colnames = c("Nome","Tamanho (mm)","Fase","Proteína","Fabricante","Preço (R$/kg)","Quant. (kg)","Validade","Código lote","Valor pedido","Distribuidor"),
-            class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
-            options = list(searching = FALSE, lengthChange = FALSE,
-                           scrollX = TRUE # mantem a tabela dentro do conteiner
-            ),
-            editable = list(target = "row", disable = list(columns = c(0:4,9,10) ))
-          )
-        })
+        # output$inf_ped_table
         #==============================================
       }
     })
-
-
-
-
-
-
-
 
   })
 }
