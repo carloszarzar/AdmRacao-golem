@@ -152,6 +152,49 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
+  # Dados da Ração em Estoque (view_entrada)
+  df_view_entrada <- reactiveVal({
+    ## conectando com o DB PostgreSQL
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue("TABLE view_entrada;")
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
+  # Dados Saída Ração
+  df_saida_racao <- reactiveVal({
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue("TABLE saida_racao;")
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
+  # Dados Saída Alevino
+  df_saida_alevino <- reactiveVal({
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue("TABLE saida_alevino;")
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
 
   ####----- tabInicio ----####
   mod_tabInicio_server("global")
@@ -164,13 +207,13 @@ app_server <- function(input, output, session) {
   ####----- tabFazenda ----####
   mod_tabFazenda_server("global",df_prop,df_faz)
   ####----- tabCompRac ----####
-  mod_tabCompRac_server("global",df_rac,df_comp,df_comp_rac)
+  mod_tabCompRac_server("global",df_rac,df_comp,df_comp_rac,df_view_entrada)
   ####----- tabCompAle ----####
   mod_tabCompAle_server("global",df_comp_ale,df_alevino,df_comp)
   ####----- tabEstoque ----####
   mod_tabEstoque_server("global")
   ####----- tabSaidaRac ----####
-  mod_tabSaidaRac_server("global")
+  mod_tabSaidaRac_server("global",df_view_entrada,df_rac,df_comp_rac,df_faz,df_saida_racao)
   ####----- tabSaidaAle ----####
   mod_tabSaidaAle_server("global")
 

@@ -54,7 +54,7 @@ mod_tabCompRac_ui <- function(id){
 #' tabCompRac Server Functions
 #'
 #' @noRd
-mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
+mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_view_entrada){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Tablea Lista de Ração para Compra (list_rac) ----####
@@ -375,6 +375,61 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
             )
           ) %>% DT::formatDate(c('data_compra','data_chegada'), method = "toLocaleDateString") # Consertando timestap para formato desejado
         })
+        # Atualizando os dados de entrada do estoque Ração
+        #------------- REFRESH MATERIALIZED VIEW --------------
+        # browser()
+        # Connect to DB
+        con <- connect_to_db()
+        ## Inserindo dados fornecedor
+        query <- glue::glue("REFRESH MATERIALIZED VIEW view_entrada;")
+        ### Query to send to database
+        insert_prop <- DBI::dbSendQuery(conn = con, statement = query)
+        DBI::dbClearResult(insert_prop) # limpando resultados
+        # Disconnect from the DB
+        DBI::dbDisconnect(con)
+        #---------------------------
+        # Atualizando a renderização da tabela Saída estoque Ração (saida_racao) (tabSaidaRac)
+        output$rac_st <- DT::renderDataTable({
+          # browser()
+          # Atualizando materialized view de entrada de ração
+          df_view_entrada({
+            ## conectando com o DB PostgreSQL
+            # Connect to DB
+            con <- connect_to_db()
+            # Query
+            query <- glue::glue("TABLE view_entrada;")
+            # browser() # Shiny Debugging
+            df_postgres <- DBI::dbGetQuery(con, statement = query)
+            # Disconnect from the DB
+            DBI::dbDisconnect(con)
+            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+            # Convert to data.frame
+            data.frame(df_postgres,check.names = FALSE)
+          })
+          # Merge da tabelas (inf completo)
+          rac_st_tb <- merge(df_view_entrada(),df_rac())
+          # Selecionando as colunas para renderizar
+          df <- rac_st_tb |>
+            dplyr::select(c(
+              "nome","Fabricante","tamanho","Proteína","Fase",
+              "entrada","valor_entrada"
+            ))
+          # Renderizando a tabela
+          DT::datatable(
+            df,
+            rownames = FALSE,
+            # selection = "single",
+            extensions = 'RowGroup',
+            colnames = c("Nome","Fabricante","Tamanho (mm)","Proteína","Qnt. stc. (Kg)","Valor stc. (R$)"),
+            class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+            options = list(searching = FALSE, lengthChange = FALSE,
+                           scrollX = TRUE, # mantem a tabela dentro do conteiner
+                           rowGroup = list(dataSrc=c(4)), # Opção subtítulos e grupos de linhas
+                           columnDefs = list(list(visible=FALSE, targets=c("Fase"))) # Opção subtítulos e grupos de linhas
+            )
+          ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+        })
+        #-----------------------------------------------------
         # Desabilitando UI dinamico (linhas selecionadas)
         shinyjs::disable("dados_pedido")
         shinyjs::disable("realizar_pedido")
@@ -649,6 +704,60 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac){
           )
         ) %>% DT::formatDate(c('data_compra','data_chegada'), method = "toLocaleDateString") # Consertando timestap para formato desejado
       })
+      #------------- REFRESH MATERIALIZED VIEW --------------
+      # browser()
+      # Connect to DB
+      con <- connect_to_db()
+      ## Inserindo dados fornecedor
+      query <- glue::glue("REFRESH MATERIALIZED VIEW view_entrada;")
+      ### Query to send to database
+      insert_prop <- DBI::dbSendQuery(conn = con, statement = query)
+      DBI::dbClearResult(insert_prop) # limpando resultados
+      # Disconnect from the DB
+      DBI::dbDisconnect(con)
+      #---------------------------
+      # Atualizando a renderização da tabela Saída estoque Ração (saida_racao)
+      output$rac_st <- DT::renderDataTable({
+        browser()
+        # Atualizando materialized view de entrada de ração
+        df_view_entrada({
+          ## conectando com o DB PostgreSQL
+          # Connect to DB
+          con <- connect_to_db()
+          # Query
+          query <- glue::glue("TABLE view_entrada;")
+          # browser() # Shiny Debugging
+          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+          # Convert to data.frame
+          data.frame(df_postgres,check.names = FALSE)
+        })
+        # Merge da tabelas (inf completo)
+        rac_st_tb <- merge(df_view_entrada(),df_rac())
+        # Selecionando as colunas para renderizar
+        df <- rac_st_tb |>
+          dplyr::select(c(
+            "nome","Fabricante","tamanho","Proteína","Fase",
+            "entrada","valor_entrada"
+          ))
+        # Renderizando a tabela
+        DT::datatable(
+          df,
+          rownames = FALSE,
+          # selection = "single",
+          extensions = 'RowGroup',
+          colnames = c("Nome","Fabricante","Tamanho (mm)","Proteína","Qnt. stc. (Kg)","Valor stc. (R$)"),
+          class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+          options = list(searching = FALSE, lengthChange = FALSE,
+                         scrollX = TRUE, # mantem a tabela dentro do conteiner
+                         rowGroup = list(dataSrc=c(4)), # Opção subtítulos e grupos de linhas
+                         columnDefs = list(list(visible=FALSE, targets=c("Fase"))) # Opção subtítulos e grupos de linhas
+          )
+        ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+      })
+      #-----------------------------------------------------
       removeModal()
     })
     ##---- Botão Editar ----##

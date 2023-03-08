@@ -12,7 +12,7 @@ mod_stockDas_ui <- function(id){
   tagList(
     box(
       title = "Estoque", status = "primary",
-      width = 6, height = 250,
+      width = 6, # height = 250,
       tableOutput(ns("estoque"))
     )
   )

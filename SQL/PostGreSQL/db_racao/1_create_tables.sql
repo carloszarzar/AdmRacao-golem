@@ -114,7 +114,7 @@ CREATE TABLE compra(
 	valor_total NUMERIC NOT NULL,
 	data_compra DATE NOT NULL, -- Data que foi pago e realizado o pedido
 	data_chegada DATE NULL, -- Previsão de chegada
-	tipo_compra VARCHAR(10) NOT NULL,
+	tipo_compra VARCHAR(10) NOT NULL, -- ração ou alevino
     created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL 
 );
