@@ -38,20 +38,28 @@ mod_tabSaidaRac_ui <- function(id){
 #' tabSaidaRac Server Functions
 #'
 #' @noRd
-mod_tabSaidaRac_server <- function(id,df_view_entrada,df_rac,df_comp_rac,df_faz,df_saida_racao){
+mod_tabSaidaRac_server <- function(id,df_estoque,df_rac,df_comp_rac,df_faz,df_saida_racao){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Renderizando tabela MATERIALIZED VIEW Ração no estoque ----####
     output$rac_st <- DT::renderDataTable({
-      browser()
+      # browser()
+      # Somando os lotes por grupo ração disponível no estoque
+      # returns tibble table
+      agr_estoque <- df_estoque() %>% group_by(id_racao) %>%
+        summarise(quant_total=sum(quant_total),
+                  valor_total=sum(valor_total),
+                  .groups = 'drop')
       # Merge da tabelas (inf completo)
-      rac_st_tb <- merge(df_view_entrada(),df_rac())
+      # rac_st_tb <- merge(df_estoque(),df_rac())
+      rac_st_tb <- merge(agr_estoque,df_rac())
       # Selecionando as colunas para renderizar
       df <- rac_st_tb |>
         dplyr::select(c(
           "nome","Fabricante","tamanho","Proteína","Fase",
-          "entrada","valor_entrada"
-        ))
+          "quant_total","valor_total" # "entrada","valor_entrada"
+        )) |>
+        dplyr::filter(quant_total != 0)
       # Renderizando a tabela
       DT::datatable(
         df,
@@ -74,17 +82,28 @@ mod_tabSaidaRac_server <- function(id,df_view_entrada,df_rac,df_comp_rac,df_faz,
       cond <- input$rac_st_rows_selected
       # browser()
       if(!is.null(cond)){ # Linha selecionada:
+        # Somando os lotes por grupo ração disponível no estoque
+        # returns tibble table
+        agr_estoque <- df_estoque() %>% group_by(id_racao) %>%
+          summarise(quant_total=sum(quant_total),
+                    valor_total=sum(valor_total),
+                    .groups = 'drop')
+        # Merge da tabelas (inf completo)
+        # rac_st_tb <- merge(df_estoque(),df_rac())
+        rac_st_tb <- merge(agr_estoque,df_rac())
         ## Selecionando os dados do estoque
         # Merge da tabelas (inf completo)
-        st <- merge(df_view_entrada(),df_rac()) |>
+        st <- rac_st_tb |>
           dplyr::select(c("id_racao","nome","Fabricante","tamanho","Proteína","Fase",
-            "entrada","valor_entrada")) |>
+                          "quant_total","valor_total")) |>
+          dplyr::filter(quant_total != 0) |>
           dplyr::slice(cond) # entrada é a quantidade que tem no estoque kg e seu valor_entrada em real R$
-
         # Informação (dados) da compra da ração selecionada
-        # subset(df_comp_rac(),id_racao == st$id_racao)
-        comp_rac <- merge(st,df_comp_rac(),by='id_racao',suffixes = c(".total",".pedido")) # quantidade kg da ração no estoque comprada no pedido
-        # browser()
+        # subset(df_estoque(),id_racao == st$id_racao)
+        comp_rac <- merge(st,df_estoque(),by='id_racao',suffixes = c(".racao",".lote")) |> # quantidade kg da ração no estoque comprada no pedido
+          filter(quant_total.lote != 0)
+        comp_rac <- merge(comp_rac,df_comp_rac())
+        # browser() # Parei aqui # Tenho que criar um estoque atual para detalhar cada ração para cada lote.
         ## Renderizando Box dados do envio
         div(
           # Coluna da seleção da fazenda
@@ -120,8 +139,8 @@ mod_tabSaidaRac_server <- function(id,df_view_entrada,df_rac,df_comp_rac,df_faz,
                            # Coluna da quantidade de ração a ser enviado da ração lote
                            column(3,
                                   numericInput(ns(paste0("qnt_saida",x['id_comp_racao'])),
-                                               labelMandatory(paste("Qnt. eviada max: ",x['quantidade'],"(kg)")),
-                                               value = 0, min = 0, max = x['quantidade']),
+                                               labelMandatory(paste("Qnt. eviada max: ",x['quant_total.lote'],"(kg)")),
+                                               value = 0, min = 0, max = x['quant_total.lote']),
                                   tags$style(".shiny-input-container {margin-top: 5px;}")
                            ),
                          )
@@ -138,20 +157,32 @@ mod_tabSaidaRac_server <- function(id,df_view_entrada,df_rac,df_comp_rac,df_faz,
     })
     # Apertando o botão Realizar Envio (enviar)
     observeEvent(input$enviar,{
+      # browser()
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$rac_st_rows_selected
       # Corrigindo um erro caso não tenha nenhuma linha selecionada na tabela
       req(cond, cancelOutput = FALSE)
-      ## Selecionando os dados do estoque clicados
-      # Merge da tabelas (inf completo) st - select table
-      st <- merge(df_view_entrada(),df_rac()) |>
+      # Somando os lotes por grupo ração disponível no estoque
+      # returns tibble table
+      agr_estoque <- df_estoque() %>% group_by(id_racao) %>%
+        summarise(quant_total=sum(quant_total),
+                  valor_total=sum(valor_total),
+                  .groups = 'drop')
+      # Merge da tabelas (inf completo)
+      # rac_st_tb <- merge(df_estoque(),df_rac())
+      rac_st_tb <- merge(agr_estoque,df_rac())
+      ## Selecionando os dados do estoque
+      # Merge da tabelas (inf completo)
+      st <- rac_st_tb |>
         dplyr::select(c("id_racao","nome","Fabricante","tamanho","Proteína","Fase",
-                        "entrada","valor_entrada")) |>
+                        "quant_total","valor_total")) |>
+        dplyr::filter(quant_total != 0) |>
         dplyr::slice(cond) # entrada é a quantidade que tem no estoque kg e seu valor_entrada em real R$
-
       # Informação (dados) da compra da ração selecionada
       # subset(df_comp_rac(),id_racao == st$id_racao)
-      comp_rac <- merge(st,df_comp_rac(),by='id_racao',suffixes = c(".total",".pedido"))
+      comp_rac <- merge(st,df_estoque(),by='id_racao',suffixes = c(".racao",".lote")) |> # quantidade kg da ração no estoque comprada no pedido
+        filter(quant_total.lote != 0)
+      comp_rac <- merge(comp_rac,df_comp_rac())
       ## Listas de input quantidade de saída
       (list_qnt_saida_select <- paste0("qnt_saida",comp_rac$id_comp_racao))
       ## Verificação se todos estão com valores permitidos
@@ -162,8 +193,8 @@ mod_tabSaidaRac_server <- function(id,df_view_entrada,df_rac,df_comp_rac,df_faz,
         # stringi::stri_stats_latex(input[[x]])[[1]] <= 30
       })
       # Listando a verificação da condição de cada um
-      condiction <- list_input >= 0 & list_input <= comp_rac$quantidade
-      # condiction <- c(0,0,0,-2) >= c(0,0,0,0) & c(0,0,50000,-2) <= comp_rac$quantidade
+      condiction <- list_input >= 0 & list_input <= comp_rac$quant_total.lote
+      # condiction <- c(0,0,0,-2) >= c(0,0,0,0) & c(0,0,50000,-2) <= comp_rac$quant_total
       condiction
       # browser()
       ## Todos foram aprovados?
@@ -185,161 +216,144 @@ mod_tabSaidaRac_server <- function(id,df_view_entrada,df_rac,df_comp_rac,df_faz,
         # Retirando as rações que não foram enviadas (quantidade = 0)
         insertSaidaRac <- insertSaidaRac |>
           dplyr::filter(quantidade != 0)
-        #------------- INSERT INTO --------------
-        # browser()
-        # Connect to DB
-        con <- connect_to_db()
-        # DBI::dbWriteTable(con, "compra", insertCompra, row.names=FALSE, append=TRUE)
-        # Criando tabela temporária no DB para inserir os valores
-        DBI::dbWriteTable(con, "valores_a_inserir", insertSaidaRac, row.names=FALSE, append=FALSE,
-                          field.types = c(data_saida = 'TIMESTAMPTZ'))
-        ## Inserindo dados fornecedor
-        query <- glue::glue(read_sql_file(path = "SQL/insert_saida_racao.sql"))
-        ### Query to send to database
-        insert <- DBI::dbSendQuery(conn = con, statement = query)
-        DBI::dbClearResult(insert) # limpando resultados
-
-        # Removendo a tabela temporária criada para inserir os valores
-        DBI::dbRemoveTable(con, "valores_a_inserir")
-        # Disconnect from the DB
-        DBI::dbDisconnect(con)
-        #----------------------------------------
-        ###shinyModal to show to user when the update to the database table is successful
-        showModal(
-          modalDialog( title=paste0("Envio realizado com sucesso!!!"),
-                       br(),
-                       div(tags$b(paste0("A tabela Histórico Saída Ração foi atualizada."), style = "color: green;")),
-                       footer = modalButton("Ok")
-          )
-        )
-        #----------------------------------------
-        # Atualização da tabela histórico Saída Ração
-        output$hist_saida_rac <- DT::renderDataTable({
-          df_saida_racao({
-            # Connect to DB
-            con <- connect_to_db()
-            # Query
-            query <- glue::glue("TABLE saida_racao;")
-            # browser() # Shiny Debugging
-            df_postgres <- DBI::dbGetQuery(con, statement = query)
-            # Disconnect from the DB
-            DBI::dbDisconnect(con)
-            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
-            # Convert to data.frame
-            data.frame(df_postgres,check.names = FALSE)
-          })
-          # Selecionando as colunas para renderizar
-          df <- df_saida_racao() |>
-            dplyr::select(c(
-              "id_saida_racao","quantidade","valor_saida","id_fazenda","data_saida",
-              "id_comp_racao","id_racao"
-            ))
-          # Renderizando a tabela
-          DT::datatable(
-            df,
-            rownames = FALSE,
-            # selection = "single",
-            extensions = 'RowGroup',
-            # selection = "single",
-            # colnames = c("Nome","Fabricante","Tamanho (mm)","Proteína","Fase","Qnt. stc. (Kg)","Valor stc. (R$)"),
-            class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
-            options = list(searching = FALSE, lengthChange = FALSE,
-                           scrollX = TRUE # mantem a tabela dentro do conteiner
-            )
-          ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
-        })
-
-        browser()
-        #===================== Parei aqui =======================
-        # Tenho que conferir a tabela rac_st pois não está atualizando
-        # Conferir a legenda no box operação de envio. Não está atualizando o valor máximo com a quantidade do estoque
-        # Colocar o histórico da saída da racao em ordem crescente pela data de criação
-        # Colcoar insofrmação de apagar e editar a saída da ração
-        #------------- REFRESH MATERIALIZED VIEW --------------
-        # Connect to DB
-        con <- connect_to_db()
-        ## Inserindo dados fornecedor
-        query <- glue::glue("REFRESH MATERIALIZED VIEW view_saida;")
-        ### Query to send to database
-        refresh <- DBI::dbSendQuery(conn = con, statement = query)
-        DBI::dbClearResult(refresh) # limpando resultados
-        # Disconnect from the DB
-        DBI::dbDisconnect(con)
-        #---------------------------
-
-        # Atualizando os dados de entrada do estoque Ração
-        #------------- REFRESH MATERIALIZED VIEW --------------
-        # browser()
-        # Connect to DB
-        con <- connect_to_db()
-        ## Inserindo dados fornecedor
-        query <- glue::glue("REFRESH MATERIALIZED VIEW view_entrada;")
-        ### Query to send to database
-        insert_prop <- DBI::dbSendQuery(conn = con, statement = query)
-        DBI::dbClearResult(insert_prop) # limpando resultados
-        # Disconnect from the DB
-        DBI::dbDisconnect(con)
-        #---------------------------
-        # Atualizando a renderização da tabela Saída estoque Ração (saida_racao)
-        output$rac_st <- DT::renderDataTable({
+        # Conferindo se o usuário colocou algum valor maior que zero, ou tudo zero para a saída da ração
+        nrow(req(insertSaidaRac))>0
+        # Ao menos um valor maior que zero
+        if(nrow(req(insertSaidaRac))>0){
+          #------------- INSERT INTO --------------
           # browser()
-          # Atualizando materialized view de entrada de ração
-          df_view_entrada({
-            ## conectando com o DB PostgreSQL
-            # Connect to DB
-            con <- connect_to_db()
-            # Query
-            query <- glue::glue("TABLE view_entrada;")
-            # browser() # Shiny Debugging
-            df_postgres <- DBI::dbGetQuery(con, statement = query)
-            # Disconnect from the DB
-            DBI::dbDisconnect(con)
-            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
-            # Convert to data.frame
-            data.frame(df_postgres,check.names = FALSE)
-          })
-          # Merge da tabelas (inf completo)
-          rac_st_tb <- merge(df_view_entrada(),df_rac())
-          # Selecionando as colunas para renderizar
-          df <- rac_st_tb |>
-            dplyr::select(c(
-              "nome","Fabricante","tamanho","Proteína","Fase",
-              "entrada","valor_entrada"
-            ))
-          # Renderizando a tabela
-          DT::datatable(
-            df,
-            rownames = FALSE,
-            # selection = "single",
-            extensions = 'RowGroup',
-            colnames = c("Nome","Fabricante","Tamanho (mm)","Proteína","Qnt. stc. (Kg)","Valor stc. (R$)"),
-            class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
-            options = list(searching = FALSE, lengthChange = FALSE,
-                           scrollX = TRUE, # mantem a tabela dentro do conteiner
-                           rowGroup = list(dataSrc=c(4)), # Opção subtítulos e grupos de linhas
-                           columnDefs = list(list(visible=FALSE, targets=c("Fase"))) # Opção subtítulos e grupos de linhas
+          # Connect to DB
+          con <- connect_to_db()
+          # DBI::dbWriteTable(con, "compra", insertCompra, row.names=FALSE, append=TRUE)
+          # Criando tabela temporária no DB para inserir os valores
+          DBI::dbWriteTable(con, "valores_a_inserir", insertSaidaRac, row.names=FALSE, append=FALSE,
+                            field.types = c(data_saida = 'TIMESTAMPTZ'))
+          ## Inserindo dados fornecedor
+          query <- glue::glue(read_sql_file(path = "SQL/insert_saida_racao.sql"))
+          ### Query to send to database
+          insert <- DBI::dbSendQuery(conn = con, statement = query)
+          DBI::dbClearResult(insert) # limpando resultados
+
+          # Removendo a tabela temporária criada para inserir os valores
+          DBI::dbRemoveTable(con, "valores_a_inserir")
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          #----------------------------------------
+          ###shinyModal to show to user when the update to the database table is successful
+          showModal(
+            modalDialog( title=paste0("Envio realizado com sucesso!!!"),
+                         br(),
+                         div(tags$b(paste0("A tabela Histórico Saída Ração foi atualizada."), style = "color: green;")),
+                         footer = modalButton("Ok")
             )
-          ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
-        })
-        #-----------------------------------------------------
-
-
-        #=========================================================
-        #-----------------------------------------------------
-        # Desabilitando UI dinamico (linhas selecionadas)
-        shinyjs::disable("dados_envio")
-
-
-
-
-
-
+          )
+          #----------------------------------------
+          # Atualização da tabela histórico Saída Ração
+          output$hist_saida_rac <- DT::renderDataTable({
+            df_saida_racao({
+              # Connect to DB
+              con <- connect_to_db()
+              # Query
+              query <- glue::glue("TABLE saida_racao;")
+              # browser() # Shiny Debugging
+              df_postgres <- DBI::dbGetQuery(con, statement = query)
+              # Disconnect from the DB
+              DBI::dbDisconnect(con)
+              # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+              # Convert to data.frame
+              data.frame(df_postgres,check.names = FALSE)
+            })
+            # Selecionando as colunas para renderizar
+            df <- df_saida_racao() |>
+              dplyr::select(c(
+                "id_saida_racao","quantidade","valor_saida","id_fazenda","data_saida",
+                "id_comp_racao","id_racao"
+              ))
+            # Renderizando a tabela
+            DT::datatable(
+              df,
+              rownames = FALSE,
+              # selection = "single",
+              extensions = 'RowGroup',
+              # selection = "single",
+              # colnames = c("Nome","Fabricante","Tamanho (mm)","Proteína","Fase","Qnt. stc. (Kg)","Valor stc. (R$)"),
+              class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+              options = list(searching = FALSE, lengthChange = FALSE,
+                             scrollX = TRUE # mantem a tabela dentro do conteiner
+              )
+            ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+          })
+          # browser()
+          # Atualizando a renderização da tabela Saída estoque Ração (saida_racao)
+          output$rac_st <- DT::renderDataTable({
+            # browser()
+            # Atualizando materialized view de entrada de ração
+            df_estoque({
+              # Connect to DB
+              con <- connect_to_db()
+              # Query estoque data (Materilized View)
+              df_postgres <- DBI::dbGetQuery(con,
+                                             read_sql_file(path = "SQL/estoque_lote.sql")
+              )
+              # Disconnect from the DB
+              DBI::dbDisconnect(con)
+              # Convert to data.frame
+              data.frame(df_postgres)
+            })
+            # Somando os lotes por grupo ração disponível no estoque
+            # returns tibble table
+            agr_estoque <- df_estoque() %>% group_by(id_racao) %>%
+              summarise(quant_total=sum(quant_total),
+                        valor_total=sum(valor_total),
+                        .groups = 'drop')
+            # Merge da tabelas (inf completo)
+            # rac_st_tb <- merge(df_estoque(),df_rac())
+            rac_st_tb <- merge(agr_estoque,df_rac())
+            # Selecionando as colunas para renderizar
+            df <- rac_st_tb |>
+              dplyr::select(c(
+                "nome","Fabricante","tamanho","Proteína","Fase",
+                "quant_total","valor_total" # "entrada","valor_entrada"
+              )) |>
+              dplyr::filter(quant_total != 0)
+            # Renderizando a tabela
+            DT::datatable(
+              df,
+              rownames = FALSE,
+              # selection = "single",
+              extensions = 'RowGroup',
+              colnames = c("Nome","Fabricante","Tamanho (mm)","Proteína","Qnt. stc. (Kg)","Valor stc. (R$)"),
+              class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+              options = list(searching = FALSE, lengthChange = FALSE,
+                             scrollX = TRUE, # mantem a tabela dentro do conteiner
+                             rowGroup = list(dataSrc=c(4)), # Opção subtítulos e grupos de linhas
+                             columnDefs = list(list(visible=FALSE, targets=c("Fase"))) # Opção subtítulos e grupos de linhas
+              )
+            ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+          })
+          #-----------------------------------------------------
+          # Desabilitando UI dinamico (linhas selecionadas)
+          shinyjs::disable("dados_envio")
+        }
+        #Caso todos o valores imputados sejam zero
+        else{
+          #----------------------------------------
+          ###shinyModal to show to user when the update to the database table is successful
+          showModal(
+            modalDialog( title=paste0("Problemas na Saída da Ração !!!"),
+                         br(),
+                         div(tags$b(paste0("É necessário definir a quantidade de ração enviada ao menos para uma das rações disponível no estoque."), style = "color: red;")),
+                         footer = modalButton("Ok")
+            )
+          )
+          #----------------------------------------
+        }
       }
       else { # Condições NÃO satisfeita
         # Lista de msg a ser printada na tela
         list_msg <- apply(comp_rac,1, function(x){
           paste("A quantidade da ração de código:",x['cod_lote'],
-                " deve ser menor que ",x['quantidade'],"Kg.")
+                " deve ser menor que ",x['quant_total'],"Kg.")
         })
         # Msg printadas
         list_msg[!condiction]

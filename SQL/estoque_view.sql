@@ -17,7 +17,7 @@ salida as (
             GROUP BY r.id_racao
             ORDER BY r.id_racao)
 SELECT
-    coalesce(e.id_racao,s.id_racao) as id, coalesce(e.qty,0) - coalesce(s.qty,0) AS quant_total,
+    coalesce(e.id_racao,s.id_racao) as id_racao, coalesce(e.qty,0) - coalesce(s.qty,0) AS quant_total,
     coalesce(e.valor,0) - coalesce(s.valor,0) AS valor_total
 FROM
     entrada AS e

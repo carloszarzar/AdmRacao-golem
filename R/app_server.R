@@ -152,6 +152,7 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
+  #---------------------------------------------
   # Dados da Ração em Estoque (view_entrada)
   df_view_entrada <- reactiveVal({
     ## conectando com o DB PostgreSQL
@@ -167,6 +168,20 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
+  # Dados balanço da ração no estoque
+  df_estoque <- reactiveVal({
+    # Connect to DB
+    con <- connect_to_db()
+    # Query estoque data (Materilized View)
+    df_postgres <- DBI::dbGetQuery(con,
+                                   read_sql_file(path = "SQL/estoque_lote.sql")
+    )
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # Convert to data.frame
+    data.frame(df_postgres)
+  })
+  #---------------------------------------------
   # Dados Saída Ração
   df_saida_racao <- reactiveVal({
     # Connect to DB
@@ -207,13 +222,13 @@ app_server <- function(input, output, session) {
   ####----- tabFazenda ----####
   mod_tabFazenda_server("global",df_prop,df_faz)
   ####----- tabCompRac ----####
-  mod_tabCompRac_server("global",df_rac,df_comp,df_comp_rac,df_view_entrada)
+  mod_tabCompRac_server("global",df_rac,df_comp,df_comp_rac,df_estoque)
   ####----- tabCompAle ----####
   mod_tabCompAle_server("global",df_comp_ale,df_alevino,df_comp)
   ####----- tabEstoque ----####
   mod_tabEstoque_server("global")
   ####----- tabSaidaRac ----####
-  mod_tabSaidaRac_server("global",df_view_entrada,df_rac,df_comp_rac,df_faz,df_saida_racao)
+  mod_tabSaidaRac_server("global",df_estoque,df_rac,df_comp_rac,df_faz,df_saida_racao)
   ####----- tabSaidaAle ----####
   mod_tabSaidaAle_server("global")
 

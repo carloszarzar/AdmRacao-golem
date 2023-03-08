@@ -54,7 +54,7 @@ mod_tabCompRac_ui <- function(id){
 #' tabCompRac Server Functions
 #'
 #' @noRd
-mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_view_entrada){
+mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Tablea Lista de Ração para Compra (list_rac) ----####
@@ -392,28 +392,34 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_view_entrada)
         output$rac_st <- DT::renderDataTable({
           # browser()
           # Atualizando materialized view de entrada de ração
-          df_view_entrada({
-            ## conectando com o DB PostgreSQL
+          df_estoque({
             # Connect to DB
             con <- connect_to_db()
-            # Query
-            query <- glue::glue("TABLE view_entrada;")
-            # browser() # Shiny Debugging
-            df_postgres <- DBI::dbGetQuery(con, statement = query)
+            # Query estoque data (Materilized View)
+            df_postgres <- DBI::dbGetQuery(con,
+                                           read_sql_file(path = "SQL/estoque_lote.sql")
+            )
             # Disconnect from the DB
             DBI::dbDisconnect(con)
-            # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
             # Convert to data.frame
-            data.frame(df_postgres,check.names = FALSE)
+            data.frame(df_postgres)
           })
+          # Somando os lotes por grupo ração disponível no estoque
+          # returns tibble table
+          agr_estoque <- df_estoque() %>% group_by(id_racao) %>%
+            summarise(quant_total=sum(quant_total),
+                      valor_total=sum(valor_total),
+                      .groups = 'drop')
           # Merge da tabelas (inf completo)
-          rac_st_tb <- merge(df_view_entrada(),df_rac())
+          # rac_st_tb <- merge(df_estoque(),df_rac())
+          rac_st_tb <- merge(agr_estoque,df_rac())
           # Selecionando as colunas para renderizar
           df <- rac_st_tb |>
             dplyr::select(c(
               "nome","Fabricante","tamanho","Proteína","Fase",
-              "entrada","valor_entrada"
-            ))
+              "quant_total","valor_total" # "entrada","valor_entrada"
+            )) |>
+            dplyr::filter(quant_total != 0)
           # Renderizando a tabela
           DT::datatable(
             df,
@@ -720,28 +726,34 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_view_entrada)
       output$rac_st <- DT::renderDataTable({
         browser()
         # Atualizando materialized view de entrada de ração
-        df_view_entrada({
-          ## conectando com o DB PostgreSQL
+        df_estoque({
           # Connect to DB
           con <- connect_to_db()
-          # Query
-          query <- glue::glue("TABLE view_entrada;")
-          # browser() # Shiny Debugging
-          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Query estoque data (Materilized View)
+          df_postgres <- DBI::dbGetQuery(con,
+                                         read_sql_file(path = "SQL/estoque_lote.sql")
+          )
           # Disconnect from the DB
           DBI::dbDisconnect(con)
-          # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
           # Convert to data.frame
-          data.frame(df_postgres,check.names = FALSE)
+          data.frame(df_postgres)
         })
+        # Somando os lotes por grupo ração disponível no estoque
+        # returns tibble table
+        agr_estoque <- df_estoque() %>% group_by(id_racao) %>%
+          summarise(quant_total=sum(quant_total),
+                    valor_total=sum(valor_total),
+                    .groups = 'drop')
         # Merge da tabelas (inf completo)
-        rac_st_tb <- merge(df_view_entrada(),df_rac())
+        # rac_st_tb <- merge(df_estoque(),df_rac())
+        rac_st_tb <- merge(agr_estoque,df_rac())
         # Selecionando as colunas para renderizar
         df <- rac_st_tb |>
           dplyr::select(c(
             "nome","Fabricante","tamanho","Proteína","Fase",
-            "entrada","valor_entrada"
-          ))
+            "quant_total","valor_total" # "entrada","valor_entrada"
+          )) |>
+          dplyr::filter(quant_total != 0)
         # Renderizando a tabela
         DT::datatable(
           df,
