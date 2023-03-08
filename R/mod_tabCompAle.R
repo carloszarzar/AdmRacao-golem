@@ -140,7 +140,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
                 ),
                 column(2,
                        textInput(ns(paste0("codigo",x['id_alevino'])),
-                                 "Código lote:"),
+                                 "Código lote fab.:"),
                        tags$style(".shiny-input-container {margin-top: 5px;}")
                 )
               ),
@@ -308,7 +308,10 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
           peso_init = as.vector(peso_init),
           data_init = format(as.vector(date)),
           dias_init = as.vector(dias_init),
-          cod_lote = as.vector(codigo)
+          cod_lote = paste0(letters[list_ale$id_alevino],
+                            stringr::str_remove_all(as.vector(date),"-"),
+                            "-"),
+          cod_fab = as.vector(codigo)
         )
         # insertCompRac
         # str(insertCompRac)
@@ -392,6 +395,22 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
             )
           ) %>% DT::formatDate(c('data_compra','data_chegada'), method = "toLocaleDateString") # Consertando timestap para formato desejado
         })
+        # Atualizando a tabela compra_alevino
+        df_comp_ale({
+          golem::cat_dev("Importou os dados da Compra de Alevino \n")
+          ## conectando com o DB PostgreSQL
+          # Connect to DB
+          con <- connect_to_db()
+          # Query
+          query <- glue::glue("TABLE compra_alevino;")
+          # browser() # Shiny Debugging
+          df_postgres <- DBI::dbGetQuery(con, statement = query)
+          # Disconnect from the DB
+          DBI::dbDisconnect(con)
+          # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+          # Convert to data.frame
+          data.frame(df_postgres,check.names = FALSE)
+        })
         # Desabilitando UI dinamico (linhas selecionadas)
         shinyjs::disable("ale_pedido")
         shinyjs::disable("realizar_ale_pedido")
@@ -399,7 +418,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
       else { # Condições NÃO satisfeita
         # Lista de msg a ser printada na tela
         list_msg <- list(
-          codigo = "Código do Lote não pode ultrapassar 30 caractéres",
+          codigo = "Código do Lote do fabricante não pode ultrapassar 30 caractéres",
           num = "O preço milheiro, a quantidade a ser comprada e peso médio do alevino devem ser maiores que 0 (zero)"
         )
         # Seleção de qual msg deve ser printada
@@ -802,7 +821,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
           DT::DTOutput(ns("inf_ped_table_ale")),
           tags$b("Para editar clique duas vezes na linha que deseja ser editado e faça a alteração."),
           br(),
-          tags$b("Apenas a data de validade e o código do lote poderão ser editados."),
+          tags$b("Apenas a data de validade e o código do lote do fabricante poderão ser editados."),
           br(),
           tags$b("Em seguida aperte control e Enter (ctrl + enter) para confirmar a edição, ou esc para cancelar.")
         )
@@ -836,7 +855,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
                         "nome_distribuidor","sexo",
                         "valor_uni","quantidade","valor_entrada",
                         "peso_init","dias_init","data_init",
-                        "cod_lote"
+                        "cod_lote","cod_fab"
                         )
                       ) |>
         dplyr::mutate(data_init = as.character( format(as.Date(data_init), "%d-%m-%Y") ))
@@ -846,7 +865,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
         rownames = FALSE,
         selection = "single",
         # editable = TRUE,
-        colnames = c("Fabricante","Apelido","Produto","Distribuidor","Sexo","Preço (R$/mil.)","Quant. (mil.)","Valor pedido","Peso alevino (kg)","Dias vida","Data nasc.","Código lote"),
+        colnames = c("Fabricante","Apelido","Produto","Distribuidor","Sexo","Preço (R$/mil.)","Quant. (mil.)","Valor pedido","Peso alevino (kg)","Dias vida","Data nasc.","Código lote","Código lote fab."),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -902,7 +921,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
         id_compAle_select
         #---- Dados editados ----#
         ## Código do lote
-        cod_lote <- input$inf_ped_table_ale_cell_edit$value[12]
+        cod_fab <- input$inf_ped_table_ale_cell_edit$value[12]
         ## data init
         data_init <- as.Date(input$inf_ped_table_ale_cell_edit$value[11],"%d-%m-%Y")
         dias_init <- as.numeric(input$inf_ped_table_ale_cell_edit$value[10])
@@ -961,7 +980,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
                             "nome_distribuidor","sexo",
                             "valor_uni","quantidade","valor_entrada",
                             "peso_init","dias_init","data_init",
-                            "cod_lote"
+                            "cod_lote","cod_fab"
               )
             ) |>
             dplyr::mutate(data_init = as.character( format(as.Date(data_init), "%d-%m-%Y") ))
@@ -971,7 +990,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
             rownames = FALSE,
             selection = "single",
             # editable = TRUE,
-            colnames = c("Fabricante","Apelido","Produto","Distribuidor","Sexo","Preço (R$/mil.)","Quant. (mil.)","Valor pedido","Peso alevino (kg)","Dias vida","Data nasc.","Código lote"),
+            colnames = c("Fabricante","Apelido","Produto","Distribuidor","Sexo","Preço (R$/mil.)","Quant. (mil.)","Valor pedido","Peso alevino (kg)","Dias vida","Data nasc.","Código lote","Código lote fab."),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -988,7 +1007,7 @@ mod_tabCompAle_server <- function(id,df_comp_ale,df_alevino,df_comp){
             div(tags$b(paste0("Data não válida. É importante conferir o formato editado da data."), style = "color: red;")),
             div(tags$b(paste0("Deve seguir o modelo: ano-mês-dia",Sys.Date()))),
           ),
-          cod_lot = div(tags$b(paste0("O Código do lote deve ter menos que 30 caracteres."), style = "color: red;")),
+          cod_lot = div(tags$b(paste0("O Código do lote do fabricante deve ter menos que 30 caracteres."), style = "color: red;")),
           peso = div(tags$b(paste0("O peso inicial deve ser maior que 0 (zero) e menor que 200000 kg."), style = "color: red;")),
           dias = div(tags$b(paste0("Os dias de vida do animal deve ser maior que 0 (zero) e menor que 200000 dias."), style = "color: red;"))
         )

@@ -130,7 +130,8 @@ CREATE TABLE compra_racao(
 	quantidade REAL NOT NULL, -- quantidade comprada (kg)
 	valor_entrada NUMERIC NOT NULL, -- Valor total da compra para essa ração (R$)
 	validade VARCHAR(10) NOT NULL, -- Corrigir validade para = TIMESTAMPTZ NOT NULL
-	cod_lote VARCHAR(30) NULL, -- Código da ração do fabricante para rastreio
+	cod_lote VARCHAR(30) NULL, -- Código da ração do nosso sistema = ID_ração_LETRA ALFABETO + validade - ID compra
+	cod_fab  VARCHAR(30) NULL, -- Código da ração do fabricante para futuro rastreio
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL  
 );
@@ -148,7 +149,8 @@ CREATE TABLE compra_alevino(
 	peso_init REAL NOT NULL, -- g
 	data_init DATE NOT NULL, -- Data de eclosão (nascimento)
 	dias_init INT NULL, -- dias de vida
-	cod_lote VARCHAR(30) NULL,
+	cod_lote VARCHAR(30) NULL, -- código sistema = ID_alevino_letra alfabeto + data_init(nascimento) - ID compra
+	cod_fab  VARCHAR(30) NULL, -- Código do fabricante da ração para futuro rastreio
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL
 );

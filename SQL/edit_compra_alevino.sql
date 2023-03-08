@@ -4,6 +4,6 @@
    # Inserindo dados editados na tabela compra_alevino no DB
 */
 UPDATE compra_alevino
-  SET data_init = '{data_init}', cod_lote = '{cod_lote}',
+  SET data_init = '{data_init}', cod_fab = '{cod_fab}',
       dias_init = {dias_init}, peso_init = {peso_init}
   WHERE id_comp_alevino = {id_compAle_select};

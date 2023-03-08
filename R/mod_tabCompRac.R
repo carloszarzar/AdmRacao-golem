@@ -121,7 +121,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
                        ),
                 column(2,
                        textInput(ns(paste0("codigo",x['id_racao'])),
-                                 "Código lote:"),
+                                 "Código lote fab.:"),
                        tags$style(".shiny-input-container {margin-top: 5px;}")
                        ),
                 column(2,
@@ -278,7 +278,10 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
           quantidade = as.vector(quantidade),
           valor_entrada = as.vector(valor_uni*quantidade),
           validade = format(as.vector(date)),
-          cod_lote = as.vector(codigo)
+          cod_lote = paste0(LETTERS[list_rac$id_racao],
+                            stringr::str_remove_all(as.vector(date),"-"),
+                            "-"),
+          cod_fab = as.vector(codigo)
           # id_compra =
         )
         # insertCompRac
@@ -377,16 +380,16 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
         })
         # Atualizando os dados de entrada do estoque Ração
         #------------- REFRESH MATERIALIZED VIEW --------------
-        # browser()
-        # Connect to DB
-        con <- connect_to_db()
-        ## Inserindo dados fornecedor
-        query <- glue::glue("REFRESH MATERIALIZED VIEW view_entrada;")
-        ### Query to send to database
-        insert_prop <- DBI::dbSendQuery(conn = con, statement = query)
-        DBI::dbClearResult(insert_prop) # limpando resultados
-        # Disconnect from the DB
-        DBI::dbDisconnect(con)
+        # # browser()
+        # # Connect to DB
+        # con <- connect_to_db()
+        # ## Inserindo dados fornecedor
+        # query <- glue::glue("REFRESH MATERIALIZED VIEW view_entrada;")
+        # ### Query to send to database
+        # insert_prop <- DBI::dbSendQuery(conn = con, statement = query)
+        # DBI::dbClearResult(insert_prop) # limpando resultados
+        # # Disconnect from the DB
+        # DBI::dbDisconnect(con)
         #---------------------------
         # Atualizando a renderização da tabela Saída estoque Ração (saida_racao) (tabSaidaRac)
         output$rac_st <- DT::renderDataTable({
@@ -443,7 +446,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
       else { # Condições NÃO satisfeita
         # Lista de msg a ser printada na tela
         list_msg <- list(
-          codigo = "Código do Lote não pode ultrapassar 30 caractéres",
+          codigo = "Código do Lote do fabricante não pode ultrapassar 30 caractéres",
           num = "O Preço unitário e a quantidade a ser comprada devem ser maiores que 0 (zero)"
         )
         # Seleção de qual msg deve ser printada
@@ -903,7 +906,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
           DT::DTOutput(ns("inf_ped_table")),
           tags$b("Para editar clique duas vezes na linha que deseja ser editado e faça a alteração."),
           br(),
-          tags$b("Apenas a data de validade e o código do lote poderão ser editados."),
+          tags$b("Apenas a data de validade e o código do lote do fabricante poderão ser editados."),
           br(),
           tags$b("Em seguida aperte control e Enter (ctrl + enter) para confirmar a edição, ou esc para cancelar.")
         )
@@ -934,7 +937,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
       # Selecionando os dados para renderizar na tabela
       df <- merge |>
         dplyr::select(c("nome","tamanho","Fase","Proteína","Fabricante",
-                        "valor_uni","quantidade","validade","cod_lote",
+                        "valor_uni","quantidade","validade","cod_lote","cod_fab",
                         "valor_entrada","Distribuidor"))
       # Renderizando a tabela
       DT::datatable(
@@ -942,7 +945,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
         rownames = FALSE,
         selection = "single",
         # editable = TRUE,
-        colnames = c("Nome","Tamanho (mm)","Fase","Proteína","Fabricante","Preço (R$/kg)","Quant. (kg)","Validade","Código lote","Valor pedido","Distribuidor"),
+        colnames = c("Nome","Tamanho (mm)","Fase","Proteína","Fabricante","Preço (R$/kg)","Quant. (kg)","Validade","Código lote","Código lote fab.","Valor pedido","Distribuidor"),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -992,7 +995,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
         id_compRac_select
         #---- Dados editados ----#
         ## Código do lote
-        cod_lote <- input$inf_ped_table_cell_edit$value[9]
+        cod_fab <- input$inf_ped_table_cell_edit$value[9]
         ## validade
         val_edit <- input$inf_ped_table_cell_edit$value[8]
         #------------- UPDATE SET --------------
@@ -1053,7 +1056,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
           # Selecionando os dados para renderizar na tabela
           df <- merge |>
             dplyr::select(c("nome","tamanho","Fase","Proteína","Fabricante",
-                            "valor_uni","quantidade","validade","cod_lote",
+                            "valor_uni","quantidade","validade","cod_lote","cod_fab",
                             "valor_entrada","Distribuidor"))
           # Renderizando a tabela
           DT::datatable(
@@ -1061,7 +1064,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
             rownames = FALSE,
             selection = "single",
             # editable = TRUE,
-            colnames = c("Nome","Tamanho (mm)","Fase","Proteína","Fabricante","Preço (R$/kg)","Quant. (kg)","Validade","Código lote","Valor pedido","Distribuidor"),
+            colnames = c("Nome","Tamanho (mm)","Fase","Proteína","Fabricante","Preço (R$/kg)","Quant. (kg)","Validade","Código lote","Código lote fab.","Valor pedido","Distribuidor"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -1078,7 +1081,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
             div(tags$b(paste0("Data não válida. É importante conferir o formato editado da data."), style = "color: red;")),
             div(tags$b(paste0("Deve seguir o modelo: ano-mês-dia",Sys.Date()))),
           ),
-          cod_lot = div(tags$b(paste0("O Código do lote deve ter menos que 30 caracteres."), style = "color: red;"))
+          cod_lot = div(tags$b(paste0("O Código do lote do fabricante deve ter menos que 30 caracteres."), style = "color: red;"))
         )
         # Mostrar o modal informando o problema
         showModal(modalDialog(
@@ -1149,7 +1152,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
           # Selecionando os dados para renderizar na tabela
           df <- merge |>
             dplyr::select(c("nome","tamanho","Fase","Proteína","Fabricante",
-                            "valor_uni","quantidade","validade","cod_lote",
+                            "valor_uni","quantidade","validade","cod_fab",
                             "valor_entrada","Distribuidor"))
           # Renderizando a tabela
           DT::datatable(

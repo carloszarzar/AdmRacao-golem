@@ -4,5 +4,5 @@
    # Inserindo dados editados na tabela compra_racao no DB
 */
 UPDATE compra_racao
-  SET validade = '{val_edit}', cod_lote = '{cod_lote}'
+  SET validade = '{val_edit}', cod_fab = '{cod_fab}'
   WHERE id_comp_racao = {id_compRac_select};
