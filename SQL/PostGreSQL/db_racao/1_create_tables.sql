@@ -155,15 +155,31 @@ CREATE TABLE compra_alevino(
 	modified_at TIMESTAMPTZ NULL
 );
 
+-- TABELA saida
+CREATE TABLE saida(
+	id_saida SERIAL PRIMARY KEY NOT NULL,
+	quantidade_itens INT NOT NULL,
+	quantidade_total NUMERIC NOT NULL, -- quantidade total saindo em kg de ração ou milheiro de alevino
+	valor_total NUMERIC NOT NULL,
+	data_saida DATE NOT NULL, -- Data que a ração ou alevino saiu do estoque
+	tipo_compra VARCHAR(10) NOT NULL, -- ração ou alevino
+	id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda) ON DELETE CASCADE,
+	created_at TIMESTAMPTZ DEFAULT Now(),
+	modified_at TIMESTAMPTZ NULL
+);
+
 -- TABELA saida_racao
 CREATE TABLE saida_racao(
 	id_saida_racao SERIAL PRIMARY KEY NOT NULL,
 	quantidade REAL NOT NULL,
 	valor_saida NUMERIC NOT NULL,
-	id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda) ON DELETE CASCADE,
+	-- id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda) ON DELETE CASCADE,
 	data_saida TIMESTAMP NOT NULL,
 	id_comp_racao SERIAL NOT NULL REFERENCES compra_racao(id_comp_racao) ON DELETE CASCADE,
 	id_racao SERIAL NOT NULL REFERENCES racao(id_racao) ON DELETE CASCADE,
+	cod_lote VARCHAR(30) NULL, -- Código da ração que está saindo do nosso sistema = ID_ração_LETRA ALFABETO + validade - ID compra
+	cod_fab VARCHAR(30) NULL, -- Código da ração do fabricante para futuro rastreio
+	id_saida SERIAL NOT NULL REFERENCES saida(id_saida) ON DELETE CASCADE,
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL 
 );
@@ -173,9 +189,12 @@ CREATE TABLE saida_alevino(
 	id_saida_alevino SERIAL PRIMARY KEY NOT NULL,
 	quantidade INT NOT NULL,
 	valor_saida NUMERIC NOT NULL,
-	id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda) ON DELETE CASCADE,
+	-- id_fazenda SERIAL NOT NULL REFERENCES fazenda(id_fazenda) ON DELETE CASCADE,
 	data_saida TIMESTAMP NOT NULL,
 	id_comp_alevino SERIAL NOT NULL REFERENCES compra_alevino(id_comp_alevino) ON DELETE CASCADE,
+	cod_lote VARCHAR(30) NULL,
+	cod_fab VARCHAR(30) NULL,
+	id_saida SERIAL NOT NULL REFERENCES saida(id_saida) ON DELETE CASCADE,
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL 
 );

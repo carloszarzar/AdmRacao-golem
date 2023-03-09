@@ -40,70 +40,6 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
-  # Dados da Tabela Ração
-  df_rac <- reactiveVal({
-    golem::cat_dev("Importou os dados da Ração \n")
-    ## conectando com o DB PostgreSQL
-    # Connect to DB
-    con <- connect_to_db()
-    # Query
-    query <- glue::glue(read_sql_file(path = "SQL/TBracao.sql"))
-    # browser() # Shiny Debugging
-    df_postgres <- DBI::dbGetQuery(con, statement = query)
-    # Disconnect from the DB
-    DBI::dbDisconnect(con)
-    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
-    # Convert to data.frame
-    data.frame(df_postgres,check.names = FALSE)
-  })
-  # Dados da Tabela Compra_Ração
-  df_comp_rac <- reactiveVal({
-    golem::cat_dev("Importou os dados da Compra de Ração \n")
-    ## conectando com o DB PostgreSQL
-    # Connect to DB
-    con <- connect_to_db()
-    # Query
-    query <- glue::glue("TABLE compra_racao;")
-    # browser() # Shiny Debugging
-    df_postgres <- DBI::dbGetQuery(con, statement = query)
-    # Disconnect from the DB
-    DBI::dbDisconnect(con)
-    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
-    # Convert to data.frame
-    data.frame(df_postgres,check.names = FALSE)
-  })
-  # Dados da Tabela Alevino
-  df_alevino <- reactiveVal({
-    golem::cat_dev("Importou os dados Alevino \n")
-    ## conectando com o DB PostgreSQL
-    # Connect to DB
-    con <- connect_to_db()
-    # Query
-    query <- glue::glue(read_sql_file(path = "SQL/TBalevino.sql"))
-    # browser() # Shiny Debugging
-    df_postgres <- DBI::dbGetQuery(con, statement = query)
-    # Disconnect from the DB
-    DBI::dbDisconnect(con)
-    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
-    # Convert to data.frame
-    data.frame(df_postgres,check.names = FALSE)
-  })
-  # Dados da Tabela Compra_Alevino
-  df_comp_ale <- reactiveVal({
-    golem::cat_dev("Importou os dados da Compra de Alevino \n")
-    ## conectando com o DB PostgreSQL
-    # Connect to DB
-    con <- connect_to_db()
-    # Query
-    query <- glue::glue("TABLE compra_alevino;")
-    # browser() # Shiny Debugging
-    df_postgres <- DBI::dbGetQuery(con, statement = query)
-    # Disconnect from the DB
-    DBI::dbDisconnect(con)
-    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
-    # Convert to data.frame
-    data.frame(df_postgres,check.names = FALSE)
-  })
   # Dados da Tabela Proprietário
   df_prop <- reactiveVal({
     golem::cat_dev("Importou os dados Proprietário \n")
@@ -136,6 +72,38 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
+  # Dados da Tabela Ração
+  df_rac <- reactiveVal({
+    golem::cat_dev("Importou os dados da Ração \n")
+    ## conectando com o DB PostgreSQL
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue(read_sql_file(path = "SQL/TBracao.sql"))
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
+  # Dados da Tabela Alevino
+  df_alevino <- reactiveVal({
+    golem::cat_dev("Importou os dados Alevino \n")
+    ## conectando com o DB PostgreSQL
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue(read_sql_file(path = "SQL/TBalevino.sql"))
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
   # Dados da Tabela Compra
   df_comp <- reactiveVal({
     golem::cat_dev("Importou os dados da Compra \n")
@@ -152,14 +120,14 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
-  #---------------------------------------------
-  # Dados da Ração em Estoque (view_entrada)
-  df_view_entrada <- reactiveVal({
+  # Dados da Tabela Compra_Ração
+  df_comp_rac <- reactiveVal({
+    golem::cat_dev("Importou os dados da Compra de Ração \n")
     ## conectando com o DB PostgreSQL
     # Connect to DB
     con <- connect_to_db()
     # Query
-    query <- glue::glue("TABLE view_entrada;")
+    query <- glue::glue("TABLE compra_racao;")
     # browser() # Shiny Debugging
     df_postgres <- DBI::dbGetQuery(con, statement = query)
     # Disconnect from the DB
@@ -168,6 +136,38 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
+  # Dados da Tabela Compra_Alevino
+  df_comp_ale <- reactiveVal({
+    golem::cat_dev("Importou os dados da Compra de Alevino \n")
+    ## conectando com o DB PostgreSQL
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue("TABLE compra_alevino;")
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
+  #---------------------------------------------
+  # Dados da Ração em Estoque (view_entrada)
+  # df_view_entrada <- reactiveVal({
+  #   ## conectando com o DB PostgreSQL
+  #   # Connect to DB
+  #   con <- connect_to_db()
+  #   # Query
+  #   query <- glue::glue("TABLE view_entrada;")
+  #   # browser() # Shiny Debugging
+  #   df_postgres <- DBI::dbGetQuery(con, statement = query)
+  #   # Disconnect from the DB
+  #   DBI::dbDisconnect(con)
+  #   # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+  #   # Convert to data.frame
+  #   data.frame(df_postgres,check.names = FALSE)
+  # })
   # Dados balanço da ração no estoque
   df_estoque <- reactiveVal({
     # Connect to DB
@@ -182,6 +182,20 @@ app_server <- function(input, output, session) {
     data.frame(df_postgres)
   })
   #---------------------------------------------
+  # Dados Saída
+  df_saida <- reactiveVal({
+    # Connect to DB
+    con <- connect_to_db()
+    # Query
+    query <- glue::glue("TABLE saida;")
+    # browser() # Shiny Debugging
+    df_postgres <- DBI::dbGetQuery(con, statement = query)
+    # Disconnect from the DB
+    DBI::dbDisconnect(con)
+    # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+    # Convert to data.frame
+    data.frame(df_postgres,check.names = FALSE)
+  })
   # Dados Saída Ração
   df_saida_racao <- reactiveVal({
     # Connect to DB
@@ -228,7 +242,7 @@ app_server <- function(input, output, session) {
   ####----- tabEstoque ----####
   mod_tabEstoque_server("global")
   ####----- tabSaidaRac ----####
-  mod_tabSaidaRac_server("global",df_estoque,df_rac,df_comp_rac,df_faz,df_saida_racao)
+  mod_tabSaidaRac_server("global",df_estoque,df_rac,df_comp_rac,df_faz,df_saida,df_saida_racao)
   ####----- tabSaidaAle ----####
   mod_tabSaidaAle_server("global")
 

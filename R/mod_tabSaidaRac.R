@@ -38,7 +38,7 @@ mod_tabSaidaRac_ui <- function(id){
 #' tabSaidaRac Server Functions
 #'
 #' @noRd
-mod_tabSaidaRac_server <- function(id,df_estoque,df_rac,df_comp_rac,df_faz,df_saida_racao){
+mod_tabSaidaRac_server <- function(id,df_estoque,df_rac,df_comp_rac,df_faz,df_saida,df_saida_racao){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Renderizando tabela MATERIALIZED VIEW Ração no estoque ----####
@@ -78,6 +78,7 @@ mod_tabSaidaRac_server <- function(id,df_estoque,df_rac,df_comp_rac,df_faz,df_sa
     })
     ####---- Operação de Envio ----####
     output$dados_envio <- renderUI({
+      # browser()
       # Conferindo se a linha da tabela foi selecionado
       cond <- input$rac_st_rows_selected
       # browser()
@@ -183,6 +184,7 @@ mod_tabSaidaRac_server <- function(id,df_estoque,df_rac,df_comp_rac,df_faz,df_sa
       comp_rac <- merge(st,df_estoque(),by='id_racao',suffixes = c(".racao",".lote")) |> # quantidade kg da ração no estoque comprada no pedido
         filter(quant_total.lote != 0)
       comp_rac <- merge(comp_rac,df_comp_rac())
+      # browser()
       ## Listas de input quantidade de saída
       (list_qnt_saida_select <- paste0("qnt_saida",comp_rac$id_comp_racao))
       ## Verificação se todos estão com valores permitidos
@@ -204,18 +206,31 @@ mod_tabSaidaRac_server <- function(id,df_estoque,df_rac,df_comp_rac,df_faz,df_sa
         # st # dados racao selecionada no estoque
         # comp_rac # dados da compra dessa racao
 
-        # Dados a serem inseridos o DB
+        # Dados a serem inseridos o DB tablea Saída Ração
         insertSaidaRac <- data.frame(
           quantidade = list_input,
           valor_saida = list_input * comp_rac$valor_uni,
-          id_fazenda = df_faz()[which(df_faz()$nome == input$fazenda),"id_fazenda"],
+          # id_fazenda = df_faz()[which(df_faz()$nome == input$fazenda),"id_fazenda"],
           data_saida = format(input$data_saida),
           id_comp_racao = comp_rac$id_comp_racao,
-          id_racao = comp_rac$id_racao
+          id_racao = comp_rac$id_racao,
+          cod_lote = comp_rac$cod_lote,
+          cod_fab = comp_rac$cod_fab
         )
         # Retirando as rações que não foram enviadas (quantidade = 0)
         insertSaidaRac <- insertSaidaRac |>
           dplyr::filter(quantidade != 0)
+        # Dados para a tabela Saída
+        insertSaida <- data.frame(
+          quantidade_itens = nrow(insertSaidaRac),
+          quantidade_total = sum(insertSaidaRac$quantidade),
+          valor_total = sum(insertSaidaRac$valor_saida),
+          data_saida = format(input$data_saida),
+          tipo_compra = 'ração',
+          id_fazenda = df_faz()[which(df_faz()$nome == input$fazenda),"id_fazenda"]
+        )
+        insertSaida
+        insertSaidaRac
         # Conferindo se o usuário colocou algum valor maior que zero, ou tudo zero para a saída da ração
         nrow(req(insertSaidaRac))>0
         # Ao menos um valor maior que zero
@@ -248,8 +263,26 @@ mod_tabSaidaRac_server <- function(id,df_estoque,df_rac,df_comp_rac,df_faz,df_sa
             )
           )
           #----------------------------------------
+          #====== Trabalhar nessa atualização depois que a rederizaçao tiver funcionando ====#
           # Atualização da tabela histórico Saída Ração
           output$hist_saida_rac <- DT::renderDataTable({
+            # browser()
+            # Atualizando banco de dados saida
+            # Dados Saída
+            df_saida({
+              # Connect to DB
+              con <- connect_to_db()
+              # Query
+              query <- glue::glue("TABLE saida;")
+              # browser() # Shiny Debugging
+              df_postgres <- DBI::dbGetQuery(con, statement = query)
+              # Disconnect from the DB
+              DBI::dbDisconnect(con)
+              # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
+              # Convert to data.frame
+              data.frame(df_postgres,check.names = FALSE)
+            })
+            # Dados Saída Ração
             df_saida_racao({
               # Connect to DB
               con <- connect_to_db()
@@ -264,19 +297,21 @@ mod_tabSaidaRac_server <- function(id,df_estoque,df_rac,df_comp_rac,df_faz,df_sa
               data.frame(df_postgres,check.names = FALSE)
             })
             # Selecionando as colunas para renderizar
-            df <- df_saida_racao() |>
+            # names(df_saida())
+            df <- df_saida() |>
+              merge(df_faz()[1:2]) |> # # Obtendo nome da fazenda
               dplyr::select(c(
-                "id_saida_racao","quantidade","valor_saida","id_fazenda","data_saida",
-                "id_comp_racao","id_racao"
-              ))
+                "id_saida","data_saida","quantidade_total","valor_total","quantidade_itens","nome"
+              )) |>
+              dplyr::arrange(dplyr::desc(id_saida))
             # Renderizando a tabela
             DT::datatable(
               df,
               rownames = FALSE,
               # selection = "single",
               extensions = 'RowGroup',
-              # selection = "single",
-              # colnames = c("Nome","Fabricante","Tamanho (mm)","Proteína","Fase","Qnt. stc. (Kg)","Valor stc. (R$)"),
+              selection = "single",
+              colnames = c("ID","Data saída","Quant. (kg)","Valor (R$)","N° Itens","Fazenda"),
               class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
               options = list(searching = FALSE, lengthChange = FALSE,
                              scrollX = TRUE # mantem a tabela dentro do conteiner
@@ -374,25 +409,39 @@ mod_tabSaidaRac_server <- function(id,df_estoque,df_rac,df_comp_rac,df_faz,df_sa
     output$hist_saida_rac <- DT::renderDataTable({
       # browser()
       # Selecionando as colunas para renderizar
-      df <- df_saida_racao() |>
+      # names(df_saida())
+      df <- df_saida() |>
+        merge(df_faz()[1:2]) |> # # Obtendo nome da fazenda
         dplyr::select(c(
-          "id_saida_racao","quantidade","valor_saida","id_fazenda","data_saida",
-          "id_comp_racao","id_racao"
-        ))
+          "id_saida","data_saida","quantidade_total","valor_total","quantidade_itens","nome"
+        )) |>
+        dplyr::arrange(dplyr::desc(id_saida))
       # Renderizando a tabela
       DT::datatable(
         df,
         rownames = FALSE,
         # selection = "single",
         extensions = 'RowGroup',
-        # selection = "single",
-        # colnames = c("Nome","Fabricante","Tamanho (mm)","Proteína","Fase","Qnt. stc. (Kg)","Valor stc. (R$)"),
+        selection = "single",
+        colnames = c("ID","Data saída","Quant. (kg)","Valor (R$)","N° Itens","Fazenda"),
         class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
         options = list(searching = FALSE, lengthChange = FALSE,
                        scrollX = TRUE # mantem a tabela dentro do conteiner
         )
       ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
     })
+
+
+
+
+
+
+    # Próximos passos:
+    # OK Trabalhar na tablea histórico Saída Ração para deixar nomes das colunas melhores
+    # OK Selecionar quais as colunas interessantes,
+    ## Fazer o box para informação da saída com botão de editar e apagar
+    ## Saber quais das variáveis (colunas) serão editadas
+    # OK Avaliar se faz uma tabela saida ou so a saida_racao é o suficiente
 
 
 

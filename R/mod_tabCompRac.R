@@ -371,7 +371,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
             rownames = FALSE,
             selection = "single",
             extensions = 'RowGroup',
-            colnames = c("ID","Data do pedido","Quant. (kg)","Valor (R$)","Itens","Previsão chegada"),
+            colnames = c("ID","Data do pedido","Quant. (kg)","Valor (R$)","N° Itens","Previsão chegada"),
             class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
             options = list(searching = FALSE, lengthChange = FALSE,
                            scrollX = TRUE # mantem a tabela dentro do conteiner
