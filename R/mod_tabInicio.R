@@ -69,12 +69,12 @@ mod_tabInicio_ui <- function(id){
 #' tabInicio Server Functions
 #'
 #' @noRd
-mod_tabInicio_server <- function(id){
+mod_tabInicio_server <- function(id,df_estoque,df_rac){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     ####---- Stock Dashboard ----#####
     # Stock Dashboard Module. Localizado no tabInicio (body aba Início)
-    # mod_stockDas_server("stock") # Fazer esse modulo aninhado com o modulo do tabInicio que será feito
+    mod_stockDas_server("stock",df_estoque,df_rac) # Fazer esse modulo aninhado com o modulo do tabInicio que será feito
     ####---- Botões Cadastro ----#####
     ## Botão cadastro na aba inicio que leva para a aba (tab) cadastros ...
     # Botões Cadastro

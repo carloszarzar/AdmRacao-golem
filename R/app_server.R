@@ -152,22 +152,6 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres,check.names = FALSE)
   })
-  #---------------------------------------------
-  # Dados da Ração em Estoque (view_entrada)
-  # df_view_entrada <- reactiveVal({
-  #   ## conectando com o DB PostgreSQL
-  #   # Connect to DB
-  #   con <- connect_to_db()
-  #   # Query
-  #   query <- glue::glue("TABLE view_entrada;")
-  #   # browser() # Shiny Debugging
-  #   df_postgres <- DBI::dbGetQuery(con, statement = query)
-  #   # Disconnect from the DB
-  #   DBI::dbDisconnect(con)
-  #   # golem::cat_dev("Fez a query e armazenou os dados (FAzenda 1) \n")
-  #   # Convert to data.frame
-  #   data.frame(df_postgres,check.names = FALSE)
-  # })
   # Dados balanço da ração no estoque
   df_estoque <- reactiveVal({
     # Connect to DB
@@ -181,7 +165,6 @@ app_server <- function(input, output, session) {
     # Convert to data.frame
     data.frame(df_postgres)
   })
-  #---------------------------------------------
   # Dados Saída
   df_saida <- reactiveVal({
     # Connect to DB
@@ -226,7 +209,7 @@ app_server <- function(input, output, session) {
   })
 
   ####----- tabInicio ----####
-  mod_tabInicio_server("global")
+  mod_tabInicio_server("global",df_estoque,df_rac)
   ####----- tabFornecedor ----####
   mod_tabFornecedor_server("global",df_fab,df_dis,df_rac,df_alevino)
   ####----- tabRacao ----####
