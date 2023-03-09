@@ -12,7 +12,7 @@ mod_tabSaidaRac_ui <- function(id){
   tagList(
     fluidPage(
       fluidRow(
-        ####---- Renderizando tabela MATERIALIZED VIEW Ração no estoque ----####
+        ####---- Renderizando tabela Estoque Ração ----####
         box(title = "Ração em Estoque", status = "primary",
             DT::dataTableOutput(ns("rac_st")) # ração stock (st)
         )

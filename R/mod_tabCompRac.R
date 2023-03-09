@@ -426,6 +426,52 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
             )
           ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
         })
+        output$rac_st2 <- DT::renderDataTable({
+          # browser()
+          # Atualizando materialized view de entrada de ração
+          df_estoque({
+            # Connect to DB
+            con <- connect_to_db()
+            # Query estoque data (Materilized View)
+            df_postgres <- DBI::dbGetQuery(con,
+                                           read_sql_file(path = "SQL/estoque_lote.sql")
+            )
+            # Disconnect from the DB
+            DBI::dbDisconnect(con)
+            # Convert to data.frame
+            data.frame(df_postgres)
+          })
+          # Somando os lotes por grupo ração disponível no estoque
+          # returns tibble table
+          agr_estoque <- df_estoque() %>% group_by(id_racao) %>%
+            summarise(quant_total=sum(quant_total),
+                      valor_total=sum(valor_total),
+                      .groups = 'drop')
+          # Merge da tabelas (inf completo)
+          # rac_st_tb <- merge(df_estoque(),df_rac())
+          rac_st_tb <- merge(agr_estoque,df_rac())
+          # Selecionando as colunas para renderizar
+          df <- rac_st_tb |>
+            dplyr::select(c(
+              "nome","Fabricante","tamanho","Proteína","Fase",
+              "quant_total","valor_total" # "entrada","valor_entrada"
+            )) |>
+            dplyr::filter(quant_total != 0)
+          # Renderizando a tabela
+          DT::datatable(
+            df,
+            rownames = FALSE,
+            # selection = "single",
+            extensions = 'RowGroup',
+            colnames = c("Nome","Fabricante","Tamanho (mm)","Proteína","Qnt. stc. (Kg)","Valor stc. (R$)"),
+            class = "compact stripe row-border nowrap", # mantem as linhas apertadinhas da tabela
+            options = list(searching = FALSE, lengthChange = FALSE,
+                           scrollX = TRUE, # mantem a tabela dentro do conteiner
+                           rowGroup = list(dataSrc=c(4)), # Opção subtítulos e grupos de linhas
+                           columnDefs = list(list(visible=FALSE, targets=c("Fase"))) # Opção subtítulos e grupos de linhas
+            )
+          ) # %>% DT::formatDate(  3, method = 'toLocaleString') # Consertando timestap para formato desejado
+        })
         #-----------------------------------------------------
         # Desabilitando UI dinamico (linhas selecionadas)
         shinyjs::disable("dados_pedido")
@@ -883,7 +929,7 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
 
 
     })
-    #------------------------------------------------
+    #---------------#
     # Informação do Pedido (Aba 2)
     output$inf_ped <- renderUI({
       # Conferindo se a linha da tabela foi selecionado

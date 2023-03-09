@@ -7,6 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
+# (Pode apagar esse módulo e os testes atribuidos a ele)
 mod_stockDas_ui <- function(id){
   ns <- NS(id)
   tagList(
