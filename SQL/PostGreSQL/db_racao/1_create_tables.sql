@@ -177,8 +177,8 @@ CREATE TABLE saida_racao(
 	data_saida TIMESTAMP NOT NULL,
 	id_comp_racao SERIAL NOT NULL REFERENCES compra_racao(id_comp_racao) ON DELETE CASCADE,
 	id_racao SERIAL NOT NULL REFERENCES racao(id_racao) ON DELETE CASCADE,
-	cod_lote VARCHAR(30) NULL, -- Código da ração que está saindo do nosso sistema = ID_ração_LETRA ALFABETO + validade - ID compra
-	cod_fab VARCHAR(30) NULL, -- Código da ração do fabricante para futuro rastreio
+	-- cod_lote VARCHAR(30) NULL, -- Código da ração que está saindo do nosso sistema = ID_ração_LETRA ALFABETO + validade - ID compra
+	-- cod_fab VARCHAR(30) NULL, -- Código da ração do fabricante para futuro rastreio
 	id_saida SERIAL NOT NULL REFERENCES saida(id_saida) ON DELETE CASCADE,
 	created_at TIMESTAMPTZ DEFAULT Now(),
 	modified_at TIMESTAMPTZ NULL 

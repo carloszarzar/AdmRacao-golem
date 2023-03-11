@@ -748,16 +748,16 @@ mod_tabCompRac_server <- function(id,df_rac,df_comp,df_comp_rac,df_estoque){
         ) %>% DT::formatDate(c('data_compra','data_chegada'), method = "toLocaleDateString") # Consertando timestap para formato desejado
       })
       #------------- REFRESH MATERIALIZED VIEW --------------
-      # browser()
-      # Connect to DB
-      con <- connect_to_db()
-      ## Inserindo dados fornecedor
-      query <- glue::glue("REFRESH MATERIALIZED VIEW view_entrada;")
-      ### Query to send to database
-      insert_prop <- DBI::dbSendQuery(conn = con, statement = query)
-      DBI::dbClearResult(insert_prop) # limpando resultados
-      # Disconnect from the DB
-      DBI::dbDisconnect(con)
+      # # browser()
+      # # Connect to DB
+      # con <- connect_to_db()
+      # ## Inserindo dados fornecedor
+      # query <- glue::glue("REFRESH MATERIALIZED VIEW view_entrada;")
+      # ### Query to send to database
+      # insert_prop <- DBI::dbSendQuery(conn = con, statement = query)
+      # DBI::dbClearResult(insert_prop) # limpando resultados
+      # # Disconnect from the DB
+      # DBI::dbDisconnect(con)
       #---------------------------
       # Atualizando a renderização da tabela Saída estoque Ração (saida_racao)
       output$rac_st <- DT::renderDataTable({
