@@ -105,9 +105,9 @@ projeto serão bem vindos. Podem entrar em contato com:
 </a>
 
 <a href="https://des.ufla.br/">
-<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/logo-ufla.jpg" width="330" height="152"/>
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/dev/man/figures/logo-ufla.jpg" width="330" height="152"/>
 </a>
 
-<a >
-<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/cnpq_capes.jpg" width="330" height="152"/>
+<a href="https://www.gov.br/cnpq/pt-br">
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/dev/man/figures/cnpq_capes.jpg" width="330" height="152"/>
 </a>
