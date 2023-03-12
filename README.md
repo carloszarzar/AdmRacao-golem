@@ -99,6 +99,8 @@ projeto serão bem vindos. Podem entrar em contato com:
 - E-mail: <carlos.zarzar@ufopa.edu.br>
 - Professor: Dr. Carlos Antônio Zarzar;
 - Universidade Federal do Oeste do Pará (Campus Monte Alegre);
+- Professora: Dra. Izabela Regina Cardoso De Oliveira;
+- Universidade Federal de Lavras (Departamento de Estatística);
 
 <a href="http://www.ufopa.edu.br/montealegre/">
 <img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/UFOPA_Logo.jpg" width="330" height="152"/>
