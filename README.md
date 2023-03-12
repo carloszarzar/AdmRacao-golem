@@ -103,3 +103,11 @@ projeto serão bem vindos. Podem entrar em contato com:
 <a href="http://www.ufopa.edu.br/montealegre/">
 <img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/UFOPA_Logo.jpg" width="330" height="152"/>
 </a>
+
+<a href="https://des.ufla.br/">
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/logo-ufla.jpg" width="330" height="152"/>
+</a>
+
+<a >
+<img src="https://github.com/carloszarzar/AdmRacao-golem/blob/master/man/figures/cnpq_capes.jpg" width="330" height="152"/>
+</a>
